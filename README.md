@@ -91,3 +91,18 @@ WorkingDirectory=/home/tedcrypto/ojo-price-tracker-monitor
 [Install]
 WantedBy=multi-user.target
 ```
+
+### Development
+
+If you want to contribute to this project, you can do it by forking the repository and making a pull request.
+
+#### Run tests
+
+```bash
+npm run test
+```
+
+### Service in screenshots
+
+![img.png](docs/assets/terminal.png)
+![img.png](docs/assets/telegram_alert.png)
