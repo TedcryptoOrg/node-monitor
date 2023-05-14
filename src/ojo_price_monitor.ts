@@ -1,7 +1,7 @@
 import axios from 'axios';
 import TelegramBot from 'node-telegram-bot-api';
 
-require('dotenv').config({override: false});
+require('dotenv').config({path: '.env', override: false});
 
 let endpointURL: string;
 
@@ -9,13 +9,17 @@ async function fetchMissCounter(): Promise<number> {
     try {
         const response = await axios.get(endpointURL);
         return response.data.miss_counter;
-    } catch (error) {
+    } catch (error: any) {
         console.error('Error fetching miss counter:', error.message);
         throw new Error('Error fetching miss counter');
     }
 }
 
 async function sendTelegramMessage(currentMissCounter: number): Promise<void> {
+    if (!process.env.TELEGRAM_BOT_ID || !process.env.TELEGRAM_TOKEN || !process.env.TELEGRAM_CHAT) {
+        throw new Error('Telegram bot ID, token or chat ID not set.');
+    }
+
     // Send Telegram message
     const bot = new TelegramBot(`${process.env.TELEGRAM_BOT_ID}:${process.env.TELEGRAM_TOKEN}`);
     const message = `Miss counter exceeded: ${currentMissCounter}`;
@@ -27,7 +31,7 @@ export async function main(): Promise<void> {
     const missTolerance = parseInt(process.env.MISS_TOLERANCE!);
     const missTolerancePeriod = parseInt(process.env.MISS_TOLERANCE_PERIOD!);
     const sleepDuration = parseInt(process.env.SLEEP!);
-    const alertSleepDuration = parseInt(process.env.ALERT_SLEEP_PERIOD);
+    const alertSleepDuration = parseInt(process.env.ALERT_SLEEP_PERIOD!);
     const rpc = process.env.RPC;
     const valoper = process.env.VALOPER_ADDRESS;
 
