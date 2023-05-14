@@ -42,6 +42,7 @@ export async function main(): Promise<void> {
     let lastMissCounter = 0;
     let lastAlertedPeriod = 0;
     while (true) {
+        console.log('Running checks...');
         let currentMissCounter = await fetchMissCounter();
 
         // Check if miss counter exceeds the tolerance
