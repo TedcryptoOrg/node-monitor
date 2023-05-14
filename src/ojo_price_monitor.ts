@@ -1,30 +1,38 @@
 import axios from 'axios';
 import TelegramBot from 'node-telegram-bot-api';
 
-require('dotenv').config();
+require('dotenv').config({override: false});
 
-const telegramBotId = process.env.TELEGRAM_BOT_ID;
-const telegramToken = process.env.TELEGRAM_TOKEN;
-const telegramChat = process.env.TELEGRAM_CHAT;
-const missTolerance = parseInt(process.env.MISS_TOLERANCE!);
-const missTolerancePeriod = parseInt(process.env.MISS_TOLERANCE_PERIOD!);
-const sleepDuration = parseInt(process.env.SLEEP!);
-const alertSleepDuration = parseInt(process.env.ALERT_SLEEP_PERIOD);
-const rpc = process.env.RPC;
-const valoper = process.env.VALOPER_ADDRESS;
-
-const endpointURL = `${rpc}/ojo/oracle/v1/validators/${valoper}/miss`;
+let endpointURL: string;
 
 async function fetchMissCounter(): Promise<number> {
     try {
-        const response = await axios.get(endpointURL!);
+        const response = await axios.get(endpointURL);
         return response.data.miss_counter;
     } catch (error) {
+        console.error('Error fetching miss counter:', error.message);
         throw new Error('Error fetching miss counter');
     }
 }
 
-async function main(): Promise<void> {
+async function sendTelegramMessage(currentMissCounter: number): Promise<void> {
+    // Send Telegram message
+    const bot = new TelegramBot(`${process.env.TELEGRAM_BOT_ID}:${process.env.TELEGRAM_TOKEN}`);
+    const message = `Miss counter exceeded: ${currentMissCounter}`;
+
+    await bot.sendMessage(process.env.TELEGRAM_CHAT, message);
+}
+
+export async function main(): Promise<void> {
+    const missTolerance = parseInt(process.env.MISS_TOLERANCE!);
+    const missTolerancePeriod = parseInt(process.env.MISS_TOLERANCE_PERIOD!);
+    const sleepDuration = parseInt(process.env.SLEEP!);
+    const alertSleepDuration = parseInt(process.env.ALERT_SLEEP_PERIOD);
+    const rpc = process.env.RPC;
+    const valoper = process.env.VALOPER_ADDRESS;
+
+    endpointURL = `${rpc}/ojo/oracle/v1/validators/${valoper}/miss`;
+
     let previousMissCounter = await fetchMissCounter();
     let previousTimestamp = new Date().getTime();
     let lastMissCounter = 0;
@@ -34,17 +42,13 @@ async function main(): Promise<void> {
 
         // Check if miss counter exceeds the tolerance
         let missDifference = currentMissCounter - previousMissCounter;
-        if (missDifference > missTolerance) {
+        if (missDifference >= missTolerance) {
             console.log('Missing too many price updates...');
             let timeDifference = new Date().getTime() - lastAlertedPeriod;
             if (timeDifference / 1000 > alertSleepDuration) {
                 console.log('Sending alert message');
+                await sendTelegramMessage(currentMissCounter);
                 lastAlertedPeriod = new Date().getTime();
-                // Send Telegram message
-                const bot = new TelegramBot(`${telegramBotId}:${telegramToken}`);
-                const message = `Miss counter exceeded: ${currentMissCounter}`;
-
-                await bot.sendMessage(telegramChat!, message);
             } else {
                 console.log('Alert message sent too recently. Skipping.');
             }
@@ -67,6 +71,10 @@ async function main(): Promise<void> {
         }
 
         lastMissCounter = currentMissCounter;
+
+        if (process.env.APP_ENV === 'test') {
+            break;
+        }
 
         // Sleep for the specified duration
         await new Promise((resolve) => setTimeout(resolve, sleepDuration * 1000));
