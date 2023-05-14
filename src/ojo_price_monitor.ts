@@ -15,14 +15,14 @@ async function fetchMissCounter(): Promise<number> {
     }
 }
 
-async function sendTelegramMessage(currentMissCounter: number): Promise<void> {
+async function sendTelegramMessage(missDifference: number): Promise<void> {
     if (!process.env.TELEGRAM_BOT_ID || !process.env.TELEGRAM_TOKEN || !process.env.TELEGRAM_CHAT) {
         throw new Error('Telegram bot ID, token or chat ID not set.');
     }
 
     // Send Telegram message
     const bot = new TelegramBot(`${process.env.TELEGRAM_BOT_ID}:${process.env.TELEGRAM_TOKEN}`);
-    const message = `Miss counter exceeded: ${currentMissCounter}`;
+    const message = `🚨 OJO Price tracker monitor alert!\n You are missing too many blocks. Miss counter exceeded: ${missDifference}`;
 
     await bot.sendMessage(process.env.TELEGRAM_CHAT, message);
 }
@@ -51,7 +51,7 @@ export async function main(): Promise<void> {
             let timeDifference = new Date().getTime() - lastAlertedPeriod;
             if (timeDifference / 1000 > alertSleepDuration) {
                 console.log('Sending alert message');
-                await sendTelegramMessage(currentMissCounter);
+                await sendTelegramMessage(missDifference);
                 lastAlertedPeriod = new Date().getTime();
             } else {
                 console.log('Alert message sent too recently. Skipping.');
@@ -62,13 +62,13 @@ export async function main(): Promise<void> {
 
         // Refresh the missing period if we are missing blocks within the period
         if (currentMissCounter > lastMissCounter) {
-            console.log('Missing counter has increased. Refreshing previous incident timestamp.');
+            console.log(`Missing counter has increased, current missed: ${currentMissCounter - previousMissCounter}. Refreshing previous incident timestamp.`);
             previousTimestamp = new Date().getTime();
         }
 
         let timeDifference = currentTimestamp - previousTimestamp;
         if (timeDifference / 1000 > missTolerancePeriod) {
-            console.log('No more misses happened since last one. Reset monitoring flags')
+            console.log(`No more misses happened since last one. Last missed: ${currentMissCounter - previousMissCounter}. Reset monitoring flags`)
             // Reset the miss counter if the tolerance period has passed
             previousMissCounter = currentMissCounter;
             previousTimestamp = currentTimestamp;
