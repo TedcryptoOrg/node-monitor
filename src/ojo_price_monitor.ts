@@ -54,6 +54,7 @@ export async function main(): Promise<void> {
                 console.log('Sending alert message');
                 await sendTelegramMessage(missDifference);
                 lastAlertedPeriod = new Date().getTime();
+                previousMissCounter = currentMissCounter;
             } else {
                 console.log('Alert message sent too recently. Skipping.');
             }
