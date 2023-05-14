@@ -10,7 +10,7 @@ async function fetchMissCounter(): Promise<number> {
         const response = await axios.get(endpointURL);
         return response.data.miss_counter;
     } catch (error: any) {
-        console.error('Error fetching miss counter:', error.message);
+        console.error(endpointURL, 'Error fetching miss counter:', error.message);
         throw new Error('Error fetching miss counter');
     }
 }
