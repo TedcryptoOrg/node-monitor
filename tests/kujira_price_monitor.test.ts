@@ -9,7 +9,7 @@ import { main } from '../src/kujira_price_monitor';
 jest.mock('node-telegram-bot-api');
 
 describe('Main', () => {
-    let mock;
+    let mock: MockAdapter;
 
     beforeAll(() => {
         mock = new MockAdapter(axios);
