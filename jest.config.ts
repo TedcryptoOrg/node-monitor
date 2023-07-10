@@ -1,5 +1,5 @@
 /*
- * For a detailed explanation regarding each configuration property and type check, visit:
+ * For a detailed explanation regarding each configuration.ts property and type check, visit:
  * https://jestjs.io/docs/configuration
  */
 
@@ -50,7 +50,7 @@ export default {
   // Make calling deprecated APIs throw helpful error messages
   // errorOnDeprecated: false,
 
-  // The default configuration for fake timers
+  // The default configuration.ts for fake timers
   // fakeTimers: {
   //   "enableGlobally": false
   // },
@@ -99,13 +99,13 @@ export default {
   // An enum that specifies notification mode. Requires { notify: true }
   // notifyMode: "failure-change",
 
-  // A preset that is used as a base for Jest's configuration
+  // A preset that is used as a base for Jest's configuration.ts
   // preset: undefined,
 
   // Run tests from one or more projects
   // projects: undefined,
 
-  // Use this configuration option to add custom reporters to Jest
+  // Use this configuration.ts option to add custom reporters to Jest
   // reporters: undefined,
 
   // Automatically reset mock state before every test
