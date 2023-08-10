@@ -11,9 +11,9 @@ describe('PriceFeeder', () => {
         valoperAddress: 'your-valoper-address',
         priceFeeder: {
             miss_tolerance: 5,
-            miss_tolerance_period: 5,
-            sleep_duration: 5,
-            alert_sleep_duration: 5,
+            miss_tolerance_period_seconds: 5,
+            sleep_duration_seconds: 5,
+            alert_sleep_duration_minutes: 5,
         }
     };
     const alertChannels: AlertChannel[] = [];
