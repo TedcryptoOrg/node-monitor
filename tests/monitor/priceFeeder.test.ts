@@ -6,9 +6,9 @@ import {Configuration} from "../../src/type/configuration";
 describe('PriceFeeder', () => {
     let priceFeeder: PriceFeeder;
     const mockConfig: Configuration = {
-        chainName: 'test',
+        chainName: 'kujira',
         nodeRest: 'http://localhost:1317',
-        valoperAddress: 'your-valoper-address',
+        valoperAddress: 'kujiravaloper1excmz0f7k9z3ydchv8t2pde8v45hjl2x3ud5q3',
         priceFeeder: {
             miss_tolerance: 5,
             miss_tolerance_period_seconds: 5,
