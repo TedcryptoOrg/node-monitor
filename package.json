@@ -1,7 +1,7 @@
 {
-  "name": "@tedcryptoorg/ojo-price-tracker-monitor",
+  "name": "@tedcryptoorg/node-monitor",
   "version": "0.0.1",
-  "description": "Simple library to monitor ojo price miss tracker",
+  "description": "Simple library to monitor cosmos nodes",
   "scripts": {
     "test": "jest",
     "clean": "rm -rf ./lib",

@@ -1,3 +1,3 @@
 export interface AlertChannel {
-    alert(message: string): Promise<void>;
+  alert: (message: string) => Promise<void>
 }

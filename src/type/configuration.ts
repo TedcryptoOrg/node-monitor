@@ -1,8 +1,8 @@
-import {PriceFeederConfiguration} from "./priceFeederConfiguration";
+import { type PriceFeederConfiguration } from './priceFeederConfiguration'
 
-export type Configuration = {
-    chainName: string,
-    valoperAddress?: string,
-    nodeRest?: string,
-    priceFeeder?: PriceFeederConfiguration,
+export interface Configuration {
+  chainName: string
+  valoperAddress?: string
+  nodeRest?: string
+  priceFeeder?: PriceFeederConfiguration
 }

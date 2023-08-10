@@ -1,8 +1,7 @@
-import {AlertChannel} from "./alertChannel";
+import { type AlertChannel } from './alertChannel'
 
 export class Null implements AlertChannel {
-    async alert(message: string): Promise<void> {
-        console.log(message);
-        return;
-    }
+  async alert (message: string): Promise<void> {
+    console.log(message)
+  }
 }
