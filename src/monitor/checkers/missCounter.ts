@@ -1,51 +1,67 @@
 import axios from "axios";
 import {CryptoTools} from "../../crypto/crypto_tools";
-import {Param} from "./param";
+import {MonitorCheck} from "./monitorCheck";
+import {AlertChannel} from "../../AlertChannel/alertChannel";
 import {Configuration} from "../../type/configuration";
-import {Alerter} from "../../alerter/alerter";
 
-export class MissCounter implements Param {
+export class MissCounter implements MonitorCheck {
     private staticEndpoints: { kujira: string; ojo: string } = {
         'kujira': '/oracle/validators/%valoper%/miss',
         'ojo': '/ojo/oracle/v1/validators/%valoper%/miss',
     }
 
-    private name: string;
     private cryptoTools: CryptoTools;
-    private configuration: Configuration;
-    private alerters: Alerter[];
 
-    constructor(name: string, configuration: Configuration, alerters: Alerter[]) {
+    constructor(
+        private readonly name: string,
+        private readonly configuration: Configuration,
+        private readonly alertChannels: AlertChannel[]
+    ) {
+        if (!Object.prototype.hasOwnProperty.call(this.staticEndpoints, name)) {
+            throw new Error(`Blockchain ${name} not supported.`);
+        }
+
         this.name = name;
         this.cryptoTools = new CryptoTools();
-        this.alerters = alerters;
+        this.alertChannels = alertChannels;
         this.configuration = configuration;
     }
 
     async check(): Promise<void> {
+        if (this.configuration.nodeRest === undefined) {
+            throw new Error('Node rest is not defined.');
+        }
+        if (this.configuration.valoperAddress === undefined) {
+            throw new Error('Valoper address is not defined.');
+        }
+        if (this.configuration.priceFeeder === undefined) {
+            throw new Error('Price feeder is not defined.');
+        }
+
         let previousMissCounter = await this.fetchMissCounter(
-            this.configuration.node_rest,
-            this.configuration.valoper_address
+            this.configuration.nodeRest,
+            this.configuration.valoperAddress
         );
+
         let previousTimestamp = new Date().getTime();
         let lastMissCounter = previousMissCounter;
         let lastAlertedPeriod = 0;
-        let startReseter = false;
+        let reset = false;
         while (true) {
             console.log('Running miss counter check...');
             let currentMissCounter = await this.fetchMissCounter(
-                this.configuration.node_rest,
-                this.configuration.valoper_address
+                this.configuration.nodeRest,
+                this.configuration.valoperAddress
             );
 
             // Check if the miss counter exceeds the tolerance
             let missDifference = currentMissCounter - previousMissCounter;
-            if (missDifference >= this.configuration.miss_tolerance) {
+            if (missDifference >= this.configuration.priceFeeder.miss_tolerance) {
                 console.log('Missing too many price updates...');
                 let timeDifference = new Date().getTime() - lastAlertedPeriod;
-                if (timeDifference / 1000 > this.configuration.alert_sleep_duration) {
-                    // loop alerters and alert
-                    for (let alerter of this.alerters) {
+                if (timeDifference / 1000 > this.configuration.priceFeeder.alert_sleep_duration) {
+                    // loop alertChannels and alert
+                    for (let alerter of this.alertChannels) {
                         await alerter.alert(`🚨 ${this.name} Price tracker monitor alert!\n You are missing too many blocks. Miss counter exceeded: ${missDifference}`);
                     }
                     lastAlertedPeriod = new Date().getTime();
@@ -61,16 +77,16 @@ export class MissCounter implements Param {
             if (currentMissCounter > lastMissCounter) {
                 console.log(`[Miss Counter] Missing counter has increased, current missed: ${currentMissCounter - previousMissCounter}. Refreshing previous incident timestamp.`);
                 previousTimestamp = new Date().getTime();
-                startReseter = true;
+                reset = true;
             }
 
             let timeDifference = currentTimestamp - previousTimestamp;
-            if (startReseter && timeDifference / 1000 > this.configuration.miss_tolerance_period) {
+            if (reset && timeDifference / 1000 > this.configuration.priceFeeder.miss_tolerance_period) {
                 console.log(`[Miss Counter] No more misses happened since last one. Last missed: ${currentMissCounter - previousMissCounter}. Reset monitoring flags`)
                 // Reset the miss counter if the tolerance period has passed
                 previousMissCounter = currentMissCounter;
                 previousTimestamp = currentTimestamp;
-                startReseter = false;
+                reset = false;
             }
 
             lastMissCounter = currentMissCounter;
@@ -80,7 +96,8 @@ export class MissCounter implements Param {
             }
 
             // Sleep for the specified duration
-            await new Promise((resolve) => setTimeout(resolve, this.configuration.sleep_duration * 1000));
+            // @ts-ignore
+            await new Promise((resolve) => setTimeout(resolve, this.configuration.priceFeeder.sleep_duration * 1000));
         }
     }
 

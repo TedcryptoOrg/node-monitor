@@ -1,8 +1,7 @@
-import {ConfigurationFactory} from "./config/configuration_factory";
-import {Kujira} from "./monitor/kujira";
+import {ConfigurationFactory} from "./config/configurationFactory";
+import {Telegram} from "./AlertChannel/telegram";
 import {Configuration} from "./type/configuration";
-import {Ojo} from "./monitor/ojo";
-import {Telegram} from "./alerter/telegram";
+import {PriceFeeder} from "./monitor/priceFeeder";
 
 require('dotenv').config({path: '.env', override: false});
 
@@ -12,49 +11,38 @@ const telegram = new Telegram({
     chatId: process.env.TELEGRAM_CHAT_ID ?? ''
 });
 
-async function startKujira(configuration: Configuration): Promise<void> {
-    console.log('Starting kujira client...');
+async function startPriceFeeder(name: string, configuration: Configuration): Promise<void> {
+    console.log(`Starting ${name} price feeder monitor...`);
+    if (configuration.priceFeeder === undefined) {
+        throw new Error(`Configuration ${name} does not have a price feeder configured!`);
+    }
+
     try {
-        await new Kujira(configuration, [telegram]).start();
+        await new PriceFeeder(name, configuration.priceFeeder, [telegram]).start();
     } catch (error) {
-        const message = '🚨 Kujira Price feeder monitor alert!\n ' + error;
+        const message = `🚨 ${name} Price feeder failed to start!\n${error}`;
         try {
             await telegram.alert(message);
         } catch (error: any) {
             console.error('Failed to send Telegram alert!');
         }
-        console.error(message);
 
-        // Retry in 5 minutes
-        setTimeout(startKujira, 5 * 60 * 1000);
+        console.error(message);
     }
 }
 
-async function startOjo(configuration: Configuration): Promise<void> {
-    console.log('Starting Ojo client...');
-    try {
-        await new Ojo(configuration, [telegram]).start();
-    } catch (error) {
-        const message = '🚨 Ojo Price feeder monitor alert!\n ' + error;
-        try {
-            await telegram.alert(message);
-        } catch (error: any) {
-            console.error('Failed to send Telegram alert!');
-        }
-        console.error(message);
-
-        // Retry in 5 minutes
-        setTimeout(startOjo, 5 * 60 * 1000);
-    }
-}
-
-export async function main(): Promise<void> {
+async function main(): Promise<void> {
     const configurations: {[key: string]: Configuration} = new ConfigurationFactory().loadConfigurations();
-    if (configurations.kujira) {
-        await startKujira(configurations.kujira);
-    }
-    if (configurations.ojo) {
-        await startOjo(configurations.ojo);
+    for (const configurationName in configurations) {
+        console.log(`Loaded configuration: ${configurationName}`);
+        const configuration = configurations[configurationName];
+        if (configuration === undefined) {
+            throw new Error(`Configuration ${configurationName} not found!`);
+        }
+
+        if (Object.prototype.hasOwnProperty.call(configuration, 'priceFeeder')) {
+            startPriceFeeder(configurationName, configuration);
+        }
     }
 }
 

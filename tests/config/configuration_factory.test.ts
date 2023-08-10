@@ -1,7 +1,7 @@
-import { ConfigurationFactory } from '../../src/config/configuration_factory';
+import { ConfigurationFactory } from '../../src/config/configurationFactory';
 import * as yaml from 'yaml';
 import { readdirSync, writeFileSync, unlinkSync } from 'fs';
-import { Configuration } from 'src/type/configuration';
+import { PriceFeederConfiguration } from 'src/type/priceFeederConfiguration';
 
 describe('ConfigurationFactory', () => {
     let configurationFactory: ConfigurationFactory;
@@ -31,7 +31,7 @@ describe('ConfigurationFactory', () => {
             // Assert that each configuration is parsed correctly
             Object.keys(configurations).forEach((provider) => {
                 // @ts-ignore
-                const configuration: Configuration = configurations[provider];
+                const configuration: PriceFeederConfiguration = configurations[provider];
                 expect(configuration).toBeDefined();
                 expect(configuration.miss_tolerance).toBeDefined();
                 expect(configuration.miss_tolerance_period).toBeDefined();
@@ -50,7 +50,7 @@ describe('ConfigurationFactory', () => {
     });
 
     function createTemporaryFile(fileName: string) {
-        const configuration: Configuration = {
+        const configuration: PriceFeederConfiguration = {
             miss_tolerance: 1,
             miss_tolerance_period: 1,
             sleep_duration: 1,

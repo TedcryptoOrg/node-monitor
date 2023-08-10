@@ -1,5 +1,5 @@
 import TelegramBot from "node-telegram-bot-api";
-import {Alerter} from "./alerter";
+import {AlertChannel} from "./alertChannel";
 
 export type TelegramOptions = {
     botId: string;
@@ -7,7 +7,7 @@ export type TelegramOptions = {
     chatId: string;
 }
 
-export class Telegram implements Alerter {
+export class Telegram implements AlertChannel {
     private bot: TelegramBot;
     private options: TelegramOptions;
 

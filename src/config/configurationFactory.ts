@@ -5,7 +5,7 @@ import {Configuration} from "../type/configuration";
 export class ConfigurationFactory {
     private folderPath: string;
 
-    constructor(folderPath: string = __dirname + '/../../config/price_feeders') {
+    constructor(folderPath: string = __dirname + '/../../config') {
         this.folderPath = folderPath;
     }
 

@@ -1,0 +1,35 @@
+import { MissCounter } from '../../src/monitor/checkers/missCounter';
+import {AlertChannel} from "../../src/AlertChannel/alertChannel";
+import {PriceFeeder} from "../../src/monitor/priceFeeder";
+import {Configuration} from "../../src/type/configuration";
+
+describe('PriceFeeder', () => {
+    let priceFeeder: PriceFeeder;
+    const mockConfig: Configuration = {
+        chainName: 'test',
+        nodeRest: 'http://localhost:1317',
+        valoperAddress: 'your-valoper-address',
+        priceFeeder: {
+            miss_tolerance: 5,
+            miss_tolerance_period: 5,
+            sleep_duration: 5,
+            alert_sleep_duration: 5,
+        }
+    };
+    const alertChannels: AlertChannel[] = [];
+
+    beforeEach(() => {
+        priceFeeder = new PriceFeeder('kujira', mockConfig, alertChannels);
+    });
+
+    describe('start', () => {
+        it('should call the check method of all monitor_params', async () => {
+            const mockMissCounter = { check: jest.fn() };
+            jest.spyOn(MissCounter.prototype, 'check').mockImplementation(mockMissCounter.check);
+
+            await priceFeeder.start();
+
+            expect(mockMissCounter.check).toHaveBeenCalledTimes(1);
+        });
+    });
+});

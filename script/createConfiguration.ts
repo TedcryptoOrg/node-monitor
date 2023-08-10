@@ -2,8 +2,6 @@ import * as fs from 'fs';
 import * as readline from 'readline';
 import * as yaml from 'yaml';
 import {Configuration} from '../src/type/configuration';
-import {CryptoTools} from "../src/crypto/crypto_tools";
-import _default from "jest-circus";
 
 const VALID_PROVIDERS = ['kujira', 'ojo'];
 
@@ -14,22 +12,31 @@ async function createConfigurationFile(): Promise<void> {
     });
 
     try {
-        const configuration: Configuration = {
-            miss_tolerance: await askQuestion(rl, 'Number of blocks before alert (miss tolerance)[default: 5]: ', parseFloat, 5),
-            miss_tolerance_period: await askQuestion(rl, 'Seconds before resetting the counter (miss tolerance period)[default: 3600s (1h)]: ', parseInt, 3600),
-            sleep_duration: await askQuestion(rl, 'Frequency to check (in seconds)[default: 5]: ', parseInt, 5),
-            alert_sleep_duration: await askQuestion(rl, 'Don\'t alert again before x minutes [default: 5]: ', parseInt, 5),
-            node_rest: await askQuestion(rl, 'Rest endpoint[default: http://localhost:1317]: ', undefined, 'http://localhost:1317'),
-            valoper_address: await askQuestion(rl, 'Your valoper address: '),
+        const configurationName = await askQuestion(rl, 'Configuration name: ');
+
+        let configuration: Configuration = {
+            chainName: await askQuestion(rl, 'Chain name, e.g.: comoshub, osmosis: '),
+            valoperAddress: await askQuestion(rl, 'Your valoper address (leave empty if you don\'t want to monitor): ', (value: string) => {
+                if (value === undefined || value.length === 0) {
+                    return undefined;
+                }
+                return value;
+            }),
+            nodeRest: await askQuestion(rl, 'Rest endpoint[default: http://localhost:1317]: ', undefined, 'http://localhost:1317'),
         };
 
-        const providerName = new CryptoTools().getChainFromBech32Address(configuration.valoper_address);
-        if (providerName === null) {
-            throw new Error('Invalid valoper address');
-        }
+        // Create price feeder configuration
+        if (VALID_PROVIDERS.includes(configuration.chainName) && await askConfirmation(rl, `Do you want to monitor oracle for ${configurationName}? (Y/N): `)) {
+            if (configuration.valoperAddress === undefined) {
+                throw new Error('You need to provide a valoper address to monitor oracle');
+            }
 
-        if (!VALID_PROVIDERS.includes(providerName)) {
-            throw new Error(`Invalid choice "${providerName}". Please select one of the options: ${VALID_PROVIDERS.join(', ')}`);
+            configuration.priceFeeder = {
+                miss_tolerance: await askQuestion(rl, 'Number of blocks before alert (miss tolerance)[default: 5]: ', parseFloat, 5),
+                miss_tolerance_period: await askQuestion(rl, 'Seconds before resetting the counter (miss tolerance period)[default: 3600s (1h)]: ', parseInt, 3600),
+                sleep_duration: await askQuestion(rl, 'Frequency to check (in seconds)[default: 5]: ', parseInt, 5),
+                alert_sleep_duration: await askQuestion(rl, 'Don\'t alert again before x minutes [default: 5]: ', parseInt, 5),
+            };
         }
 
         console.log('\nConfiguration:');
@@ -37,7 +44,7 @@ async function createConfigurationFile(): Promise<void> {
 
         if (await askConfirmation(rl, 'Is the configuration correct? (Y/N): ')) {
             const yamlContent = yaml.stringify(configuration);
-            const filePath = `config/price_feeders/${providerName}.yaml`;
+            const filePath = `config/${configurationName}.yaml`;
             if (fs.existsSync(filePath)) {
                 if (await askConfirmation(rl, 'Configuration file already exists. Do you want to overwrite it? (Y/N): ')) {
                     fs.rmSync(filePath);

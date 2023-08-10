@@ -1,4 +1,4 @@
-export interface Param {
+export interface MonitorCheck {
     /**
      * @throws {Error} if the param is not valid
      */
