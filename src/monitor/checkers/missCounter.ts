@@ -3,8 +3,8 @@ import { CryptoTools } from '../../crypto/crypto_tools'
 import { type MonitorCheck } from './monitorCheck'
 import { type AlertChannel } from '../../AlertChannel/alertChannel'
 import { type Configuration } from '../../type/configuration'
-import {NoRecoverableException} from "../exception/noRecoverableException";
-import {RecoverableException} from "../exception/recoverableException";
+import { NoRecoverableException } from '../exception/noRecoverableException'
+import { RecoverableException } from '../exception/recoverableException'
 
 export class MissCounter implements MonitorCheck {
   private readonly staticEndpoints: { kujira: string, ojo: string } = {
@@ -37,10 +37,10 @@ export class MissCounter implements MonitorCheck {
       throw new NoRecoverableException('Valoper address is not defined.')
     }
 
-    console.debug(configuration);
+    console.debug(configuration)
 
-    this.nodeRest = this.configuration.nodeRest;
-    this.endpoint = this.getEndpointUrl(this.configuration.valoperAddress);
+    this.nodeRest = this.configuration.nodeRest
+    this.endpoint = this.getEndpointUrl(this.configuration.valoperAddress)
   }
 
   async check (): Promise<void> {
@@ -54,7 +54,7 @@ export class MissCounter implements MonitorCheck {
     let lastAlertedPeriod = 0
     while (true) {
       console.log(`[${this.name}] Running miss counter check...`)
-      const currentMissCounter = await this.fetchMissCounter();
+      const currentMissCounter = await this.fetchMissCounter()
 
       // Refresh the missing period if we are missing blocks within the period
       const missDifference = currentMissCounter - previousMissCounter
@@ -66,10 +66,10 @@ export class MissCounter implements MonitorCheck {
         if (missDifference >= this.configuration.priceFeeder.miss_tolerance) {
           console.log(`[${this.name}]Missing too many price updates...`, missDifference)
 
-          const timeDifferenceInMin = (new Date().getTime() - lastAlertedPeriod) / 1000 / 60;
-          console.debug(this.configuration.priceFeeder.alert_sleep_duration_minutes);
+          const timeDifferenceInMin = (new Date().getTime() - lastAlertedPeriod) / 1000 / 60
+          console.debug(this.configuration.priceFeeder.alert_sleep_duration_minutes)
           if (timeDifferenceInMin > this.configuration.priceFeeder.alert_sleep_duration_minutes) {
-            console.log('Sending an alert...', timeDifferenceInMin, this.configuration.priceFeeder.alert_sleep_duration_minutes);
+            console.log('Sending an alert...', timeDifferenceInMin, this.configuration.priceFeeder.alert_sleep_duration_minutes)
             // loop alertChannels and alert
             for (const alerter of this.alertChannels) {
               await alerter.alert(`[${this.name}] 🚨 Price tracker monitor alert!\n You are missing too many blocks. Miss counter exceeded: ${missDifference}`)
@@ -79,12 +79,12 @@ export class MissCounter implements MonitorCheck {
             console.log(`[${this.name}][Miss Counter] Alert message sent too recently. Skipping.`, timeDifferenceInMin)
           }
         }
-      } else if(missDifference > 0) {
+      } else if (missDifference > 0) {
         const currentTimestamp = new Date().getTime()
 
-        const timeDifferentInSeconds = (currentTimestamp - previousTimestamp) / 1000;
-        const secondsLeftToReset = this.configuration.priceFeeder.miss_tolerance_period_seconds - timeDifferentInSeconds;
-        console.debug(`[${this.name}][Miss Counter] No more misses happened since last one. Last missed: ${missDifference}. Reset in ${secondsLeftToReset} seconds.`);
+        const timeDifferentInSeconds = (currentTimestamp - previousTimestamp) / 1000
+        const secondsLeftToReset = this.configuration.priceFeeder.miss_tolerance_period_seconds - timeDifferentInSeconds
+        console.debug(`[${this.name}][Miss Counter] No more misses happened since last one. Last missed: ${missDifference}. Reset in ${secondsLeftToReset} seconds.`)
         if (secondsLeftToReset <= 0) {
           console.log(`[${this.name}][Miss Counter] No more misses happened since last one. Last missed: ${missDifference}. Reset monitoring flags`)
           // Reset the miss counter if the tolerance period has passed
@@ -111,7 +111,7 @@ export class MissCounter implements MonitorCheck {
 
       return Number(response.data.miss_counter)
     } catch (error: any) {
-      console.error(error);
+      console.error(error)
       throw new RecoverableException('Error fetching miss counter. Error: ' + error.message)
     }
   }

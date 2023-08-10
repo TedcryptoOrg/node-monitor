@@ -17,7 +17,7 @@ export class Telegram implements AlertChannel {
   }
 
   async alert (message: string): Promise<void> {
-    console.debug('Sending telegram alert. Message: ' + message);
+    console.debug('Sending telegram alert. Message: ' + message)
     await this.bot.sendMessage(this.options.chatId, message)
   }
 }

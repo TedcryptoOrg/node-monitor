@@ -2,21 +2,21 @@ import { ConfigurationFactory } from './config/configurationFactory'
 import { Telegram } from './AlertChannel/telegram'
 import { type Configuration } from './type/configuration'
 import { PriceFeeder } from './monitor/priceFeeder'
-import {AlertChannel} from "./AlertChannel/alertChannel";
+import { type AlertChannel } from './AlertChannel/alertChannel'
 
 require('dotenv').config({ path: '.env', override: false })
 
-let alertChannels: AlertChannel[] = [];
+const alertChannels: AlertChannel[] = []
 if (
-    process.env.TELEGRAM_BOT_ID !== undefined
-    && process.env.TELEGRAM_TOKEN !== undefined
-    && process.env.TELEGRAM_CHAT_ID !== undefined
+  process.env.TELEGRAM_BOT_ID !== undefined &&
+    process.env.TELEGRAM_TOKEN !== undefined &&
+    process.env.TELEGRAM_CHAT_ID !== undefined
 ) {
   alertChannels.push(new Telegram({
     botId: process.env.TELEGRAM_BOT_ID,
     token: process.env.TELEGRAM_TOKEN,
     chatId: process.env.TELEGRAM_CHAT_ID
-  }));
+  }))
 }
 
 async function startPriceFeeder (name: string, configuration: Configuration): Promise<void> {
