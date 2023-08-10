@@ -56,10 +56,10 @@ cp .env.dist .env
 
 ### Create configuration
 
-Run the script `create_configuration.ts` to create a configuration file
+Run the script `createConfiguration.ts` to create a configuration file
 
 ```bash
-ts-node script/create_configuration.ts
+ts-node scripts/createConfiguration.ts
 ```
 
 #### Configuration variables

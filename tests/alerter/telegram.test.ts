@@ -1,5 +1,5 @@
 import TelegramBot from 'node-telegram-bot-api';
-import { Telegram, TelegramOptions } from '../../src/alerter/telegram';
+import { Telegram, TelegramOptions } from '../../src/AlertChannel/telegram';
 
 jest.mock('node-telegram-bot-api');
 

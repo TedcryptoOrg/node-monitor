@@ -1,5 +1,5 @@
-config/price_feeders/*
-!config/price_feeders/.gitkeep
+config/*
+!config/.gitkeep
 
 node_modules/
 dist/

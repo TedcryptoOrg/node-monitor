@@ -1,3 +1,3 @@
 export interface Monitor {
-    start(): Promise<void>;
+  start: () => Promise<void>
 }

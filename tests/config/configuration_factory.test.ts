@@ -1,7 +1,7 @@
-import { ConfigurationFactory } from '../../src/config/configuration_factory';
+import { ConfigurationFactory } from '../../src/config/configurationFactory';
 import * as yaml from 'yaml';
 import { readdirSync, writeFileSync, unlinkSync } from 'fs';
-import { Configuration } from 'src/type/configuration';
+import {Configuration} from "../../src/type/configuration";
 
 describe('ConfigurationFactory', () => {
     let configurationFactory: ConfigurationFactory;
@@ -15,6 +15,9 @@ describe('ConfigurationFactory', () => {
         // Cleanup temporary folder after each test
         const files = readdirSync(tempFolderPath);
         files.forEach((fileName) => {
+            if (fileName === '.gitkeep') {
+                return;
+            }
             const filePath = `${tempFolderPath}/${fileName}`;
             unlinkSync(filePath); // Delete file
         });
@@ -33,8 +36,8 @@ describe('ConfigurationFactory', () => {
                 // @ts-ignore
                 const configuration: Configuration = configurations[provider];
                 expect(configuration).toBeDefined();
-                expect(configuration.miss_tolerance).toBeDefined();
-                expect(configuration.miss_tolerance_period).toBeDefined();
+                expect(configuration.priceFeeder.miss_tolerance).toBeDefined();
+                expect(configuration.priceFeeder.miss_tolerance_period_seconds).toBeDefined();
             });
         });
 
@@ -51,12 +54,15 @@ describe('ConfigurationFactory', () => {
 
     function createTemporaryFile(fileName: string) {
         const configuration: Configuration = {
-            miss_tolerance: 1,
-            miss_tolerance_period: 1,
-            sleep_duration: 1,
-            alert_sleep_duration: 1,
-            node_rest: 'http://',
-            valoper_address: 'valoper',
+            chainName: 'test',
+            priceFeeder: {
+                miss_tolerance: 1,
+                miss_tolerance_period_seconds: 1,
+                sleep_duration_seconds: 1,
+                alert_sleep_duration_minutes: 1,
+            },
+            nodeRest: 'http://',
+            valoperAddress: 'valoper',
         }
 
         writeFileSync(`${tempFolderPath}/${fileName}`, yaml.stringify(configuration));
