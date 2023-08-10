@@ -108,7 +108,8 @@ export class MissCounter implements MonitorCheck {
 
       return response.data.miss_counter
     } catch (error: any) {
-      throw new Error('Error fetching miss counter', error)
+      console.error(error);
+      throw new Error('Error fetching miss counter. Error: ' + error.message)
     }
   }
 
