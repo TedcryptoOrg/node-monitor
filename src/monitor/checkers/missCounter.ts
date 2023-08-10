@@ -37,8 +37,6 @@ export class MissCounter implements MonitorCheck {
       throw new NoRecoverableException('Valoper address is not defined.')
     }
 
-    console.debug(configuration)
-
     this.nodeRest = this.configuration.nodeRest
     this.endpoint = this.getEndpointUrl(this.configuration.valoperAddress)
   }
@@ -48,7 +46,7 @@ export class MissCounter implements MonitorCheck {
       throw new NoRecoverableException('Price feeder is not defined.')
     }
 
-    let previousMissCounter = await this.fetchMissCounter() - 10
+    let previousMissCounter = await this.fetchMissCounter()
     let previousTimestamp = new Date().getTime()
     let lastMissCounter = previousMissCounter
     let lastAlertedPeriod = 0
