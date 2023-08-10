@@ -3,6 +3,7 @@ import { MissCounter } from './checkers/missCounter'
 import { type Monitor } from './monitor'
 import { type AlertChannel } from '../AlertChannel/alertChannel'
 import { type Configuration } from '../type/configuration'
+import {RecoverableException} from "./exception/recoverableException";
 
 export class PriceFeeder implements Monitor {
   private readonly monitor_params: MonitorCheck[] = []
@@ -22,16 +23,14 @@ export class PriceFeeder implements Monitor {
       try {
         await param.check()
       } catch (error) {
-        const message = `🚨 ${this.name} Price feeder error: \n${error}`
-        for (const alerter of this.alertChannels) {
-          try {
-            await alerter.alert(message)
-          } catch (error) {
-            console.log(`Error sending alert: ${error} to ${alerter.constructor.name}`)
-          }
-        }
-
+        const message = `🚨 ${this.name} Price feeder checker ${param.constructor.name} failed to start. Error: \n${error}`
         console.log(message)
+
+        if (error instanceof RecoverableException) {
+          console.log('Waiting 5 seconds before retrying...');
+          await new Promise((resolve) => setTimeout(resolve, 5 * 1000));
+          this.start();
+        }
       }
     }
   }

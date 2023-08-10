@@ -2,31 +2,30 @@ import { ConfigurationFactory } from './config/configurationFactory'
 import { Telegram } from './AlertChannel/telegram'
 import { type Configuration } from './type/configuration'
 import { PriceFeeder } from './monitor/priceFeeder'
+import {AlertChannel} from "./AlertChannel/alertChannel";
 
 require('dotenv').config({ path: '.env', override: false })
 
-const telegram = new Telegram({
-  botId: process.env.TELEGRAM_BOT_ID ?? '',
-  token: process.env.TELEGRAM_TOKEN ?? '',
-  chatId: process.env.TELEGRAM_CHAT_ID ?? ''
-})
+let alertChannels: AlertChannel[] = [];
+if (
+    process.env.TELEGRAM_BOT_ID !== undefined
+    && process.env.TELEGRAM_TOKEN !== undefined
+    && process.env.TELEGRAM_CHAT_ID !== undefined
+) {
+  alertChannels.push(new Telegram({
+    botId: process.env.TELEGRAM_BOT_ID,
+    token: process.env.TELEGRAM_TOKEN,
+    chatId: process.env.TELEGRAM_CHAT_ID
+  }));
+}
 
 async function startPriceFeeder (name: string, configuration: Configuration): Promise<void> {
   console.log(`Starting ${name} price feeder monitor...`)
-  if (configuration.priceFeeder === undefined) {
-    throw new Error(`Configuration ${name} does not have a price feeder configured!`)
-  }
 
   try {
-    await new PriceFeeder(name, configuration.priceFeeder, [telegram]).start()
+    await new PriceFeeder(name, configuration, alertChannels).start()
   } catch (error) {
     const message = `🚨 ${name} Price feeder failed to start!\n${error}`
-    try {
-      await telegram.alert(message)
-    } catch (error: any) {
-      console.error('Failed to send Telegram alert!')
-    }
-
     console.error(message)
   }
 }
