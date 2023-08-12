@@ -5,8 +5,8 @@ import { type AlertChannel } from '../../AlertChannel/alertChannel'
 import { type Configuration } from '../../type/configuration'
 import { NoRecoverableException } from '../exception/noRecoverableException'
 import { RecoverableException } from '../exception/recoverableException'
-import {Alerter} from "../../Alerter/alerter";
-import {PriceFeederConfiguration} from "../../type/priceFeederConfiguration";
+import { Alerter } from '../../Alerter/alerter'
+import { type PriceFeederConfiguration } from '../../type/priceFeederConfiguration'
 
 export class MissCounter implements MonitorCheck {
   private readonly staticEndpoints: { kujira: string, ojo: string } = {
@@ -44,14 +44,14 @@ export class MissCounter implements MonitorCheck {
       throw new NoRecoverableException('Valoper address is not defined.')
     }
 
-    this.priceFeederConfig = this.configuration.priceFeeder;
+    this.priceFeederConfig = this.configuration.priceFeeder
     this.nodeRest = this.configuration.nodeRest
     this.endpoint = this.getEndpointUrl(this.configuration.valoperAddress)
     this.alerter = new Alerter(
-        this.name,
-        'MissCounter',
-        this.alertChannels,
-        this.priceFeederConfig.alert_sleep_duration_minutes
+      this.name,
+      'MissCounter',
+      this.alertChannels,
+      this.priceFeederConfig.alert_sleep_duration_minutes
     )
   }
 

@@ -1,4 +1,4 @@
-export type PriceFeederConfiguration = {
+export interface PriceFeederConfiguration {
   miss_tolerance: number
   miss_tolerance_period_seconds: number
   sleep_duration_seconds: number

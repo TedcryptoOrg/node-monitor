@@ -27,9 +27,9 @@ async function createConfigurationFile (): Promise<void> {
 
     // Create RPC configuration
     if (await askConfirmation(rl, `Do you want to monitor RPC for ${configurationName}? (Y/N): `)) {
-        configuration.rpc = {
-            address: await askQuestion(rl, 'RPC address[default: http://localhost:26657]: ', undefined, 'http://localhost:26657')
-        }
+      configuration.rpc = {
+        address: await askQuestion(rl, 'RPC address[default: http://localhost:26657]: ', undefined, 'http://localhost:26657')
+      }
     }
 
     // Create price feeder configuration

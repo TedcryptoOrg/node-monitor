@@ -1,5 +1,5 @@
-import {PriceFeederConfiguration } from './priceFeederConfiguration'
-import {RpcConfiguration} from "./rpcConfiguration";
+import { type PriceFeederConfiguration } from './priceFeederConfiguration'
+import { type RpcConfiguration } from './rpcConfiguration'
 
 export interface Configuration {
   chainName: string

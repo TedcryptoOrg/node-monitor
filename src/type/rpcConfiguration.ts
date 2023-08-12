@@ -1,3 +1,3 @@
-export type RpcConfiguration = {
-    address: string
+export interface RpcConfiguration {
+  address: string
 }
