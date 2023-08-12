@@ -3,6 +3,7 @@ import { Telegram } from './AlertChannel/telegram'
 import { type Configuration } from './type/configuration'
 import { PriceFeeder } from './monitor/priceFeeder'
 import { type AlertChannel } from './AlertChannel/alertChannel'
+import {NodeMonitor} from "./monitor/nodeMonitor";
 
 require('dotenv').config({ path: '.env', override: false })
 
@@ -30,6 +31,17 @@ async function startPriceFeeder (name: string, configuration: Configuration): Pr
   }
 }
 
+async function startNodeMonitor (name: string, configuration: Configuration): Promise<void> {
+    console.log(`Starting ${name} node monitor...`)
+
+    try {
+        await new NodeMonitor(name, configuration, alertChannels).start()
+    } catch (error) {
+        const message = `🚨 ${name} Node monitor failed to start!\n${error}`
+        console.error(message)
+    }
+}
+
 async function main (): Promise<void> {
   const configurations: Record<string, Configuration> = new ConfigurationFactory().loadConfigurations()
   for (const configurationName in configurations) {
@@ -41,6 +53,9 @@ async function main (): Promise<void> {
 
     if (Object.prototype.hasOwnProperty.call(configuration, 'priceFeeder')) {
       startPriceFeeder(configurationName, configuration)
+    }
+    if (Object.prototype.hasOwnProperty.call(configuration, 'rpc')) {
+      startNodeMonitor(configurationName, configuration)
     }
   }
 }
