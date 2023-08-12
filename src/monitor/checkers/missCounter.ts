@@ -5,6 +5,8 @@ import { type AlertChannel } from '../../AlertChannel/alertChannel'
 import { type Configuration } from '../../type/configuration'
 import { NoRecoverableException } from '../exception/noRecoverableException'
 import { RecoverableException } from '../exception/recoverableException'
+import { Alerter } from '../../Alerter/alerter'
+import { type PriceFeederConfiguration } from '../../type/priceFeederConfiguration'
 
 export class MissCounter implements MonitorCheck {
   private readonly staticEndpoints: { kujira: string, ojo: string } = {
@@ -13,8 +15,10 @@ export class MissCounter implements MonitorCheck {
   }
 
   private readonly cryptoTools: CryptoTools
+  private readonly priceFeederConfig: PriceFeederConfiguration
   private readonly nodeRest: string
   private readonly endpoint: string
+  private readonly alerter: Alerter
 
   constructor (
     private readonly name: string,
@@ -30,6 +34,9 @@ export class MissCounter implements MonitorCheck {
     this.alertChannels = alertChannels
     this.configuration = configuration
 
+    if (this.configuration.priceFeeder === undefined) {
+      throw new NoRecoverableException('Price feeder is not defined.')
+    }
     if (this.configuration.nodeRest === undefined) {
       throw new NoRecoverableException('Node rest is not defined.')
     }
@@ -37,19 +44,21 @@ export class MissCounter implements MonitorCheck {
       throw new NoRecoverableException('Valoper address is not defined.')
     }
 
+    this.priceFeederConfig = this.configuration.priceFeeder
     this.nodeRest = this.configuration.nodeRest
     this.endpoint = this.getEndpointUrl(this.configuration.valoperAddress)
+    this.alerter = new Alerter(
+      this.name,
+      'MissCounter',
+      this.alertChannels,
+      this.priceFeederConfig.alert_sleep_duration_minutes
+    )
   }
 
   async check (): Promise<void> {
-    if (this.configuration.priceFeeder === undefined) {
-      throw new NoRecoverableException('Price feeder is not defined.')
-    }
-
     let previousMissCounter = await this.fetchMissCounter()
     let previousTimestamp = new Date().getTime()
     let lastMissCounter = previousMissCounter
-    let lastAlertedPeriod = 0
     while (true) {
       console.log(`[${this.name}] Running miss counter check...`)
       const currentMissCounter = await this.fetchMissCounter()
@@ -61,27 +70,16 @@ export class MissCounter implements MonitorCheck {
         previousTimestamp = new Date().getTime()
 
         // Check if the miss counter exceeds the tolerance
-        if (missDifference >= this.configuration.priceFeeder.miss_tolerance) {
+        if (missDifference >= this.priceFeederConfig.miss_tolerance) {
           console.log(`[${this.name}]Missing too many price updates...`, missDifference)
 
-          const timeDifferenceInMin = (new Date().getTime() - lastAlertedPeriod) / 1000 / 60
-          console.debug(this.configuration.priceFeeder.alert_sleep_duration_minutes)
-          if (timeDifferenceInMin > this.configuration.priceFeeder.alert_sleep_duration_minutes) {
-            console.log('Sending an alert...', timeDifferenceInMin, this.configuration.priceFeeder.alert_sleep_duration_minutes)
-            // loop alertChannels and alert
-            for (const alerter of this.alertChannels) {
-              await alerter.alert(`[${this.name}] 🚨 Price tracker monitor alert!\n You are missing too many blocks. Miss counter exceeded: ${missDifference}`)
-            }
-            lastAlertedPeriod = new Date().getTime()
-          } else {
-            console.log(`[${this.name}][Miss Counter] Alert message sent too recently. Skipping.`, timeDifferenceInMin)
-          }
+          await this.alerter.alert(`[${this.name}] 🚨 Price tracker monitor alert!\n You are missing too many blocks. Miss counter exceeded: ${missDifference}`)
         }
       } else if (missDifference > 0) {
         const currentTimestamp = new Date().getTime()
 
         const timeDifferentInSeconds = (currentTimestamp - previousTimestamp) / 1000
-        const secondsLeftToReset = this.configuration.priceFeeder.miss_tolerance_period_seconds - timeDifferentInSeconds
+        const secondsLeftToReset = this.priceFeederConfig.miss_tolerance_period_seconds - timeDifferentInSeconds
         console.debug(`[${this.name}][Miss Counter] No more misses happened since last one. Last missed: ${missDifference}. Reset in ${secondsLeftToReset} seconds.`)
         if (secondsLeftToReset <= 0) {
           console.log(`[${this.name}][Miss Counter] No more misses happened since last one. Last missed: ${missDifference}. Reset monitoring flags`)

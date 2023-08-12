@@ -25,6 +25,13 @@ async function createConfigurationFile (): Promise<void> {
       nodeRest: await askQuestion(rl, 'Rest endpoint[default: http://localhost:1317]: ', undefined, 'http://localhost:1317')
     }
 
+    // Create RPC configuration
+    if (await askConfirmation(rl, `Do you want to monitor RPC for ${configurationName}? (Y/N): `)) {
+      configuration.rpc = {
+        address: await askQuestion(rl, 'RPC address[default: http://localhost:26657]: ', undefined, 'http://localhost:26657')
+      }
+    }
+
     // Create price feeder configuration
     if (VALID_PROVIDERS.includes(configuration.chainName) && await askConfirmation(rl, `Do you want to monitor oracle for ${configurationName}? (Y/N): `)) {
       if (configuration.valoperAddress === undefined) {
