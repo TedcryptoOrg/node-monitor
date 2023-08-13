@@ -76,7 +76,7 @@ export class BlockCheck implements MonitorCheck {
                 lastBlockHeight = currentBlockHeight;
             }
 
-            await new Promise((resolve) => setTimeout(resolve, 1000 * (Number((chain.params.actual_block_time))) * this.blockAlertConfiguration.block_creation_tolerance))
+            await new Promise((resolve) => setTimeout(resolve, 1000 * Number(chain.params.actual_block_time * this.blockAlertConfiguration.block_creation_tolerance)))
         }
     }
 
