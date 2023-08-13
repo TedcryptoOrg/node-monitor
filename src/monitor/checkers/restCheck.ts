@@ -1,6 +1,6 @@
 import { type MonitorCheck } from './monitorCheck'
 import { Alerter } from '../../Alerter/alerter'
-import {RestConfiguration} from "../../type/restConfiguration";
+import { type RestConfiguration } from '../../type/restConfiguration'
 
 /**
  * Checks that REST is alive and well

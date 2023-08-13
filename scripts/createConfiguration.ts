@@ -21,7 +21,7 @@ async function createConfigurationFile (): Promise<void> {
           return undefined
         }
         return value
-      }),
+      })
     }
 
     // Create RPC configuration
@@ -33,9 +33,9 @@ async function createConfigurationFile (): Promise<void> {
 
     // Create REST configuration
     if (await askConfirmation(rl, `Do you want to monitor REST for ${configurationName}? (Y/N): `)) {
-        configuration.rest = {
-            address: await askQuestion(rl, 'REST address[default: http://localhost:1317]: ', undefined, 'http://localhost:1317')
-        }
+      configuration.rest = {
+        address: await askQuestion(rl, 'REST address[default: http://localhost:1317]: ', undefined, 'http://localhost:1317')
+      }
     }
 
     // Create price feeder configuration
