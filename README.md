@@ -3,19 +3,24 @@
 Ted node monitoring is currently just monitoring price oracles. 
 You can only use telegram right now.
 
-## Run service
+## Install NVM or NPM
 
-This are some optional ways to start the service, feel free to change to best accommodate the way you
-run your services.
+Follow the tutorial for the installation of NVM or NPM.
 
-Before anything, you will need NPM to run this service, if you don't have it installed, you can do it
-simply by running:
+- [Use NVM](docs/installation/USE_NVM.md)
+- [Use NPM](docs/installation/USE_NPM.md)
 
-```bash
-sudo apt install npm
-```
+**Recommended:** Use NVM to manage your node versions, it simplifies greatly the process of installing
+and dealing with right versions
 
-Then lets clone the repository:
+## Run the service
+
+To run the service, we need to clone the project, install ts-nodes and dependencies. Below you have the 
+steps you need to follow.
+
+### Clone the project
+
+Lets clone the repository:
 
 ```bash
 git clone https://github.com/TedcryptoOrg/node-monitor && cd node-monitor
@@ -62,17 +67,6 @@ Run the script `createConfiguration.ts` to create a configuration file
 ts-node scripts/createConfiguration.ts
 ```
 
-#### Configuration variables
-
-| Variable              | Description                                                            |
-|-----------------------|------------------------------------------------------------------------|
-| SLEEP                 | Run checks in interval of this many seconds                            |
-| VALOPER_ADDRESS       | Your validator address                                                 |
-| RPC                   | Your RPC address or any public one                                     |
-| ALERT_SLEEP_PERIOD    | Don't alert again before this many seconds have pass (default: 5min)   |
-| MISS_TOLERANCE        | How much misses allowed                                                |
-| MISS_TOLERANCE_PERIOD | How long before reset the miss counter check, in seconds (default: 1h) |
-
 ### Install dependencies
 
 We need to install some dependencies like axios and other libraries, you can do it by running:
@@ -81,44 +75,28 @@ We need to install some dependencies like axios and other libraries, you can do 
 npm install
 ```
 
-### Configure systemctl service
-
-Now that your service is running fine, we want it to be running in the background, for that you can either use
-screen, or you can use a systemctl service.
-
-Again for convenience, I am using systemctl. 
-
-```bash
-[Unit]
-Description=Ted node monitor daemon
-After=network-online.target
-
-[Service]
-User=tedcrypto
-ExecStart=/usr/local/bin/ts-node src/index.ts
-Restart=always
-RestartSec=3
-LimitNOFILE=4096
-WorkingDirectory=/home/tedcrypto/node-monitor
-
-[Install]
-WantedBy=multi-user.target
-```
-
-If you are using a NVM for multiple versions, don't forget to add
-
-> Environment=PATH=/home/tedcrypto/.nvm/versions/node/v18.16.1/bin/
-
-Make sure that you change the home folder.
-
-### Development
+## Development
 
 If you want to contribute to this project, you can do it by forking the repository and making a pull request.
 
-#### Run tests
+### Run tests
 
 ```bash
 npm test
+```
+
+### Run linter
+
+To check for issues:
+
+```bash
+npm run lint
+```
+
+To try and automate some fixes:
+
+```bash
+npm run lint:fix
 ```
 
 ### Service in screenshots (outdated)
