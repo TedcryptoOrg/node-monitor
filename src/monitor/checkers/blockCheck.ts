@@ -69,8 +69,10 @@ export class BlockCheck implements MonitorCheck {
                         console.log(`[${this.name}][Miss Counter] No more misses happened since last one. Last missed: ${missedBlocks}. Reset monitoring flags`)
                         // Reset the miss counter if the tolerance period has passed
                         previousTimestamp = currentTimestamp
+                        missedBlocks = 0
                     }
                 }
+
                 lastBlockHeight = currentBlockHeight;
             }
 
