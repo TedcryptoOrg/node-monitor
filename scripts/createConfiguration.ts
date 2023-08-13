@@ -45,6 +45,21 @@ async function createConfigurationFile (): Promise<void> {
       }
     }
 
+    // Create block alert configuration
+    if (await askConfirmation(rl, `Do you want to monitor block for ${configurationName}? (Y/N): `)) {
+      if (configuration.rpc === undefined) {
+        throw new Error('You need to provide a RPC endpoint to monitor block')
+      }
+
+      configuration.alerts = {
+        block: {
+          miss_tolerance: await askQuestion(rl, 'Number of blocks before alert (miss tolerance)[default: 5]: ', parseInt, 5),
+          miss_tolerance_period_seconds: await askQuestion(rl, 'Seconds before resetting the counter (miss tolerance period)[default: 3600s (1h)]: ', parseInt, 3600),
+          alert_sleep_duration_minutes: await askQuestion(rl, 'Don\'t alert again before x minutes [default: 5]: ', parseInt, 5)
+        }
+      }
+    }
+
     // Create price feeder configuration
     if (VALID_PROVIDERS.includes(configuration.chainName) && await askConfirmation(rl, `Do you want to monitor oracle for ${configurationName}? (Y/N): `)) {
       if (configuration.valoperAddress === undefined) {

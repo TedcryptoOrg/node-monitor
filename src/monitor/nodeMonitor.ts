@@ -6,6 +6,7 @@ import { RecoverableException } from './exception/recoverableException'
 import { RpcCheck } from './checkers/rpcCheck'
 import { RestCheck } from './checkers/restCheck'
 import { PrometheusCheck } from './checkers/prometheusCheck'
+import { BlockCheck } from './checkers/blockCheck'
 
 interface PromiseParamPair {
   promise: Promise<void>
@@ -33,6 +34,13 @@ export class NodeMonitor implements Monitor {
     if (this.configuration.prometheus !== undefined) {
       console.log(`[${this.name}] Starting Prometheus check...`)
       this.monitor_params.push(new PrometheusCheck(this.name, this.configuration.prometheus, this.alertChannels))
+    }
+    if (this.configuration.alerts?.block !== undefined) {
+      if (this.configuration.rpc === undefined) {
+        throw new Error('You need to provide a RPC endpoint to monitor block')
+      }
+      console.log(`[${this.name}] Starting block check...`)
+      this.monitor_params.push(new BlockCheck(this.name, this.configuration.chainName, this.configuration.rpc, this.configuration.alerts.block, this.alertChannels))
     }
   }
 
