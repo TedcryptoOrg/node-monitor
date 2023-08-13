@@ -13,7 +13,6 @@ export class PriceFeeder implements Monitor {
     private readonly configuration: Configuration,
     private readonly alertChannels: AlertChannel[]
   ) {
-    console.debug(this.configuration)
     this.monitor_params.push(
       new MissCounter(this.name, this.configuration, this.alertChannels)
     )

@@ -22,7 +22,6 @@ async function createConfigurationFile (): Promise<void> {
         }
         return value
       }),
-      nodeRest: await askQuestion(rl, 'Rest endpoint[default: http://localhost:1317]: ', undefined, 'http://localhost:1317')
     }
 
     // Create RPC configuration
@@ -32,10 +31,20 @@ async function createConfigurationFile (): Promise<void> {
       }
     }
 
+    // Create REST configuration
+    if (await askConfirmation(rl, `Do you want to monitor REST for ${configurationName}? (Y/N): `)) {
+        configuration.rest = {
+            address: await askQuestion(rl, 'REST address[default: http://localhost:1317]: ', undefined, 'http://localhost:1317')
+        }
+    }
+
     // Create price feeder configuration
     if (VALID_PROVIDERS.includes(configuration.chainName) && await askConfirmation(rl, `Do you want to monitor oracle for ${configurationName}? (Y/N): `)) {
       if (configuration.valoperAddress === undefined) {
         throw new Error('You need to provide a valoper address to monitor oracle')
+      }
+      if (configuration.rest === undefined) {
+        throw new Error('You need to provide a rest endpoint to monitor oracle')
       }
 
       configuration.priceFeeder = {

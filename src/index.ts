@@ -20,6 +20,18 @@ if (
   }))
 }
 
+async function startNodeMonitor (name: string, configuration: Configuration): Promise<void> {
+  console.log(`Starting ${name} node monitor...`)
+  console.debug(configuration)
+
+  try {
+    await new NodeMonitor(name, configuration, alertChannels).start()
+  } catch (error) {
+    const message = `🚨 ${name} Node monitor failed to start!\n${error}`
+    console.error(message)
+  }
+}
+
 async function startPriceFeeder (name: string, configuration: Configuration): Promise<void> {
   console.log(`Starting ${name} price feeder monitor...`)
 
@@ -27,17 +39,6 @@ async function startPriceFeeder (name: string, configuration: Configuration): Pr
     await new PriceFeeder(name, configuration, alertChannels).start()
   } catch (error) {
     const message = `🚨 ${name} Price feeder failed to start!\n${error}`
-    console.error(message)
-  }
-}
-
-async function startNodeMonitor (name: string, configuration: Configuration): Promise<void> {
-  console.log(`Starting ${name} node monitor...`)
-
-  try {
-    await new NodeMonitor(name, configuration, alertChannels).start()
-  } catch (error) {
-    const message = `🚨 ${name} Node monitor failed to start!\n${error}`
     console.error(message)
   }
 }
@@ -51,11 +52,9 @@ async function main (): Promise<void> {
       throw new Error(`Configuration ${configurationName} not found!`)
     }
 
+    startNodeMonitor(configurationName, configuration)
     if (Object.prototype.hasOwnProperty.call(configuration, 'priceFeeder')) {
       startPriceFeeder(configurationName, configuration)
-    }
-    if (Object.prototype.hasOwnProperty.call(configuration, 'rpc')) {
-      startNodeMonitor(configurationName, configuration)
     }
   }
 }
