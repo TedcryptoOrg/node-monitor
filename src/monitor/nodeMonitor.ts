@@ -5,6 +5,7 @@ import { type Configuration } from '../type/configuration'
 import { RecoverableException } from './exception/recoverableException'
 import { RpcCheck } from './checkers/rpcCheck'
 import { RestCheck } from './checkers/restCheck'
+import {PrometheusCheck} from "./checkers/prometheusCheck";
 
 interface PromiseParamPair {
   promise: Promise<void>
@@ -28,6 +29,10 @@ export class NodeMonitor implements Monitor {
     if (this.configuration.rest !== undefined) {
       console.log(`[${this.name}] Starting REST check...`)
       this.monitor_params.push(new RestCheck(this.name, this.configuration.rest, this.alertChannels))
+    }
+    if (this.configuration.prometheus !== undefined) {
+      console.log(`[${this.name}] Starting Prometheus check...`)
+      this.monitor_params.push(new PrometheusCheck(this.name, this.configuration.prometheus, this.alertChannels))
     }
   }
 
