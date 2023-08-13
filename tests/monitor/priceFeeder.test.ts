@@ -7,13 +7,15 @@ describe('PriceFeeder', () => {
     let priceFeeder: PriceFeeder;
     const mockConfig: Configuration = {
         chainName: 'kujira',
-        nodeRest: 'http://localhost:1317',
         valoperAddress: 'kujiravaloper1excmz0f7k9z3ydchv8t2pde8v45hjl2x3ud5q3',
         priceFeeder: {
             miss_tolerance: 5,
             miss_tolerance_period_seconds: 5,
             sleep_duration_seconds: 5,
             alert_sleep_duration_minutes: 5,
+        },
+        rest: {
+            address: 'http://localhost:1317',
         }
     };
     const alertChannels: AlertChannel[] = [];
