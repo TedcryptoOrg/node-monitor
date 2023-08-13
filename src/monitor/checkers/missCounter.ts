@@ -37,15 +37,15 @@ export class MissCounter implements MonitorCheck {
     if (this.configuration.priceFeeder === undefined) {
       throw new NoRecoverableException('Price feeder is not defined.')
     }
-    if (this.configuration.nodeRest === undefined) {
-      throw new NoRecoverableException('Node rest is not defined.')
+    if (this.configuration.rest === undefined) {
+      throw new NoRecoverableException('Rest is required for price feed.')
     }
     if (this.configuration.valoperAddress === undefined) {
       throw new NoRecoverableException('Valoper address is not defined.')
     }
 
     this.priceFeederConfig = this.configuration.priceFeeder
-    this.nodeRest = this.configuration.nodeRest
+    this.nodeRest = this.configuration.rest.address
     this.endpoint = this.getEndpointUrl(this.configuration.valoperAddress)
     this.alerter = new Alerter(
       this.name,

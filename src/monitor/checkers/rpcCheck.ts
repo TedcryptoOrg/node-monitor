@@ -1,5 +1,4 @@
 import { type MonitorCheck } from './monitorCheck'
-import { type Configuration } from '../../type/configuration'
 import { type RpcConfiguration } from '../../type/rpcConfiguration'
 import { Alerter } from '../../Alerter/alerter'
 
@@ -7,19 +6,13 @@ import { Alerter } from '../../Alerter/alerter'
  * Checks that RPC is alive and well
  */
 export class RpcCheck implements MonitorCheck {
-  private readonly rpcConfiguration: RpcConfiguration
   private readonly alerter: Alerter
 
   constructor (
     private readonly name: string,
-    private readonly configuration: Configuration,
+    private readonly configuration: RpcConfiguration,
     private readonly alertChannels: any
   ) {
-    if (this.configuration.rpc === undefined) {
-      throw new Error('RPC configuration is missing')
-    }
-
-    this.rpcConfiguration = this.configuration.rpc
     this.alerter = new Alerter(
       this.name,
       'RpcCheck',
@@ -30,7 +23,7 @@ export class RpcCheck implements MonitorCheck {
 
   async check (): Promise<void> {
     const checkMin = 1
-    const rpcUrl = this.rpcConfiguration.address
+    const rpcUrl = this.configuration.address
     const minutesSinceDown = 0
 
     while (true) {
