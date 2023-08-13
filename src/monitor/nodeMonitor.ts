@@ -5,7 +5,7 @@ import { type Configuration } from '../type/configuration'
 import { RecoverableException } from './exception/recoverableException'
 import { RpcCheck } from './checkers/rpcCheck'
 import { RestCheck } from './checkers/restCheck'
-import {PrometheusCheck} from "./checkers/prometheusCheck";
+import { PrometheusCheck } from './checkers/prometheusCheck'
 
 interface PromiseParamPair {
   promise: Promise<void>
