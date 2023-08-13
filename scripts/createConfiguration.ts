@@ -38,6 +38,13 @@ async function createConfigurationFile (): Promise<void> {
       }
     }
 
+    // Create Prometheus configuration
+    if (await askConfirmation(rl, `Do you want to monitor Prometheus for ${configurationName}? (Y/N): `)) {
+      configuration.prometheus = {
+        address: await askQuestion(rl, 'Prometheus address[default: http://localhost:26660]: ', undefined, 'http://localhost:26660')
+      }
+    }
+
     // Create price feeder configuration
     if (VALID_PROVIDERS.includes(configuration.chainName) && await askConfirmation(rl, `Do you want to monitor oracle for ${configurationName}? (Y/N): `)) {
       if (configuration.valoperAddress === undefined) {

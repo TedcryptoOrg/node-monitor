@@ -1,6 +1,7 @@
 import { type PriceFeederConfiguration } from './priceFeederConfiguration'
 import { type RpcConfiguration } from './rpcConfiguration'
 import { type RestConfiguration } from './restConfiguration'
+import { type PrometheusConfiguration } from './prometheusConfiguration'
 
 export interface Configuration {
   chainName: string
@@ -8,4 +9,5 @@ export interface Configuration {
   priceFeeder?: PriceFeederConfiguration
   rpc?: RpcConfiguration
   rest?: RestConfiguration
+  prometheus?: PrometheusConfiguration
 }
