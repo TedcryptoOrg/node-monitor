@@ -1,10 +1,8 @@
 import { type AlertChannel } from '../AlertChannel/alertChannel'
 import { type Configuration } from '../type/configuration'
-import { RpcCheck } from './checkers/rpcCheck'
-import { RestCheck } from './checkers/restCheck'
-import { PrometheusCheck } from './checkers/prometheusCheck'
 import { BlockCheck } from './checkers/blockCheck'
 import {AbstractMonitor} from "./abstractMonitor";
+import {UrlCheck} from "./checkers/urlCheck";
 
 export class NodeMonitor extends AbstractMonitor {
   constructor (
@@ -15,18 +13,20 @@ export class NodeMonitor extends AbstractMonitor {
     super();
     console.debug(this.configuration)
 
+    // Service check
     if (this.configuration.rpc !== undefined) {
       console.log(`[${this.name}] Starting RPC check...`)
-      this.monitor_params.push(new RpcCheck(this.name, this.configuration.rpc, this.alertChannels))
+      this.monitor_params.push(new UrlCheck(this.name, 'RPC', this.configuration.rpc.address, this.alertChannels))
     }
     if (this.configuration.rest !== undefined) {
       console.log(`[${this.name}] Starting REST check...`)
-      this.monitor_params.push(new RestCheck(this.name, this.configuration.rest, this.alertChannels))
+      this.monitor_params.push(new UrlCheck(this.name, 'REST', this.configuration.rest.address, this.alertChannels))
     }
     if (this.configuration.prometheus !== undefined) {
       console.log(`[${this.name}] Starting Prometheus check...`)
-      this.monitor_params.push(new PrometheusCheck(this.name, this.configuration.prometheus, this.alertChannels))
+      this.monitor_params.push(new UrlCheck(this.name, 'Prometheus', this.configuration.prometheus.address, this.alertChannels))
     }
+
     if (this.configuration.alerts?.block !== undefined) {
       if (this.configuration.rpc === undefined) {
         throw new Error('You need to provide a RPC endpoint to monitor block')
