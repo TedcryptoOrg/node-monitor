@@ -3,7 +3,7 @@ import { type Configuration } from '../type/configuration'
 import { BlockCheck } from './checkers/blockCheck'
 import { AbstractMonitor } from './abstractMonitor'
 import { UrlCheck } from './checkers/urlCheck'
-import {DiskSpace} from "./checkers/nodeExporter/diskSpace";
+import { DiskSpace } from './checkers/nodeExporter/diskSpace'
 
 export class NodeMonitor extends AbstractMonitor {
   constructor (
