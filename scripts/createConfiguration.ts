@@ -55,6 +55,7 @@ async function createConfigurationFile (): Promise<void> {
         block: {
           miss_tolerance: await askQuestion(rl, 'Number of blocks before alert (miss tolerance)[default: 5]: ', parseInt, 5),
           miss_tolerance_period_seconds: await askQuestion(rl, 'Seconds before resetting the counter (miss tolerance period)[default: 3600s (1h)]: ', parseInt, 3600),
+          sleep_duration_seconds: await askQuestion(rl, 'Frequency to check (in seconds)[default: 30]: ', parseInt, 30),
           alert_sleep_duration_minutes: await askQuestion(rl, 'Don\'t alert again before x minutes [default: 5]: ', parseInt, 5)
         }
       }
