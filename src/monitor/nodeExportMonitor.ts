@@ -11,10 +11,6 @@ export class NodeExportMonitor extends AbstractMonitor {
   ) {
     super()
     console.debug(this.configuration)
-    if (this.configuration.node_exporter !== undefined) {
-      this.monitor_params.push(
-        new UrlCheck(this.name, 'NodeExporter', this.configuration.node_exporter.address, this.alertChannels)
-      )
-    }
+
   }
 }

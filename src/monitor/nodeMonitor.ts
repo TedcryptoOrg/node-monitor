@@ -26,6 +26,11 @@ export class NodeMonitor extends AbstractMonitor {
       console.log(`[${this.name}] Starting Prometheus check...`)
       this.monitor_params.push(new UrlCheck(this.name, 'Prometheus', this.configuration.prometheus.address, this.alertChannels))
     }
+    if (this.configuration.node_exporter !== undefined) {
+      this.monitor_params.push(
+          new UrlCheck(this.name, 'NodeExporter', this.configuration.node_exporter.address, this.alertChannels)
+      )
+    }
 
     if (this.configuration.alerts?.block !== undefined) {
       if (this.configuration.rpc === undefined) {
