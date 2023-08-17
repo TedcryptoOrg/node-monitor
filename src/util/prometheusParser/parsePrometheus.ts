@@ -10,7 +10,7 @@ Notes:
 const SUMMARY_TYPE = 'SUMMARY';
 const HISTOGRAM_TYPE = 'HISTOGRAM';
 
-export default function parsePrometheusTextFormat(metrics: string): object {
+export default function parsePrometheusTextFormat(metrics: string): object|any {
     const lines = metrics.split('\n'); // Prometheus format defines LF endings
     const converted = [];
 
