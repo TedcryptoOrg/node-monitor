@@ -20,6 +20,7 @@
     "bech32": "^2.0.0",
     "dotenv": "^16.0.3",
     "node-telegram-bot-api": "^0.61.0",
+    "shallow-equal": "^3.1.0",
     "yaml": "^2.3.1"
   },
   "devDependencies": {

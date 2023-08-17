@@ -1,7 +1,7 @@
-import { ConfigurationFactory } from '../../src/config/configurationFactory';
+import { ConfigurationFactory } from '../../../src/config/configurationFactory';
 import * as yaml from 'yaml';
 import { readdirSync, writeFileSync, unlinkSync } from 'fs';
-import {Configuration} from "../../src/type/configuration";
+import {Configuration} from "../../../src/type/configuration";
 
 describe('ConfigurationFactory', () => {
     let configurationFactory: ConfigurationFactory;
@@ -61,7 +61,15 @@ describe('ConfigurationFactory', () => {
                 sleep_duration_seconds: 1,
                 alert_sleep_duration_minutes: 1,
             },
-            nodeRest: 'http://',
+            rest: {
+                address: 'http://'
+            },
+            rpc: {
+                address: 'http://'
+            },
+            prometheus: {
+                address: 'http://'
+            },
             valoperAddress: 'valoper',
         }
 

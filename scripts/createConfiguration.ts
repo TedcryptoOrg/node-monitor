@@ -45,6 +45,25 @@ async function createConfigurationFile (): Promise<void> {
       }
     }
 
+    // Create node exporter configuration
+    if (await askConfirmation(rl, `Do you want to monitor node exporter for ${configurationName}? (Y/N): `)) {
+      configuration.node_exporter = {
+        address: await askQuestion(rl, 'Node exporter address[default: http://localhost:9100]: ', undefined, 'http://localhost:9100'),
+        enabled: true,
+        alerts: {}
+      }
+      if (await askConfirmation(rl, `Do you want to monitor disk space for ${configurationName}? (Y/N): `)) {
+        configuration.node_exporter.alerts = {
+          disk_space: {
+            enabled: true,
+            threshold: await askQuestion(rl, 'Disk space threshold (in %)[default: 80]: ', parseInt, 80),
+            check_interval_seconds: await askQuestion(rl, 'Frequency to check (in seconds)[default: 60]: ', parseInt, 60),
+            alert_sleep_duration_minutes: await askQuestion(rl, 'Don\'t alert again before x minutes [default: 10]: ', parseInt, 10)
+          }
+        }
+      }
+    }
+
     // Create block alert configuration
     if (await askConfirmation(rl, `Do you want to monitor block for ${configurationName}? (Y/N): `)) {
       if (configuration.rpc === undefined) {
