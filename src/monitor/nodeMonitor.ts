@@ -31,7 +31,7 @@ export class NodeMonitor extends AbstractMonitor {
       this.monitor_params.push(
         new UrlCheck(this.name, 'NodeExporter', this.configuration.node_exporter.address, this.alertChannels)
       )
-      if (this.configuration.node_exporter.alerts?.diskSpace?.enabled) {
+      if (this.configuration.node_exporter.alerts?.disk_space?.enabled) {
         this.monitor_params.push(
           new DiskSpace(this.name, this.configuration.node_exporter, this.alertChannels)
         )

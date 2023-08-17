@@ -2,7 +2,7 @@ export interface NodeExporterConfiguration {
   address: string
   enabled: boolean
   alerts?: {
-    diskSpace?: {
+    disk_space?: {
       enabled: boolean
       threshold: number
       alert_sleep_duration_minutes: number

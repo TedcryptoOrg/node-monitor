@@ -15,10 +15,10 @@ export class DiskSpace implements MonitorCheck {
         private readonly nodeExporterConfiguration: NodeExporterConfiguration,
         private readonly alertChannels: AlertChannel[]
     ) {
-        if (this.nodeExporterConfiguration.alerts?.diskSpace === undefined) {
+        if (this.nodeExporterConfiguration.alerts?.disk_space === undefined) {
             throw new Error('Disk space alert is not configured');
         }
-        if (!this.nodeExporterConfiguration.alerts.diskSpace.enabled) {
+        if (!this.nodeExporterConfiguration.alerts.disk_space.enabled) {
             throw new Error('Disk space alert is disabled');
         }
 
@@ -26,11 +26,11 @@ export class DiskSpace implements MonitorCheck {
             this.name,
             'BlockCheck',
             this.alertChannels,
-            this.nodeExporterConfiguration.alerts.diskSpace.alert_sleep_duration_minutes
+            this.nodeExporterConfiguration.alerts.disk_space.alert_sleep_duration_minutes
         )
 
-        this.checkIntervalSeconds = this.nodeExporterConfiguration.alerts.diskSpace.check_interval_seconds
-        this.diskSpaceThreshold = this.nodeExporterConfiguration.alerts.diskSpace.threshold
+        this.checkIntervalSeconds = this.nodeExporterConfiguration.alerts.disk_space.check_interval_seconds
+        this.diskSpaceThreshold = this.nodeExporterConfiguration.alerts.disk_space.threshold
     }
 
     async check (): Promise<void> {

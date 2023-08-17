@@ -54,7 +54,7 @@ async function createConfigurationFile (): Promise<void> {
       }
       if (await askConfirmation(rl, `Do you want to monitor disk space for ${configurationName}? (Y/N): `)) {
         configuration.node_exporter.alerts = {
-          diskSpace: {
+          disk_space: {
             enabled: true,
             threshold: await askQuestion(rl, 'Disk space threshold (in %)[default: 80]: ', parseInt, 80),
             check_interval_seconds: await askQuestion(rl, 'Frequency to check (in seconds)[default: 60]: ', parseInt, 60),
