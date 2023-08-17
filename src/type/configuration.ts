@@ -3,7 +3,7 @@ import { type RpcConfiguration } from './rpcConfiguration'
 import { type RestConfiguration } from './restConfiguration'
 import { type PrometheusConfiguration } from './prometheusConfiguration'
 import { type BlockAlertConfiguration } from './blockAlertConfiguration'
-import {NodeExporterConfiguration} from "./nodeExporterConfiguration";
+import { type NodeExporterConfiguration } from './nodeExporterConfiguration'
 
 export interface Configuration {
   chainName: string

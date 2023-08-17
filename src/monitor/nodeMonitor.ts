@@ -1,8 +1,8 @@
 import { type AlertChannel } from '../AlertChannel/alertChannel'
 import { type Configuration } from '../type/configuration'
 import { BlockCheck } from './checkers/blockCheck'
-import {AbstractMonitor} from "./abstractMonitor";
-import {UrlCheck} from "./checkers/urlCheck";
+import { AbstractMonitor } from './abstractMonitor'
+import { UrlCheck } from './checkers/urlCheck'
 
 export class NodeMonitor extends AbstractMonitor {
   constructor (
@@ -10,7 +10,7 @@ export class NodeMonitor extends AbstractMonitor {
     private readonly configuration: Configuration,
     private readonly alertChannels: AlertChannel[]
   ) {
-    super();
+    super()
     console.debug(this.configuration)
 
     // Service check
