@@ -1,26 +1,18 @@
-import { type MonitorCheck } from './checkers/monitorCheck'
-import { type Monitor } from './monitor'
 import { type AlertChannel } from '../AlertChannel/alertChannel'
 import { type Configuration } from '../type/configuration'
-import { RecoverableException } from './exception/recoverableException'
 import { RpcCheck } from './checkers/rpcCheck'
 import { RestCheck } from './checkers/restCheck'
 import { PrometheusCheck } from './checkers/prometheusCheck'
 import { BlockCheck } from './checkers/blockCheck'
+import {AbstractMonitor} from "./abstractMonitor";
 
-interface PromiseParamPair {
-  promise: Promise<void>
-  param: MonitorCheck
-}
-
-export class NodeMonitor implements Monitor {
-  private readonly monitor_params: MonitorCheck[] = []
-
+export class NodeMonitor extends AbstractMonitor {
   constructor (
-    private readonly name: string,
+    protected readonly name: string,
     private readonly configuration: Configuration,
     private readonly alertChannels: AlertChannel[]
   ) {
+    super();
     console.debug(this.configuration)
 
     if (this.configuration.rpc !== undefined) {
@@ -41,33 +33,6 @@ export class NodeMonitor implements Monitor {
       }
       console.log(`[${this.name}] Starting block check...`)
       this.monitor_params.push(new BlockCheck(this.name, this.configuration.chainName, this.configuration.rpc, this.configuration.alerts.block, this.alertChannels))
-    }
-  }
-
-  async start (param?: MonitorCheck): Promise<void> {
-    const params = param === undefined ? this.monitor_params : [param]
-    const promiseParamPairs = params.map(param => ({
-      promise: param.check(),
-      param
-    }))
-
-    for (const pair of promiseParamPairs) {
-      await this.runPromiseWithRetry(pair)
-    }
-  }
-
-  async runPromiseWithRetry (pair: PromiseParamPair): Promise<void> {
-    const { promise, param } = pair
-    try {
-      await promise
-    } catch (error) {
-      console.log(`🚨 ${this.name} Node checker ${param.constructor.name} failed to start. Error:\n${error}`)
-
-      if (error instanceof RecoverableException) {
-        console.log('Waiting 5 seconds before retrying...')
-        await new Promise(resolve => setTimeout(resolve, 5000))
-        await this.runPromiseWithRetry(pair)
-      }
     }
   }
 }
