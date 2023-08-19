@@ -1,4 +1,4 @@
-import { MissCounter } from './checkers/missCounter'
+import { MissCounter } from './checkers/priceFeeder/missCounter'
 import { type AlertChannel } from '../AlertChannel/alertChannel'
 import { type Configuration } from '../type/configuration'
 import { AbstractMonitor } from './abstractMonitor'
