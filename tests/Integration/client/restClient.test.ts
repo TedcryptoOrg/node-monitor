@@ -31,7 +31,6 @@ describe('REST Client', () => {
         expect(validatorInfo.validator.description.moniker).toBe('Tedcrypto.io 🧸 | TedLotto')
         expect(validatorInfo.validator.jailed).toBe(false)
         expect(validatorInfo.validator.status).toEqual('BOND_STATUS_BONDED')
-        expect(validatorInfo.validator.consensus_pubkey.key).toEqual('iGQ1nBgIebCilnCQwrqf9kzKvoAxDzAyf1j/BHS8bz8=')
-
+        expect(validatorInfo.validator.consensus_pubkey.value).toEqual('iGQ1nBgIebCilnCQwrqf9kzKvoAxDzAyf1j/BHS8bz8=')
     });
 });

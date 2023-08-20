@@ -2,8 +2,11 @@ export type ValidatorInfoResponse = {
     validator: {
         operator_address: string,
         consensus_pubkey: {
-            '@type': string,
-            key: string
+            '@type'?: string,
+            key?: string,
+            // Swagger shows the ones below, but osmosis return the above...
+            type?: string,
+            value?: string,
         },
         jailed: true,
         status: "BOND_STATUS_UNSPECIFIED"|string,

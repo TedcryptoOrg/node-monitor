@@ -10,4 +10,5 @@ describe('ValidatorTools', () => {
             )
         ).toEqual('osmovalcons139x9d4k0cw5wp84k6x3wxdr8cn8h0s84q2f7rx')
     });
+
 });

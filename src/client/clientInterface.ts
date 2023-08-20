@@ -1,5 +1,5 @@
-import { type SigningInfosResponse } from './type/rest/slashing/signingInfosResponse'
-import { type ValidatorInfoResponse } from './type/rest/staking/ValidatorInfoResponse'
+import { type SigningInfosResponse } from './type/uniformisation/slashing/signingInfosResponse'
+import { type ValidatorInfoResponse } from './type/uniformisation/staking/validatorInfoResponse'
 
 export interface ClientInterface {
   isSyncing: () => Promise<boolean>
