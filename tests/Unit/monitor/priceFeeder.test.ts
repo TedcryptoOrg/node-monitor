@@ -1,7 +1,7 @@
-import { MissCounter } from '../../../src/monitor/checkers/missCounter';
 import {AlertChannel} from "../../../src/AlertChannel/alertChannel";
 import {PriceFeeder} from "../../../src/monitor/priceFeeder";
 import {Configuration} from "../../../src/type/configuration";
+import {MissCounter} from "../../../src/monitor/checkers/priceFeeder/missCounter";
 
 describe('PriceFeeder', () => {
     let priceFeeder: PriceFeeder;

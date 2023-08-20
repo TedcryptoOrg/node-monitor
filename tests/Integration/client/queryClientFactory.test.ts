@@ -13,7 +13,7 @@ describe('Query Client Factory', () => {
         expect(status.syncInfo).toBeDefined()
         expect(status.nodeInfo).toBeDefined();
         expect(status.nodeInfo.network).toBe('osmosis-1');
-    });
+    }, 30000);
 
     it('should create a working distribution client', async () => {
         const client = await createDistributionClient(RPC_CONFIGURATION.address);
@@ -23,7 +23,7 @@ describe('Query Client Factory', () => {
 
         expect(Number(commissionResponse.commission?.commission[0].amount)).toBeGreaterThan(0);
         expect(commissionResponse.commission?.commission[0].denom).toBe('uosmo');
-    });
+    }, 30000);
 
     it('should create a working slashing client', async () => {
         const client = await createSlashingClient(RPC_CONFIGURATION.address);
@@ -34,12 +34,12 @@ describe('Query Client Factory', () => {
         const response = await client.SigningInfo({consAddress: OSMOSIS_VALCONS_ADDRESS})
 
         expect(response.valSigningInfo?.address).toBe(OSMOSIS_VALCONS_ADDRESS)
-    });
+    }, 30000);
 
     it('should create a working staking client', async () => {
         const client = await createStakingClient(RPC_CONFIGURATION.address);
 
         const response = await client.Params({})
         expect(response.params?.bondDenom).toBe('uosmo')
-    });
+    }, 30000);
 });
