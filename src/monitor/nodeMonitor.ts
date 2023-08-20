@@ -4,14 +4,14 @@ import { BlockCheck } from './checkers/blockCheck'
 import { AbstractMonitor } from './abstractMonitor'
 import { UrlCheck } from './checkers/urlCheck'
 import { DiskSpace } from './checkers/nodeExporter/diskSpace'
-import {RpcClient} from "../client/rpcClient";
-import {RestClient} from "../client/restClient";
-import {getValConsAddressFromPubKey} from "../util/validatorTools";
-import {ClientInterface} from "../client/clientInterface";
+import { RpcClient } from '../client/rpcClient'
+import { RestClient } from '../client/restClient'
+import { getValConsAddressFromPubKey } from '../util/validatorTools'
+import { type ClientInterface } from '../client/clientInterface'
 
 export class NodeMonitor extends AbstractMonitor {
-  private client: ClientInterface|undefined
-  private validatorCons: string|undefined
+  private client: ClientInterface | undefined
+  private validatorCons: string | undefined
 
   constructor (
     protected readonly name: string,
@@ -54,7 +54,7 @@ export class NodeMonitor extends AbstractMonitor {
     }
   }
 
-  private getNodeClient(): ClientInterface {
+  private getNodeClient (): ClientInterface {
     if (this.client === undefined) {
       if (this.configuration.rpc !== undefined) {
         this.client = new RpcClient(this.configuration.rpc)
@@ -67,24 +67,24 @@ export class NodeMonitor extends AbstractMonitor {
       throw new Error('No client configuration found. Please configure either RPC or REST')
     }
 
-    return this.client;
+    return this.client
   }
 
-  private async getValidatorConsAddress(): Promise<string> {
+  private async getValidatorConsAddress (): Promise<string> {
     if (this.validatorCons === undefined) {
       if (this.configuration.valoperAddress === undefined) {
         throw new Error('Valoper needs to be configured to get validator cons address')
       }
 
-      const validator = (await this.getNodeClient().getValidatorInfo(this.configuration.valoperAddress)).validator;
+      const validator = (await this.getNodeClient().getValidatorInfo(this.configuration.valoperAddress)).validator
 
       this.validatorCons = getValConsAddressFromPubKey(
-          this.configuration.chainName,
-          validator.consensus_pubkey["@type"],
-          validator.consensus_pubkey.key
-      );
+        this.configuration.chainName,
+        validator.consensus_pubkey['@type'],
+        validator.consensus_pubkey.key
+      )
     }
 
-    return this.validatorCons;
+    return this.validatorCons
   }
 }

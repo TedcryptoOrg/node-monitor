@@ -2,14 +2,12 @@ import { type RpcConfiguration } from '../type/rpcConfiguration'
 import { type RpcStatus } from './type/rpc/rpcStatus'
 import { RecoverableException } from '../monitor/exception/recoverableException'
 import axios from 'axios'
-import {ClientInterface} from "./clientInterface";
+import { type ClientInterface } from './clientInterface'
 
 export class RpcClient implements ClientInterface {
   constructor (
     private readonly rpcConfiguration: RpcConfiguration
   ) { }
-
-
 
   async isSyncing (): Promise<boolean> {
     try {
@@ -19,12 +17,12 @@ export class RpcClient implements ClientInterface {
     }
   }
 
-  async getValidatorSigningInfo (valconsAddress:string): Promise<any> {
-    throw new Error('Not Implemented yet...');
+  async getValidatorSigningInfo (valconsAddress: string): Promise<any> {
+    throw new Error('Not Implemented yet...')
   }
 
-  async getValidatorInfo(valoperAddress: string): Promise<any> {
-    throw new Error('Not Implemented yet...');
+  async getValidatorInfo (valoperAddress: string): Promise<any> {
+    throw new Error('Not Implemented yet...')
   }
 
   async getBlockHeight (): Promise<string> {
@@ -35,7 +33,7 @@ export class RpcClient implements ClientInterface {
     }
   }
 
-  async getStatus(): Promise<RpcStatus> {
+  async getStatus (): Promise<RpcStatus> {
     try {
       const rpcUrl = this.rpcConfiguration.address + '/status'
       return (await axios.get(rpcUrl)).data.result
