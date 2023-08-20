@@ -15,5 +15,6 @@ export interface Configuration {
   node_exporter?: NodeExporterConfiguration
   alerts?: {
     block?: BlockAlertConfiguration
+    sign_blocks?: BlockAlertConfiguration
   }
 }

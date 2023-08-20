@@ -1,12 +1,12 @@
 import axios from 'axios'
-import { CryptoTools } from '../../crypto/crypto_tools'
-import { type MonitorCheck } from './monitorCheck'
-import { type AlertChannel } from '../../AlertChannel/alertChannel'
-import { type Configuration } from '../../type/configuration'
-import { NoRecoverableException } from '../exception/noRecoverableException'
-import { RecoverableException } from '../exception/recoverableException'
-import { Alerter } from '../../Alerter/alerter'
-import { type PriceFeederConfiguration } from '../../type/priceFeederConfiguration'
+import { CryptoTools } from '../../../crypto/crypto_tools'
+import { type MonitorCheck } from '../monitorCheck'
+import { type AlertChannel } from '../../../AlertChannel/alertChannel'
+import { type Configuration } from '../../../type/configuration'
+import { NoRecoverableException } from '../../exception/noRecoverableException'
+import { RecoverableException } from '../../exception/recoverableException'
+import { Alerter } from '../../../Alerter/alerter'
+import { type PriceFeederConfiguration } from '../../../type/priceFeederConfiguration'
 
 export class MissCounter implements MonitorCheck {
   private readonly staticEndpoints: { kujira: string, ojo: string } = {

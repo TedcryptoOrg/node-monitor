@@ -16,6 +16,7 @@ async function createConfigurationFile (): Promise<void> {
 
     const configuration: Configuration = {
       chainName: await askQuestion(rl, 'Chain name, e.g.: comoshub, osmosis: '),
+      alerts: {},
       valoperAddress: await askQuestion(rl, 'Your valoper address (leave empty if you don\'t want to monitor): ', (value: string) => {
         if (value === undefined || value.length === 0) {
           return undefined
@@ -64,14 +65,20 @@ async function createConfigurationFile (): Promise<void> {
       }
     }
 
-    // Create block alert configuration
-    if (await askConfirmation(rl, `Do you want to monitor block for ${configurationName}? (Y/N): `)) {
-      if (configuration.rpc === undefined) {
-        throw new Error('You need to provide a RPC endpoint to monitor block')
+    if (configuration.alerts !== undefined && (configuration.rpc !== undefined || configuration.rest !== undefined)) {
+      // Create block alert configuration
+      if (await askConfirmation(rl, `Do you want to monitor block for ${configurationName}? (Y/N): `)) {
+        configuration.alerts.block = {
+          miss_tolerance: await askQuestion(rl, 'Number of blocks before alert (miss tolerance)[default: 5]: ', parseInt, 5),
+          miss_tolerance_period_seconds: await askQuestion(rl, 'Seconds before resetting the counter (miss tolerance period)[default: 3600s (1h)]: ', parseInt, 3600),
+          sleep_duration_seconds: await askQuestion(rl, 'Frequency to check (in seconds)[default: 30]: ', parseInt, 30),
+          alert_sleep_duration_minutes: await askQuestion(rl, 'Don\'t alert again before x minutes [default: 5]: ', parseInt, 5)
+        }
       }
 
-      configuration.alerts = {
-        block: {
+      // Create Sign miss block configuration
+      if (configuration.valoperAddress && await askConfirmation(rl, `Do you want to configure block sign miss for ${configurationName}? (Y/N): `)) {
+        configuration.alerts.sign_blocks = {
           miss_tolerance: await askQuestion(rl, 'Number of blocks before alert (miss tolerance)[default: 5]: ', parseInt, 5),
           miss_tolerance_period_seconds: await askQuestion(rl, 'Seconds before resetting the counter (miss tolerance period)[default: 3600s (1h)]: ', parseInt, 3600),
           sleep_duration_seconds: await askQuestion(rl, 'Frequency to check (in seconds)[default: 30]: ', parseInt, 30),

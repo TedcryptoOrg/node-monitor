@@ -36,8 +36,8 @@ describe('ConfigurationFactory', () => {
                 // @ts-ignore
                 const configuration: Configuration = configurations[provider];
                 expect(configuration).toBeDefined();
-                expect(configuration.priceFeeder.miss_tolerance).toBeDefined();
-                expect(configuration.priceFeeder.miss_tolerance_period_seconds).toBeDefined();
+                expect(configuration.priceFeeder?.miss_tolerance).toBeDefined();
+                expect(configuration.priceFeeder?.miss_tolerance_period_seconds).toBeDefined();
             });
         });
 

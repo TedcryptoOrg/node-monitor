@@ -4,6 +4,7 @@ import { type Configuration } from './type/configuration'
 import { PriceFeeder } from './monitor/priceFeeder'
 import { type AlertChannel } from './AlertChannel/alertChannel'
 import { NodeMonitor } from './monitor/nodeMonitor'
+import {ChainDirectory} from "@tedcryptoorg/cosmos-directory";
 
 require('dotenv').config({ path: '.env', override: false })
 
@@ -24,8 +25,11 @@ async function startNodeMonitor (name: string, configuration: Configuration): Pr
   console.log(`Starting ${name} node monitor...`)
   console.debug(configuration)
 
+
+  const chain = (await new ChainDirectory().getChainData(configuration.chainName)).chain;
+
   try {
-    await new NodeMonitor(name, configuration, alertChannels).start()
+    await new NodeMonitor(name, chain, configuration, alertChannels).start()
   } catch (error) {
     const message = `🚨 ${name} Node monitor failed to start!\n${error}`
     console.error(message)
