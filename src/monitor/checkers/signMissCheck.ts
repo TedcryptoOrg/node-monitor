@@ -81,8 +81,8 @@ export class SignMissCheck implements MonitorCheck {
 
         return getValConsAddressFromPubKey(
             this.chain.bech32_prefix,
-            validator.consensus_pubkey['@type'],
-            validator.consensus_pubkey.key
+            validator.consensus_pubkey.type,
+            validator.consensus_pubkey.value
         )
     }
 
