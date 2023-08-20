@@ -4,8 +4,15 @@ import { BlockCheck } from './checkers/blockCheck'
 import { AbstractMonitor } from './abstractMonitor'
 import { UrlCheck } from './checkers/urlCheck'
 import { DiskSpace } from './checkers/nodeExporter/diskSpace'
+import {RpcClient} from "../client/rpcClient";
+import {RestClient} from "../client/restClient";
+import {getValConsAddressFromPubKey} from "../util/validatorTools";
+import {ClientInterface} from "../client/clientInterface";
 
 export class NodeMonitor extends AbstractMonitor {
+  private client: ClientInterface|undefined
+  private validatorCons: string|undefined
+
   constructor (
     protected readonly name: string,
     private readonly configuration: Configuration,
@@ -45,5 +52,39 @@ export class NodeMonitor extends AbstractMonitor {
       console.log(`[${this.name}] Starting block check...`)
       this.monitor_params.push(new BlockCheck(this.name, this.configuration.chainName, this.configuration.rpc, this.configuration.alerts.block, this.alertChannels))
     }
+  }
+
+  private getNodeClient(): ClientInterface {
+    if (this.client === undefined) {
+      if (this.configuration.rpc !== undefined) {
+        this.client = new RpcClient(this.configuration.rpc)
+      }
+      if (this.configuration.rest !== undefined) {
+        this.client = new RestClient(this.configuration.rest)
+      }
+    }
+    if (this.client === undefined) {
+      throw new Error('No client configuration found. Please configure either RPC or REST')
+    }
+
+    return this.client;
+  }
+
+  private async getValidatorConsAddress(): Promise<string> {
+    if (this.validatorCons === undefined) {
+      if (this.configuration.valoperAddress === undefined) {
+        throw new Error('Valoper needs to be configured to get validator cons address')
+      }
+
+      const validator = (await this.getNodeClient().getValidatorInfo(this.configuration.valoperAddress)).validator;
+
+      this.validatorCons = getValConsAddressFromPubKey(
+          this.configuration.chainName,
+          validator.consensus_pubkey["@type"],
+          validator.consensus_pubkey.key
+      );
+    }
+
+    return this.validatorCons;
   }
 }
