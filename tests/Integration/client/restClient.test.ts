@@ -13,8 +13,8 @@ describe('REST Client', () => {
         }
     )
 
-    it('should return whether is syncing or not', () => {
-        expect(restClient.isSyncing()).resolves.toBe(false);
+    it('should return whether is syncing or not', async () => {
+        expect(await restClient.isSyncing()).toBe(false);
     }, 30000);
 
     it('should return the validator signing info', async () => {
