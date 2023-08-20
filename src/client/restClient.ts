@@ -15,7 +15,7 @@ export class RestClient implements ClientInterface {
   async isSyncing (): Promise<boolean> {
     try {
       const restUrl = this.configuration.address + '/cosmos/base/tendermint/v1beta1/syncing'
-      return (await axios.get(restUrl)).data.result.sync_info.catching_up
+      return (await axios.get(restUrl)).data.syncing
     } catch (error: any) {
       throw new RecoverableException('Error fetching syncing status from REST: ' + String(error.message))
     }
