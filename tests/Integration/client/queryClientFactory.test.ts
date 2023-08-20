@@ -5,6 +5,8 @@ import {
 } from "../../../src/client/queryClientFactory";
 import {OSMOSIS_VALCONS_ADDRESS, OSMOSIS_VALOPER_ADDRESS, RPC_CONFIGURATION} from "../../Helper/fixedConfigurations";
 
+jest.retryTimes(3);
+
 describe('Query Client Factory', () => {
     it('should create tendermint client', async () => {
         const tendermintClient = await createTendermintClient('https://rpc.cosmos.directory/osmosis');

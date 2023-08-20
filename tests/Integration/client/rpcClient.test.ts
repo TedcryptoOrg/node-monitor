@@ -1,6 +1,8 @@
 import {RpcClient} from "../../../src/client/rpcClient";
 import {OSMOSIS_VALCONS_ADDRESS, OSMOSIS_VALOPER_ADDRESS, RPC_CONFIGURATION} from "../../Helper/fixedConfigurations";
 
+jest.retryTimes(3);
+
 describe('RPC Client', () => {
     let rpcClient: RpcClient;
     beforeAll(

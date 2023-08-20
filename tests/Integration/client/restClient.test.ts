@@ -1,6 +1,8 @@
 import {OSMOSIS_VALCONS_ADDRESS, OSMOSIS_VALOPER_ADDRESS, REST_CONFIGURATION} from "../../Helper/fixedConfigurations";
 import {RestClient} from "../../../src/client/restClient";
 
+jest.retryTimes(3)
+
 describe('REST Client', () => {
     let restClient: RestClient;
     beforeAll(
