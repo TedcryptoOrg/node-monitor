@@ -1,6 +1,6 @@
 version: '3'
 services:
-  mariadb:
+  database:
     image: mariadb:11.0.3
     environment:
       MYSQL_ROOT_PASSWORD: root
@@ -19,7 +19,7 @@ services:
       - ./:/app
     command: ["npm", "start"]
     depends_on:
-      - mariadb
+      - database
 
 volumes:
   mariadb_data:

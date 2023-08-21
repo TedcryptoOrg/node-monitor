@@ -1,7 +1,7 @@
 **/*
 !/dist/**
 !/lib/**
-!index.js
+!src/models/index.ts
 !index.d.ts
 !index.d.cts
 !CHANGELOG.md
