@@ -1,10 +1,11 @@
-import { Sequelize, DataTypes } from 'sequelize'
+import {DataTypes, Sequelize} from 'sequelize'
 import fs from "fs";
 import path from "path";
 
 export default class Database {
     private readonly sequelize: Sequelize
     private db: any = {};
+    private isConnected: boolean = false;
 
     constructor (dbDsn: string) {
         this.sequelize = new Sequelize(dbDsn)
@@ -12,6 +13,10 @@ export default class Database {
     }
 
     async connect (): Promise<void> {
+        if (this.isConnected) {
+            return;
+        }
+
         try {
             await this.sequelize.authenticate();
             console.log('Connection has been established successfully.');
@@ -21,10 +26,18 @@ export default class Database {
         }
     }
 
+    async getDatabase(): Promise<Sequelize> {
+        if (!this.isConnected) {
+            await this.connect();
+        }
+
+        return this.sequelize;
+    }
+
     private loadModels(): void
     {
         const basename = path.basename(__filename);
-        const modelFolder = __dirname + '/../models';
+        const modelFolder = path.join(__dirname, '/models');
 
         fs
             .readdirSync(path.join(modelFolder))
