@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "Simple library to monitor cosmos nodes",
   "scripts": {
+    "start": "ts-node src/index.ts",
     "test": "jest",
     "clean": "rm -rf ./lib",
     "lint": "eslint src/**/*.ts scripts/**/*.ts",
