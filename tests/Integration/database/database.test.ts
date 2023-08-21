@@ -20,7 +20,7 @@ describe('Database', () => {
             chain: 'test',
         })
 
-        const configuration: Model<Configuration>|null = await configurationModel.findOne({where: {name: 'test'}})
+        const configuration: Model<Configuration>|null|any = await configurationModel.findOne({where: {name: 'test'}})
         expect(configuration).not.toBeNull();
         expect(configuration?.name).toBe('test');
         expect(configuration?.chain).toBe('test');
@@ -34,10 +34,29 @@ describe('Database', () => {
             ip_address: '127.0.0.1'
         });
 
-        serverModel.findOne({where: {name: 'test'}}).then((server: Model<Server>|null) => {
+        serverModel.findOne({where: {name: 'test'}}).then((server: Model<Server>|null|any) => {
             expect(server).not.toBeNull();
             expect(server?.name).toBe('test');
             expect(server?.ip_address).toBe('127.0.0.1');
+            expect(server?.is_enabled).toBe(true);
         })
     });
+
+    it('should create a service', () => {
+        const serviceModel = database.model('service');
+
+        serviceModel.create({
+            name: 'test',
+            ip_address: '127.0.0.1',
+            port: '8080'
+        });
+
+        serviceModel.findOne({where: {name: 'test'}}).then((service: Model<Server>|null|any) => {
+            expect(service).not.toBeNull();
+            expect(service?.name).toBe('test');
+            expect(service?.ip_address).toBe('127.0.0.1');
+            expect(service?.port).toBe('8080');
+            expect(service?.is_enabled).toBe(true);
+        })
+    })
 });

@@ -2,15 +2,16 @@
 
 import {DataTypes, Model} from "sequelize";
 
-export default class Server extends Model {
+export default class Service extends Model {
   static init(sequelize:any): any {
     return super.init({
       name: DataTypes.STRING,
       ip_address: DataTypes.STRING,
+      port: DataTypes.STRING,
       is_enabled: DataTypes.BOOLEAN,
     }, {
       sequelize,
-      modelName: 'server',
+      modelName: 'service',
     });
   }
 

@@ -2,7 +2,7 @@
 /** @type {import('sequelize-cli').Migration} */
 module.exports = {
   async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('servers', {
+    await queryInterface.createTable('services', {
       id: {
         allowNull: false,
         autoIncrement: true,
@@ -13,6 +13,9 @@ module.exports = {
         type: Sequelize.STRING
       },
       ip_address: {
+        type: Sequelize.STRING
+      },
+      port: {
         type: Sequelize.STRING
       },
       is_enabled: {
@@ -30,6 +33,6 @@ module.exports = {
     });
   },
   async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('servers');
+    await queryInterface.dropTable('services');
   }
 };
