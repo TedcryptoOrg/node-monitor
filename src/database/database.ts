@@ -49,9 +49,9 @@ export default class Database {
         )
       })
       .forEach(file => {
-        const {default: ModelClass} = require(path.join(modelFolder, file))
-        const model = ModelClass.init(this.sequelize);
-        this.db[model.name] = model;
+        const { default: ModelClass } = require(path.join(modelFolder, file))
+        const model = ModelClass.init(this.sequelize)
+        this.db[model.name] = model
       })
 
     Object.keys(this.db).forEach(modelName => {
