@@ -59,4 +59,27 @@ describe('Database', () => {
             expect(service?.is_enabled).toBe(true);
         })
     })
+
+    it('should creeate a service check', () => {
+        const serviceCheck = database.model('serviceCheck')
+
+        serviceCheck.create({
+            name: 'test',
+            type: 'http',
+            ip_address: '',
+            port: '',
+            is_enabled: true,
+            configuration_object: JSON.stringify({}),
+        })
+
+        serviceCheck.findOne({where: {name: 'test'}}).then((serviceCheck: Model<Server>|null|any) => {
+            expect(serviceCheck).not.toBeNull();
+            expect(serviceCheck?.name).toBe('test');
+            expect(serviceCheck?.type).toBe('http');
+            expect(serviceCheck?.ip_address).toBe('');
+            expect(serviceCheck?.port).toBe('');
+            expect(serviceCheck?.is_enabled).toBe(true);
+            expect(serviceCheck?.configuration_object).toBe('{}');
+        })
+    });
 });
