@@ -13,7 +13,12 @@ export default class Configuration extends Model {
     });
   }
 
-  static associate(models: Model[]) {
-    // define association here
+  associate(models: Model[]) {
+    // @ts-ignore: Unreachable code error
+    Configuration.hasMany(models.Server, {
+        foreignKey: 'configuration_id',
+        as: 'servers',
+        onDelete: 'CASCADE'
+    })
   }
 }

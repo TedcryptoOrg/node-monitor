@@ -22,6 +22,15 @@ module.exports = {
         type: Sequelize.BOOLEAN,
         defaultValue: true
       },
+      server_id: {
+        type: Sequelize.INTEGER,
+        references: {
+            model: 'server',
+            key: 'id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE',
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

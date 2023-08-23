@@ -24,6 +24,15 @@ module.exports = {
       is_enabled: {
         type: Sequelize.BOOLEAN
       },
+      service_id: {
+        type: Sequelize.INTEGER,
+        references: {
+            model: 'services',
+            key: 'id'
+        },
+        onUpdate: 'CASCADE',
+        onDelete: 'CASCADE',
+      },
       createdAt: {
         allowNull: false,
         type: Sequelize.DATE

@@ -17,7 +17,12 @@ export default class ServiceCheck extends Model {
     });
   }
 
-  static associate(models: Model[]) {
-    // define association here
+  associate(models: Model[]) {
+    // @ts-ignore: Unreachable code error
+    ServiceCheck.belongsTo(models.Service, {
+        foreignKey: 'service_id',
+        as: 'service',
+        onDelete: 'CASCADE'
+    })
   }
 }

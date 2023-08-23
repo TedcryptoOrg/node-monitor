@@ -14,7 +14,18 @@ export default class Server extends Model {
     });
   }
 
-  static associate(models: Model[]) {
-    // define association here
+  associate(models: Model[]) {
+    // @ts-ignore: Unreachable code error
+    Server.belongsTo(models.Configuration, {
+        foreignKey: 'configuration_id',
+        as: 'configuration',
+        onDelete: 'CASCADE'
+    })
+    // @ts-ignore: Unreachable code error
+    Server.hasMany(models.Service, {
+        foreignKey: 'server_id',
+        as: 'services',
+        onDelete: 'CASCADE'
+    })
   }
 }
