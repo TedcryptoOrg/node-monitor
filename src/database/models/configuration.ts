@@ -47,6 +47,7 @@ Configuration.init({
   },
 }, {
   timestamps: true,
+    tableName: 'configurations',
   sequelize: sequelizeConnection,
 });
 

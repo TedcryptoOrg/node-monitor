@@ -65,6 +65,7 @@ Server.init({
     }
 }, {
     timestamps: true,
+    tableName: 'servers',
     sequelize: sequelizeConnection,
 });
 

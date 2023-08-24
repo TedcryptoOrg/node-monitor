@@ -2,6 +2,7 @@ import {createAndResetDatabaseInstance} from "../../Helper/databaseHelper";
 import {ConfigurationManager} from "../../../src/services/configuration/configurationManager";
 import { create as createConfiguration } from "../../../src/database/dal/configuration";
 import { create as createServer } from "../../../src/database/dal/server";
+import { create as createService } from "../../../src/database/dal/service";
 
 describe('ConfigurationManager', () => {
     let configurationManager: ConfigurationManager;
@@ -22,7 +23,12 @@ describe('ConfigurationManager', () => {
             is_enabled: true,
             configuration_id: configuration.id
         });
-        //const service = await createService('RPC', '127.0.0.1', '26657', server);
+        const service = await createService({
+            name: 'RPC',
+            address: 'localhost:26657',
+            is_enabled: true,
+            server_id: server.id
+        });
         //const serviceCheck = await createServiceCheck('Url checker', 'UrlChecker', '127.0.0.1', '26657', service);
 
         const configurations = await configurationManager.getAllConfigurations();

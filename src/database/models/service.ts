@@ -1,19 +1,25 @@
 'use strict';
 
-import {DataTypes, Model} from "sequelize";
+import { DataTypes, Model, Optional } from 'sequelize'
+import sequelizeConnection from "../config";
 
-export default class Service extends Model {
-  static init(sequelize:any): any {
-    return super.init({
-      name: DataTypes.STRING,
-      ip_address: DataTypes.STRING,
-      port: DataTypes.STRING,
-      is_enabled: DataTypes.BOOLEAN,
-    }, {
-      sequelize,
-      modelName: 'service',
-    });
-  }
+interface ServiceAttributes {
+    id: number,
+    name: string,
+    address: string,
+    is_enabled: boolean,
+    server_id: number,
+}
+
+export interface ServiceInput extends Optional<ServiceAttributes, 'id'> {}
+export interface ServiceOutput extends Required<ServiceAttributes> {}
+
+class Service extends Model<ServiceAttributes, ServiceInput> implements ServiceAttributes {
+    public id!: number
+    public name!: string
+    public address!: string
+    public is_enabled!: boolean
+    public server_id!: number
 
   associate(models: Model[]) {
     // @ts-ignore: Unreachable code error
@@ -30,3 +36,33 @@ export default class Service extends Model {
     })
   }
 }
+
+Service.init({
+    id: {
+        type: DataTypes.INTEGER.UNSIGNED,
+        autoIncrement: true,
+        primaryKey: true,
+    },
+    name: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
+    address: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
+    is_enabled: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+    },
+    server_id: {
+        type: DataTypes.INTEGER.UNSIGNED,
+        allowNull: false,
+    },
+}, {
+    sequelize: sequelizeConnection,
+    tableName: 'services',
+    timestamps: true,
+})
+
+export default Service
