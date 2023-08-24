@@ -2,14 +2,13 @@ import Database from "../../../src/database/database";
 import {Model, Sequelize} from "sequelize";
 import Configuration from "../../../src/database/models/configuration";
 import Server from "../../../src/database/models/server";
+import {createAndResetDatabaseInstance} from "../../Helper/databaseHelper";
 
 describe('Database', () => {
-    let database:Sequelize;
+    let database:Database;
 
     beforeAll(async () => {
-        database = await (new Database('sqlite::memory:')).getDatabase();
-        await database.sync({force: true})
-        await database.truncate()
+        database = await createAndResetDatabaseInstance();
     })
 
     it('should create a configuration', async () => {

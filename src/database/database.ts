@@ -1,4 +1,4 @@
-import { Sequelize } from 'sequelize'
+import {Model, ModelStatic, Sequelize} from 'sequelize'
 import fs from 'fs'
 import path from 'path'
 
@@ -24,6 +24,10 @@ export default class Database {
       console.error('Unable to connect to the database:', error)
       throw new Error('Unable to connect to the database')
     }
+  }
+
+  model(modelName: string): ModelStatic<Model<any, any>> {
+    return this.sequelize.model(modelName)
   }
 
   async getDatabase (): Promise<Sequelize> {
