@@ -5,6 +5,10 @@ export class ConfigurationManager {
     constructor(private readonly database: Database) {
     }
 
-    async getAllConfigurations(): Promise<Configuration> {
+    async getAllConfigurations(): Promise<Configuration[]> {
+        const configurationModel = this.database.model('configuration');
+
+        // @ts-ignore: Unreachable code error
+        return configurationModel.findAll();
     }
 }
