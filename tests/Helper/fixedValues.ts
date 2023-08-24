@@ -1,6 +1,6 @@
 import Configuration from "../../src/database/models/configuration";
 import Server from "../../src/database/models/server";
-import ServiceCheck from "../../src/database/models/serviceCheck";
+import ServiceCheck from "../../src/database/models/monitor";
 import Service from "../../src/database/models/service";
 
 export async function createConfiguration(name: string, chain: string): Promise<Configuration> {
