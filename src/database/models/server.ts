@@ -1,18 +1,29 @@
 'use strict';
 
-import {DataTypes, Model} from "sequelize";
+import { DataTypes, Model, Optional } from 'sequelize'
+import sequelizeConnection from "../config";
 
-export default class Server extends Model {
-  static init(sequelize:any): any {
-    return super.init({
-      name: DataTypes.STRING,
-      ip_address: DataTypes.STRING,
-      is_enabled: DataTypes.BOOLEAN,
-    }, {
-      sequelize,
-      modelName: 'server',
-    });
-  }
+interface ServerAttributes {
+    id: number,
+    name: string,
+    address: string,
+    is_enabled: boolean,
+    configuration_id: number,
+    createdAt?: Date;
+    updatedAt?: Date;
+}
+
+export interface ServerInput extends Optional<ServerAttributes, 'id'> {}
+export interface ServerOutput extends Required<ServerAttributes> {}
+
+class Server extends Model<ServerAttributes, ServerInput> implements ServerAttributes{
+    public id!: number
+    public name!: string
+    public address!: string
+    public is_enabled!: boolean
+    public configuration_id!: number
+    public readonly createdAt!: Date;
+    public readonly updatedAt!: Date;
 
   associate(models: Model[]) {
     // @ts-ignore: Unreachable code error
@@ -29,3 +40,32 @@ export default class Server extends Model {
     })
   }
 }
+
+Server.init({
+    id: {
+        type: DataTypes.INTEGER.UNSIGNED,
+        autoIncrement: true,
+        primaryKey: true,
+    },
+    name: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
+    address: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
+    is_enabled: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+    },
+    configuration_id: {
+        type: DataTypes.INTEGER.UNSIGNED,
+        allowNull: false,
+    }
+}, {
+    timestamps: true,
+    sequelize: sequelizeConnection,
+});
+
+export default Server;
