@@ -1,14 +1,12 @@
 import Database from "../../database/database";
-import {Configuration} from "../../type/configuration";
+import {getAll} from "../../database/dal/configuration";
+import {ConfigurationOutput} from "../../database/models/configuration";
 
 export class ConfigurationManager {
     constructor(private readonly database: Database) {
     }
 
-    async getAllConfigurations(): Promise<Configuration[]> {
-        const configurationModel = this.database.model('configuration');
-
-        // @ts-ignore: Unreachable code error
-        return configurationModel.findAll();
+    async getAllConfigurations(): Promise<ConfigurationOutput[]> {
+        return getAll();
     }
 }
