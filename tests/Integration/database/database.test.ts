@@ -21,6 +21,14 @@ describe('Database', () => {
         expect(configuration?.name).toBe('configuration_test');
         expect(configuration?.chain).toBe('chain_test');
 
+        // test associations
+        const monitors = await configuration?.getMonitors();
+        expect(monitors).not.toBeNull();
+        expect(monitors?.length).toBe(0);
+
+        const servers = await configuration?.getServers();
+        expect(servers).not.toBeNull();
+        expect(servers?.length).toBe(0);
     })
 
     it('should create a server', async () => {
@@ -42,6 +50,15 @@ describe('Database', () => {
         expect(server?.address).toBe('localhost');
         expect(server?.is_enabled).toBe(true);
         expect(server?.configuration_id).toBe(configuration.id);
+
+        // test associations
+        const configurationFromServer = await server?.getConfiguration();
+        expect(configurationFromServer).not.toBeNull();
+        expect(configurationFromServer?.id).toBe(configuration.id);
+
+        const services = await server?.getServices();
+        expect(services).not.toBeNull();
+        expect(services?.length).toBe(0);
     });
 
     it('should create a service', async () => {
@@ -70,9 +87,14 @@ describe('Database', () => {
         expect(service?.address).toBe('localhost:26657');
         expect(service?.is_enabled).toBe(true);
         expect(service?.server_id).toBe(server.id);
+
+        // test associations
+        const serverFromService = await service?.getServer();
+        expect(serverFromService).not.toBeNull();
+        expect(serverFromService?.id).toBe(server.id);
     })
 
-    it('should creeate a service check', async () => {
+    it('should create a monitor check', async () => {
         const configuration = await createConfiguration({
             name: 'configuration_test',
             chain: 'chain_test'
@@ -93,5 +115,10 @@ describe('Database', () => {
         expect(monitor?.is_enabled).toBe(true);
         expect(monitor?.configuration_id).toBe(configuration.id);
         expect(monitor?.configuration_object).toBe('{}');
+
+        // test associations
+        const configurationFromMonitor = await monitor?.getConfiguration();
+        expect(configurationFromMonitor).not.toBeNull();
+        expect(configurationFromMonitor?.id).toBe(configuration.id);
     });
 });

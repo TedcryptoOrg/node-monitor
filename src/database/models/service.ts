@@ -1,7 +1,8 @@
 'use strict';
 
-import { DataTypes, Model, Optional } from 'sequelize'
+import {DataTypes, HasOneGetAssociationMixin, Model, Optional} from 'sequelize'
 import sequelizeConnection from "../config";
+import Server from "./server";
 
 interface ServiceAttributes {
     id: number,
@@ -12,7 +13,9 @@ interface ServiceAttributes {
 }
 
 export interface ServiceInput extends Optional<ServiceAttributes, 'id'> {}
-export interface ServiceOutput extends Required<ServiceAttributes> {}
+export interface ServiceOutput extends Required<ServiceAttributes> {
+    getServer: HasOneGetAssociationMixin<Server>
+}
 
 class Service extends Model<ServiceAttributes, ServiceInput> implements ServiceAttributes {
     public id!: number
@@ -21,20 +24,7 @@ class Service extends Model<ServiceAttributes, ServiceInput> implements ServiceA
     public is_enabled!: boolean
     public server_id!: number
 
-  associate(models: Model[]) {
-    // @ts-ignore: Unreachable code error
-    Service.belongsTo(models.Server, {
-        foreignKey: 'server_id',
-        as: 'server',
-        onDelete: 'CASCADE'
-    })
-    // @ts-ignore: Unreachable code error
-    Service.hasMany(models.ServiceCheck, {
-        foreignKey: 'service_id',
-        as: 'serviceChecks',
-        onDelete: 'CASCADE'
-    })
-  }
+    public getServer!: HasOneGetAssociationMixin<Server>
 }
 
 Service.init({

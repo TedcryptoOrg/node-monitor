@@ -1,7 +1,17 @@
 'use strict';
 
-import { DataTypes, Model, Optional } from 'sequelize'
+import {
+    Association,
+    DataTypes,
+    ForeignKey,
+    HasManyGetAssociationsMixin,
+    HasOneGetAssociationMixin,
+    Model,
+    Optional
+} from 'sequelize'
 import sequelizeConnection from "../config";
+import Configuration from "./configuration";
+import Service from "./service";
 
 interface ServerAttributes {
     id: number,
@@ -14,31 +24,26 @@ interface ServerAttributes {
 }
 
 export interface ServerInput extends Optional<ServerAttributes, 'id'> {}
-export interface ServerOutput extends Required<ServerAttributes> {}
+export interface ServerOutput extends Required<ServerAttributes> {
+    getConfiguration: HasOneGetAssociationMixin<Configuration>
+    getServices: HasManyGetAssociationsMixin<Service>
+}
 
 class Server extends Model<ServerAttributes, ServerInput> implements ServerAttributes{
     public id!: number
     public name!: string
     public address!: string
     public is_enabled!: boolean
-    public configuration_id!: number
+    public configuration_id!: ForeignKey<Configuration['id']>
     public readonly createdAt!: Date;
     public readonly updatedAt!: Date;
 
-  associate(models: Model[]) {
-    // @ts-ignore: Unreachable code error
-    Server.belongsTo(models.Configuration, {
-        foreignKey: 'configuration_id',
-        as: 'configuration',
-        onDelete: 'CASCADE'
-    })
-    // @ts-ignore: Unreachable code error
-    Server.hasMany(models.Service, {
-        foreignKey: 'server_id',
-        as: 'services',
-        onDelete: 'CASCADE'
-    })
-  }
+    public getConfiguration!: HasOneGetAssociationMixin<Configuration>
+    public getServices!: HasManyGetAssociationsMixin<Service>
+
+    public static associations: {
+        services: Association<Server, Service>
+    }
 }
 
 Server.init({
@@ -46,6 +51,10 @@ Server.init({
         type: DataTypes.INTEGER.UNSIGNED,
         autoIncrement: true,
         primaryKey: true,
+    },
+    configuration_id: {
+        type: DataTypes.INTEGER.UNSIGNED,
+        allowNull: false,
     },
     name: {
         type: DataTypes.STRING,
@@ -58,15 +67,23 @@ Server.init({
     is_enabled: {
         type: DataTypes.BOOLEAN,
         allowNull: false,
-    },
-    configuration_id: {
-        type: DataTypes.INTEGER.UNSIGNED,
-        allowNull: false,
     }
 }, {
     timestamps: true,
     tableName: 'servers',
     sequelize: sequelizeConnection,
 });
+
+
+Server.hasMany(Service, {
+    sourceKey: 'id',
+    foreignKey: 'server_id',
+    onDelete: 'CASCADE',
+})
+Service.belongsTo(Server, {
+    foreignKey: 'server_id',
+    as: 'server',
+    onDelete: 'CASCADE'
+})
 
 export default Server;

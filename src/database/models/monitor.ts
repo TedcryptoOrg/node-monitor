@@ -1,12 +1,10 @@
 'use strict';
 
 import {
-    Association,
     DataTypes,
     ForeignKey,
-    HasManyCreateAssociationMixin, HasOneGetAssociationMixin,
+    HasOneGetAssociationMixin,
     Model,
-    NonAttribute,
     Optional
 } from 'sequelize'
 import sequelizeConnection from "../config";
@@ -45,6 +43,10 @@ Monitor.init({
         autoIncrement: true,
         primaryKey: true,
     },
+    configuration_id: {
+        type: DataTypes.INTEGER.UNSIGNED,
+        allowNull: false,
+    },
     name: {
         type: DataTypes.STRING,
         allowNull: false,
@@ -60,10 +62,6 @@ Monitor.init({
     },
     configuration_object: {
         type: DataTypes.STRING,
-        allowNull: false,
-    },
-    configuration_id: {
-        type: DataTypes.INTEGER.UNSIGNED,
         allowNull: false,
     }
 }, {
