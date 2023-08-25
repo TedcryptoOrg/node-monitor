@@ -1,33 +1,41 @@
 'use strict';
 
-import { DataTypes, Model, Optional } from 'sequelize'
+import {
+    Association,
+    DataTypes,
+    HasManyCreateAssociationMixin,
+    HasManyGetAssociationsMixin,
+    Model,
+    NonAttribute,
+    Optional
+} from 'sequelize'
 import sequelizeConnection from "../config";
+import Monitor from "./monitor";
 
 interface ConfigurationAttributes {
-    id: number,
-    name: string,
-    chain: string,
-    createdAt?: Date;
-    updatedAt?: Date;
+    id: number
+    name: string
+    chain: string
+    createdAt?: Date
+    updatedAt?: Date
 }
 
 export interface ConfigurationInput extends Optional<ConfigurationAttributes, 'id'> {}
-export interface ConfigurationOutput extends Required<ConfigurationAttributes> {}
+export interface ConfigurationOutput extends Required<ConfigurationAttributes> {
+    getMonitors: HasManyGetAssociationsMixin<Monitor>
+}
 
 class Configuration extends Model<ConfigurationAttributes, ConfigurationInput> implements ConfigurationAttributes {
   public id!: number
   public name!: string
   public chain!: string
-    public readonly createdAt!: Date;
-    public readonly updatedAt!: Date;
+  public readonly createdAt!: Date;
+  public readonly updatedAt!: Date;
 
-  static associate(models: Model[]) {
-    // @ts-ignore: Unreachable code error
-    Configuration.hasMany(models.Server, {
-        foreignKey: 'configuration_id',
-        as: 'servers',
-        onDelete: 'CASCADE'
-    })
+  public getMonitors!: HasManyGetAssociationsMixin<Monitor>
+
+  public static associations: {
+      monitors: Association<Configuration, Monitor>
   }
 }
 

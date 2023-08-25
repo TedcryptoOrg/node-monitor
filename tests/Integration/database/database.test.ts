@@ -1,84 +1,97 @@
-import Database from "../../../src/database/database";
-import {Model, Sequelize} from "sequelize";
-import Configuration from "../../../src/database/models/configuration";
-import Server from "../../../src/database/models/server";
 import {createAndResetDatabaseInstance} from "../../Helper/databaseHelper";
+import {create as createConfiguration} from "../../../src/database/dal/configuration";
+import {create as createServer} from "../../../src/database/dal/server";
+import {create as createService} from "../../../src/database/dal/service";
+import {create as createMonitor} from "../../../src/database/dal/monitor";
 
 describe('Database', () => {
-    let database:Database;
 
     beforeAll(async () => {
-        database = await createAndResetDatabaseInstance();
+        await createAndResetDatabaseInstance();
     })
 
     it('should create a configuration', async () => {
-        const configurationModel = database.model('configuration');
-
-        await configurationModel.create({
-            name: 'test',
-            chain: 'test',
-        })
-
-        const configuration: Model<Configuration>|null|any = await configurationModel.findOne({where: {name: 'test'}})
-        expect(configuration).not.toBeNull();
-        expect(configuration?.name).toBe('test');
-        expect(configuration?.chain).toBe('test');
-    })
-
-    it('should create a server', () => {
-        const serverModel = database.model('server');
-
-        serverModel.create({
-            name: 'test',
-            ip_address: '127.0.0.1'
+        const configuration = await createConfiguration({
+            name: 'configuration_test',
+            chain: 'chain_test'
         });
 
-        serverModel.findOne({where: {name: 'test'}}).then((server: Model<Server>|null|any) => {
-            expect(server).not.toBeNull();
-            expect(server?.name).toBe('test');
-            expect(server?.ip_address).toBe('127.0.0.1');
-            expect(server?.is_enabled).toBe(true);
-        })
+        expect(configuration).not.toBeNull();
+        expect(configuration?.id).toBe(1);
+        expect(configuration?.name).toBe('configuration_test');
+        expect(configuration?.chain).toBe('chain_test');
+
+    })
+
+    it('should create a server', async () => {
+        const configuration = await createConfiguration({
+            name: 'configuration_test',
+            chain: 'chain_test'
+        });
+
+        const server = await createServer({
+            name: 'server_test',
+            address: 'localhost',
+            is_enabled: true,
+            configuration_id: configuration.id
+        });
+
+        expect(server).not.toBeNull();
+        expect(server?.id).toBe(1);
+        expect(server?.name).toBe('server_test');
+        expect(server?.address).toBe('localhost');
+        expect(server?.is_enabled).toBe(true);
+        expect(server?.configuration_id).toBe(configuration.id);
     });
 
-    it('should create a service', () => {
-        const serviceModel = database.model('service');
-
-        serviceModel.create({
-            name: 'test',
-            ip_address: '127.0.0.1',
-            port: '8080'
+    it('should create a service', async () => {
+        const configuration = await createConfiguration({
+            name: 'configuration_test',
+            chain: 'chain_test'
         });
 
-        serviceModel.findOne({where: {name: 'test'}}).then((service: Model<Server>|null|any) => {
-            expect(service).not.toBeNull();
-            expect(service?.name).toBe('test');
-            expect(service?.ip_address).toBe('127.0.0.1');
-            expect(service?.port).toBe('8080');
-            expect(service?.is_enabled).toBe(true);
-        })
+        const server = await createServer({
+            name: 'server_test',
+            address: 'localhost',
+            is_enabled: true,
+            configuration_id: configuration.id
+        });
+
+        const service = await createService({
+            name: 'RPC',
+            address: 'localhost:26657',
+            is_enabled: true,
+            server_id: server.id
+        });
+
+        expect(service).not.toBeNull();
+        expect(service?.id).toBe(1);
+        expect(service?.name).toBe('RPC');
+        expect(service?.address).toBe('localhost:26657');
+        expect(service?.is_enabled).toBe(true);
+        expect(service?.server_id).toBe(server.id);
     })
 
-    it('should creeate a service check', () => {
-        const serviceCheck = database.model('serviceCheck')
+    it('should creeate a service check', async () => {
+        const configuration = await createConfiguration({
+            name: 'configuration_test',
+            chain: 'chain_test'
+        });
 
-        serviceCheck.create({
-            name: 'test',
-            type: 'http',
-            ip_address: '',
-            port: '',
+        const monitor = await createMonitor({
+            name: 'Check URL',
+            type: 'UrlChecker',
             is_enabled: true,
+            configuration_id: configuration.id,
             configuration_object: JSON.stringify({}),
         })
 
-        serviceCheck.findOne({where: {name: 'test'}}).then((serviceCheck: Model<Server>|null|any) => {
-            expect(serviceCheck).not.toBeNull();
-            expect(serviceCheck?.name).toBe('test');
-            expect(serviceCheck?.type).toBe('http');
-            expect(serviceCheck?.ip_address).toBe('');
-            expect(serviceCheck?.port).toBe('');
-            expect(serviceCheck?.is_enabled).toBe(true);
-            expect(serviceCheck?.configuration_object).toBe('{}');
-        })
+        expect(monitor).not.toBeNull();
+        expect(monitor?.id).toBe(1);
+        expect(monitor?.name).toBe('Check URL');
+        expect(monitor?.type).toBe('UrlChecker');
+        expect(monitor?.is_enabled).toBe(true);
+        expect(monitor?.configuration_id).toBe(configuration.id);
+        expect(monitor?.configuration_object).toBe('{}');
     });
 });

@@ -1,10 +1,22 @@
 import {Model, ModelStatic, Sequelize} from 'sequelize'
+import Monitor from "./models/monitor";
+import Configuration from "./models/configuration";
+import sequelizeConnection from "./config";
 
-export default class Database {
-  private readonly sequelize: Sequelize
-
-  constructor (dbDsn: string) {
-    this.sequelize = new Sequelize(dbDsn)
+class Database {
+  constructor (private readonly sequelize: Sequelize) {
+    Configuration.hasMany(Monitor, {
+      sourceKey: 'id',
+      foreignKey: 'configuration_id',
+      onDelete: 'CASCADE',
+      onUpdate: 'NO ACTION'
+    })
+    Monitor.belongsTo(Configuration, {
+        foreignKey: 'configuration_id',
+        targetKey: 'id',
+        foreignKeyConstraint: true,
+        constraints: true
+    })
   }
 
   model(modelName: string): ModelStatic<Model<any, any>> {
@@ -14,5 +26,6 @@ export default class Database {
   async getDatabase (): Promise<Sequelize> {
     return this.sequelize
   }
-
 }
+
+export const database = new Database(sequelizeConnection)

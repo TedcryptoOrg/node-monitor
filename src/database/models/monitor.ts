@@ -1,7 +1,16 @@
 'use strict';
 
-import { DataTypes, Model, Optional } from 'sequelize'
+import {
+    Association,
+    DataTypes,
+    ForeignKey,
+    HasManyCreateAssociationMixin, HasOneGetAssociationMixin,
+    Model,
+    NonAttribute,
+    Optional
+} from 'sequelize'
 import sequelizeConnection from "../config";
+import Configuration from "./configuration";
 
 interface MonitorAttributes {
     id: number,
@@ -9,30 +18,25 @@ interface MonitorAttributes {
     type: string,
     is_enabled: boolean,
     configuration_id: number,
-    configuration_object: string
+    configuration_object: string,
 }
 
 export interface MonitorInput extends Optional<MonitorAttributes, 'id'> {}
-export interface MonitorOutput extends Required<MonitorAttributes> {}
+export interface MonitorOutput extends Required<MonitorAttributes> {
+    getConfiguration: HasOneGetAssociationMixin<Configuration>
+}
 
 class Monitor extends Model<MonitorAttributes, MonitorInput> implements MonitorAttributes {
     public id!: number
     public name!: string
     public type!: string
     public is_enabled!: boolean
-    public configuration_id!: number
+    public configuration_id!: ForeignKey<Configuration['id']>
     public configuration_object!: string
     public readonly createdAt!: Date;
     public readonly updatedAt!: Date;
 
-  associate(models: Model[]) {
-    // @ts-ignore: Unreachable code error
-    ServiceCheck.belongsTo(models.Service, {
-        foreignKey: 'service_id',
-        as: 'service',
-        onDelete: 'CASCADE'
-    })
-  }
+    public getConfiguration!: HasOneGetAssociationMixin<Configuration>
 }
 
 Monitor.init({
@@ -54,14 +58,14 @@ Monitor.init({
         allowNull: false,
         defaultValue: true,
     },
-    configuration_id: {
-        type: DataTypes.INTEGER.UNSIGNED,
-        allowNull: false,
-    },
     configuration_object: {
         type: DataTypes.STRING,
         allowNull: false,
     },
+    configuration_id: {
+        type: DataTypes.INTEGER.UNSIGNED,
+        allowNull: false,
+    }
 }, {
     timestamps: true,
     tableName: 'monitors',
