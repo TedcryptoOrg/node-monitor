@@ -13,8 +13,6 @@
   "author": "Josh_Lopes<josluis.lopes@gmail.com>",
   "license": "MIT",
   "repository": "https://github.com/TedcryptoOrg/ojo-price-tracker-monitor",
-  "types": "./lib/cjs/types/index.d.ts",
-  "main": "./lib/cjs/index.js",
   "dependencies": {
     "@cosmjs/stargate": "^0.31.0",
     "@tedcryptoorg/cosmos-directory": "^0.1.0",
