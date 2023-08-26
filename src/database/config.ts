@@ -1,7 +1,5 @@
 import { Sequelize } from 'sequelize'
 
-const dbDsn = process.env.DB_DSN as string
-
-const sequelizeConnection = new Sequelize(dbDsn)
+const sequelizeConnection = new Sequelize(process.env.DB_DSN as string)
 
 export default sequelizeConnection

@@ -3,15 +3,13 @@ import sequelizeConnection from './config'
 
 class Database {
 
-  constructor (private readonly sequelize: Sequelize) {
-
-  }
+  constructor (private readonly sequelize: Sequelize) {}
 
   model (modelName: string): ModelStatic<Model<any, any>> {
     return this.sequelize.model(modelName)
   }
 
-  async getDatabase (): Promise<Sequelize> {
+  getDatabase (): Sequelize {
     return this.sequelize
   }
 }
