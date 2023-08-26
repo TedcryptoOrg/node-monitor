@@ -15,6 +15,7 @@ interface ConfigurationAttributes {
     id: number
     name: string
     chain: string
+    is_enabled: boolean
     createdAt?: Date
     updatedAt?: Date
 }
@@ -29,6 +30,7 @@ class Configuration extends Model<ConfigurationAttributes, ConfigurationInput> i
   public id!: number
   public name!: string
   public chain!: string
+    public is_enabled!: boolean
   public readonly createdAt!: Date;
   public readonly updatedAt!: Date;
 
@@ -55,6 +57,11 @@ Configuration.init({
     type: DataTypes.STRING,
     allowNull: false,
   },
+    is_enabled: {
+      type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: true,
+    }
 }, {
   timestamps: true,
     tableName: 'configurations',

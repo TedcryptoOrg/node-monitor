@@ -11,5 +11,3 @@ export const RPC_CONFIGURATION: RpcConfiguration = {
 export const REST_CONFIGURATION: RestConfiguration = {
     address: 'https://rest.cosmos.directory/osmosis',
 }
-
-export const DATABASE_DSN: string = 'mariadb://monitor:monitor@database:3306/ted_node_monitor'

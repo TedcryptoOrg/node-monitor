@@ -13,13 +13,15 @@ describe('Database', () => {
     it('should create a configuration', async () => {
         const configuration = await createConfiguration({
             name: 'configuration_test',
-            chain: 'chain_test'
+            chain: 'chain_test',
+            is_enabled: true
         });
 
         expect(configuration).not.toBeNull();
         expect(configuration?.id).toBe(1);
         expect(configuration?.name).toBe('configuration_test');
         expect(configuration?.chain).toBe('chain_test');
+        expect(configuration?.is_enabled).toBe(true);
 
         // test associations
         const monitors = await configuration?.getMonitors();
@@ -34,7 +36,8 @@ describe('Database', () => {
     it('should create a server', async () => {
         const configuration = await createConfiguration({
             name: 'configuration_test',
-            chain: 'chain_test'
+            chain: 'chain_test',
+            is_enabled: true
         });
 
         const server = await createServer({
@@ -64,7 +67,8 @@ describe('Database', () => {
     it('should create a service', async () => {
         const configuration = await createConfiguration({
             name: 'configuration_test',
-            chain: 'chain_test'
+            chain: 'chain_test',
+            is_enabled: true
         });
 
         const server = await createServer({
@@ -97,7 +101,8 @@ describe('Database', () => {
     it('should create a monitor check', async () => {
         const configuration = await createConfiguration({
             name: 'configuration_test',
-            chain: 'chain_test'
+            chain: 'chain_test',
+            is_enabled: true
         });
 
         const monitor = await createMonitor({

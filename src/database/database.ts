@@ -2,7 +2,6 @@ import { type Model, type ModelStatic, type Sequelize } from 'sequelize'
 import sequelizeConnection from './config'
 
 class Database {
-
   constructor (private readonly sequelize: Sequelize) {}
 
   model (modelName: string): ModelStatic<Model<any, any>> {
