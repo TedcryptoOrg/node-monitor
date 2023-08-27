@@ -1,4 +1,5 @@
 .DEFAULT_GOAL := help
+.PHONY: tests
 .SILENT:
 
 include .env
@@ -35,6 +36,24 @@ help:
 
 SEQUELIZE_IMAGE ?= "calipsaci/sequelize-cli"
 SEQUELIZE_RUN ?= docker run --rm -it --network=node-monitor_default --env-file .env -v .:/app -w /app $(SEQUELIZE_IMAGE)
+DOCKER_COMPOSE_EXEC ?= docker compose exec
+DOCKER_NODE_COMPOSE_EXEC ?= docker compose exec node-app
+
+## [Docker] Start containers
+up:
+	docker compose up -d
+
+## [Docker] Stop containers
+stop:
+	docker compose stop
+
+## [NPM] Install packages
+install:
+	$(DOCKER_NODE_COMPOSE_EXEC) npm install
+
+## [Tests] Run tests
+tests:
+	$(DOCKER_NODE_COMPOSE_EXEC) npm test --detectOpenHandles
 
 ## [Database] Create a empty migration with name (NAME=name-migration make db-create-migration)
 db-create-migration:

@@ -19,12 +19,13 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - uses: actions/setup-node@v3
+      - name: "Docker compose"
+        uses: isbang/compose-action@v1.5.1
         with:
-          node-version: lts/*
+          compose-file: docker-compose.yaml
 
       - name: Install modules
-        run: npm install
+        run: make install
 
       - name: Run tests
-        run: npm test
+        run: make tests
