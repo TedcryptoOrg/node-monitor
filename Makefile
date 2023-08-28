@@ -51,6 +51,10 @@ stop:
 install:
 	$(DOCKER_NODE_COMPOSE_EXEC) npm install
 
+## [NPM] Run npm command (COMMAND=command make npm-command)
+npm-command:
+	$(DOCKER_NODE_COMPOSE_EXEC) npm $(COMMAND)
+
 ## [Tests] Run tests
 tests:
 	$(DOCKER_NODE_COMPOSE_EXEC) npm test --detectOpenHandles

@@ -32,4 +32,4 @@ jobs:
           compose-file: docker-compose.yaml
 
       - name: Run tests
-        run: make tests
+        run: COMMAND="ci" make npm-command
