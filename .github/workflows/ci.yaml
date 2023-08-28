@@ -26,5 +26,10 @@ jobs:
       - name: Install modules
         run: npm install
 
+      - name: "Docker compose"
+        uses: isbang/compose-action@v1.5.1
+        with:
+          compose-file: docker-compose.yaml
+
       - name: Run tests
         run: npm test

@@ -1,0 +1,25 @@
+version: '3'
+services:
+  database:
+    image: mariadb:11.0.3
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: ted_node_monitor
+      MYSQL_USER: monitor
+      MYSQL_PASSWORD: monitor
+    ports:
+      - "3306:3306"
+    volumes:
+      - mariadb_data:/var/lib/mysql
+
+  node-app:
+    image: node:18.17.1
+    working_dir: /app
+    volumes:
+      - ./:/app
+    command: ["npm", "start"]
+    depends_on:
+      - database
+
+volumes:
+  mariadb_data:
