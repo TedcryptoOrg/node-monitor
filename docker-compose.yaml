@@ -1,7 +1,7 @@
 version: '3'
 services:
   database:
-    image: mariadb:11.0.3
+    image: mariadb:11.1.2
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: ted_node_monitor
@@ -13,7 +13,7 @@ services:
       - mariadb_data:/var/lib/mysql
 
   node-app:
-    image: node:18.17.1
+    image: node:20.7.0
     working_dir: /app
     volumes:
       - ./:/app
