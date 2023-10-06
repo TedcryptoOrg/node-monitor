@@ -7,3 +7,11 @@ export const create = async (serverInput: ServerInput): Promise<ServerOutput> =>
 export const getAll = async (): Promise<ServerOutput[]> => {
     return await Server.findAll()
 }
+
+export const getByConfigurationId = async (configurationId: number): Promise<ServerOutput[]> => {
+    return await Server.findAll({
+        where: {
+            configuration_id: configurationId
+        }
+    })
+}

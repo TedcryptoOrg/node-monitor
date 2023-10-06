@@ -78,6 +78,10 @@ module.exports = {
         type: DataTypes.STRING,
         allowNull: false,
       },
+      type: {
+        type: DataTypes.STRING,
+        allowNull: false,
+      },
       address: {
         type: DataTypes.STRING,
         allowNull: false,
@@ -96,7 +100,7 @@ module.exports = {
         allowNull: false,
       }
     })
-    await queryInterface.createTable('monitor', {
+    await queryInterface.createTable('monitors', {
       id: {
         type: DataTypes.INTEGER.UNSIGNED,
         autoIncrement: true,
@@ -156,10 +160,10 @@ module.exports = {
           onUpdate: 'cascade'
         }
     );
-    await queryInterface.addConstraint('monitor', {
+    await queryInterface.addConstraint('monitors', {
           fields: ['configuration_id'],
           type: 'foreign key',
-          name: 'fk_monitor_configuration_id',
+          name: 'fk_monitors_configuration_id',
           references: {
             table: 'configurations',
             field: 'id'
@@ -171,7 +175,7 @@ module.exports = {
   },
 
   async down (queryInterface, Sequelize) {
-    await queryInterface.dropTable('monitor');
+    await queryInterface.dropTable('monitors');
     await queryInterface.dropTable('services');
     await queryInterface.dropTable('servers');
     await queryInterface.dropTable('configurations');

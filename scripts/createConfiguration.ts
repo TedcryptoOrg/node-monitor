@@ -1,5 +1,5 @@
 import * as readline from 'readline'
-import { create as createConfiguration } from '../src/database/dal/configuration'
+import { create as createConfiguration, getAll as getAllConfigurations } from '../src/database/dal/configuration'
 import { create as createServerModel } from '../src/database/dal/server'
 import { create as createServiceModel } from '../src/database/dal/service'
 import { create as createMonitorModel } from '../src/database/dal/monitor'
@@ -11,19 +11,81 @@ import { type NodeExporterDiskSpaceUsageConfiguration } from '../src/type/config
 import { type PriceFeederMissCountConfiguration } from '../src/type/config/priceFeederMissCountConfiguration'
 import { type BlockAlertConfiguration } from '../src/type/config/blockAlertConfiguration'
 import { type SignMissCheckConfiguration } from '../src/type/config/signMissCheckConfiguration'
+import { SERVICE_TYPES } from '../src/database/models/service'
 
-async function createConfigurationFile (): Promise<void> {
-  const rl = readline.createInterface({
-    input: process.stdin,
-    output: process.stdout
+require('dotenv').config({ path: '.env', override: false })
+
+const rl = readline.createInterface({
+  input: process.stdin,
+  output: process.stdout
+})
+
+async function menu (): Promise<void> {
+  const choice = await askChoice(rl, 'What do you want to do: ', {
+    0: 'Show existing configurations',
+    1: 'Create configuration'
   })
+  switch (choice) {
+    case '0': {
+      await show()
+      break
+    }
+    case '1': {
+      await createNew()
+      break
+    }
+  }
+}
 
+async function show (): Promise<void> {
+  try {
+    const configurations = await getAllConfigurations()
+    if (configurations.length === 0) {
+      console.log('No configurations found')
+      return
+    }
+    let choices: Record<string, string> = {}
+    for (const configuration of configurations) {
+      choices[configuration.id] = configuration.name
+    }
+
+    const configurationId = await askChoice(rl, 'What configuration do you want to show details: ', choices)
+
+    const selectedConfiguration = configurations.find((configuration) => configuration.id === Number(configurationId))
+    if (selectedConfiguration === undefined) {
+      throw new Error('Invalid configuration id')
+    }
+
+    if (await askConfirmation(rl, 'Do you want to show/create servers for this configuration?')) {
+      const servers = await selectedConfiguration.getServers()
+      choices = {}
+      for (const server of servers) {
+        choices[server.id] = server.name
+      }
+
+      choices.new = 'Create new server'
+
+      const serverId = await askChoice(rl, 'What server do you want to update: ', choices)
+      if (serverId === 'new') {
+        await createServer(rl, selectedConfiguration)
+      }
+    }
+  } catch (error) {
+    console.error('An error occurred while updating configurations:', error)
+  } finally {
+    rl.close()
+  }
+}
+
+async function createNew (): Promise<void> {
   try {
     const configuration = await createConfiguration({
       name: await askQuestion(rl, 'Configuration name: '),
       chain: await askQuestion(rl, 'Chain name, e.g.: comoshub, osmosis: '),
       is_enabled: true
     })
+
+    console.log(`Configuration ${configuration.name} created! Id: ${configuration.id}`)
 
     await createServer(rl, configuration)
     await createMonitors(rl, configuration)
@@ -38,7 +100,7 @@ async function createServer (rl: readline.Interface, configuration: Configuratio
   while (await askConfirmation(rl, 'Do you wanna create a server for this configuration? [Y/N]: ')) {
     const server = await createServerModel({
       name: await askQuestion(rl, 'Server name, e.g.: Node 1 (1.1.1.1): '),
-      address: await askQuestion(rl, 'Address (including protocol and port), e.g.: htto://localhost:1317: '),
+      address: await askQuestion(rl, 'Ip of the server, e.g.: 127.0.0.1: '),
       is_enabled: true,
       configuration_id: configuration.id
     })
@@ -52,22 +114,22 @@ async function createServer (rl: readline.Interface, configuration: Configuratio
 async function createServices (rl: readline.Interface, server: ServerOutput): Promise<void> {
   while (await askConfirmation(rl, 'Do you want to create a service that you run on this server? [Y/N]: ')) {
     rl.setPrompt(server.address)
-    const address: string = await askQuestion(rl, 'Address to access service, e.g.: htto://localhost:1317: ')
+    const address: string = await askQuestion(rl, 'Address to access service, e.g.: http://localhost:1317: ')
     const service = await createServiceModel({
       name: await askQuestion(rl, 'Name of the service, e.g.: REST/RPC/Prometheus/NodeExporter: '),
+      type: await askChoice(rl, 'Type of the service: ', SERVICE_TYPES),
       address,
       is_enabled: true,
       server_id: server.id
     })
 
-    console.log('Service created!')
+    console.log(`Service ${service.name} created! Id: ${service.id}`)
 
     if (await askConfirmation(rl, 'Do you want to monitor this service aliveness? [Y/N]: ')) {
       rl.setPrompt('Check ' + service.name)
-      const monitorName: string = await askQuestion(rl, 'Name for this monitor, e.g.: Service X')
 
-      await createMonitorModel({
-        name: monitorName,
+      const monitor = await createMonitorModel({
+        name: service.name,
         is_enabled: true,
         type: monitorTypes.urlCheck.name,
         configuration_id: server.configuration_id,
@@ -76,7 +138,7 @@ async function createServices (rl: readline.Interface, server: ServerOutput): Pr
         })
       })
 
-      console.log('Monitor created!')
+      console.log(`Monitor ${monitor.name} created! Id: ${monitor.id}`)
     }
   }
 }
@@ -86,18 +148,19 @@ async function createMonitors (rl: readline.Interface, configuration: Configurat
   const typeKeys = typeValues.map((value) => {
     return value.name
   })
-  while (await askConfirmation(rl, 'Do you want to create a custom monitor for this configuration?')) {
-    rl.write('Existing types: \n')
-    typeValues.forEach((value, index) => {
-      rl.write(`[${index}] ${value.description}`)
-    })
-    const typeIdx: number = await askQuestion(rl, 'What type is this monitor: ')
+  const choices: Record<string, string> = {}
+  typeKeys.forEach((typeKey, index) => {
+    choices[typeKey] = typeValues[index].description
+  })
 
+  while (await askConfirmation(rl, 'Do you want to create a custom monitor for this configuration? [Y/N]: ')) {
+    const typeIdx = await askChoice(rl, 'What type is this monitor: ', choices)
+    const monitorType = typeKeys[Number(typeIdx)]
     const monitorName: string = await askQuestion(rl, 'Monitor name: ')
 
     let monitorConfigurationJson: string
 
-    switch (typeKeys[typeIdx]) {
+    switch (monitorType) {
       case monitorTypes.urlCheck.name: {
         const configuration: UrlCheckConfiguration = {
           name: monitorName,
@@ -162,7 +225,7 @@ async function createMonitors (rl: readline.Interface, configuration: Configurat
 
         break
       }
-      default: throw new Error(`Invalid monitor type "${typeKeys[typeIdx]}"`)
+      default: throw new Error(`Invalid monitor type "${monitorType}"`)
     }
 
     await createMonitorModel({
@@ -175,6 +238,25 @@ async function createMonitors (rl: readline.Interface, configuration: Configurat
 
     console.log('Monitor created!')
   }
+}
+
+async function askChoice (rl: readline.Interface, question: string, choices: object, _default?: string): Promise<string> {
+  let choicesMessage = 'Choices: \n'
+  const choiceKeys = Object.keys(choices)
+  const choiceValues = Object.values(choices)
+  choiceValues.forEach((value: any, index: number) => {
+    choicesMessage += `[${index}] ${value}\n`
+  })
+
+  let choiceId: undefined | number
+
+  while (choiceId === undefined || !Object.prototype.hasOwnProperty.call(choiceKeys, choiceId)) {
+    rl.write((choicesMessage))
+
+    choiceId = await askQuestion(rl, question)
+  }
+
+  return choiceKeys[choiceId]
 }
 
 async function askQuestion<T> (rl: readline.Interface, question: string, parseFn?: (value: string) => T, _default?: T): Promise<T> {
@@ -202,4 +284,4 @@ async function askConfirmation (rl: readline.Interface, question: string): Promi
   })
 }
 
-createConfigurationFile()
+menu()

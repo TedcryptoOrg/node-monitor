@@ -3,6 +3,7 @@ import {create as createConfiguration} from "../../../src/database/dal/configura
 import {create as createServer} from "../../../src/database/dal/server";
 import {create as createService} from "../../../src/database/dal/service";
 import {create as createMonitor} from "../../../src/database/dal/monitor";
+import {SERVICE_TYPES} from "../../../src/database/models/service";
 
 describe('Database', () => {
 
@@ -81,6 +82,7 @@ describe('Database', () => {
         const service = await createService({
             name: 'RPC',
             address: 'localhost:26657',
+            type: SERVICE_TYPES.RPC,
             is_enabled: true,
             server_id: server.id
         });

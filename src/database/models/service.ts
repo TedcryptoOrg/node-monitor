@@ -4,11 +4,19 @@ import {DataTypes, HasOneGetAssociationMixin, Model, Optional} from 'sequelize'
 import sequelizeConnection from "../config";
 import Server from "./server";
 
+export const SERVICE_TYPES = {
+    RPC: 'RPC',
+    REST: 'REST',
+    PROMETHEUS: 'prometheus',
+    NODE_EXPORTER: 'node_exporter',
+}
+
 interface ServiceAttributes {
     id: number,
     name: string,
     address: string,
     is_enabled: boolean,
+    type: string,
     server_id: number,
 }
 
@@ -20,6 +28,7 @@ export interface ServiceOutput extends Required<ServiceAttributes> {
 class Service extends Model<ServiceAttributes, ServiceInput> implements ServiceAttributes {
     public id!: number
     public name!: string
+    public type!: string
     public address!: string
     public is_enabled!: boolean
     public server_id!: number
@@ -34,6 +43,10 @@ Service.init({
         primaryKey: true,
     },
     name: {
+        type: DataTypes.STRING,
+        allowNull: false,
+    },
+    type: {
         type: DataTypes.STRING,
         allowNull: false,
     },
