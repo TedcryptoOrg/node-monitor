@@ -1,5 +1,6 @@
 import { type MonitorCheck } from './monitorCheck'
 import { Alerter } from '../../Alerter/alerter'
+import {UrlCheckConfiguration} from "../../type/config/urlCheckConfiguration";
 
 /**
  * Checks that port is alive and well
@@ -9,8 +10,7 @@ export class UrlCheck implements MonitorCheck {
 
   constructor (
     private readonly name: string,
-    private readonly serviceName: string,
-    private readonly address: string,
+    private readonly configuration: UrlCheckConfiguration,
     private readonly alertChannels: any
   ) {
     this.alerter = new Alerter(
@@ -26,15 +26,15 @@ export class UrlCheck implements MonitorCheck {
     const minutesSinceDown = 0
 
     while (true) {
-      console.log(`[${this.name}][${this.serviceName}] Running url check...`)
-      const isAccessible = await this.isUrlAccessible(this.address)
+      console.log(`[${this.name}][${this.configuration.name}] Running url check...`)
+      const isAccessible = await this.isUrlAccessible(this.configuration.address)
       if (!isAccessible) {
-        console.log(`[${this.name}][${this.serviceName}] Is not accessible. Sending alerts...`)
-        await this.alerter.alert(`🚨 [${this.name}][${this.serviceName}] Is not accessible. Minutes since down: ${minutesSinceDown}`)
+        console.log(`[${this.name}][${this.configuration.name}] Is not accessible. Sending alerts...`)
+        await this.alerter.alert(`🚨 [${this.name}][${this.configuration.name}] Is not accessible. Minutes since down: ${minutesSinceDown}`)
       } else {
-        console.log(`[${this.name}][${this.serviceName}] Is accessible.`)
+        console.log(`[${this.name}][${this.configuration.name}] Is accessible.`)
       }
-      console.log(`[${this.name}][${this.serviceName}] Waiting ${checkMin} minutes before checking again...`)
+      console.log(`[${this.name}][${this.configuration.name}] Waiting ${checkMin} minutes before checking again...`)
       await new Promise((resolve) => setTimeout(resolve, 60000 * checkMin))
     }
   }

@@ -1,27 +1,21 @@
 import {AlertChannel} from "../../../src/AlertChannel/alertChannel";
-import {PriceFeeder} from "../../../src/monitor/priceFeeder";
-import {Configuration} from "../../../src/type/configuration";
 import {MissCounter} from "../../../src/monitor/checkers/priceFeeder/missCounter";
+import {PriceFeederMissCountConfiguration} from "../../../src/type/config/priceFeederMissCountConfiguration";
 
 describe('PriceFeeder', () => {
-    let priceFeeder: PriceFeeder;
-    const mockConfig: Configuration = {
-        chainName: 'kujira',
-        valoperAddress: 'kujiravaloper1excmz0f7k9z3ydchv8t2pde8v45hjl2x3ud5q3',
-        priceFeeder: {
-            miss_tolerance: 5,
-            miss_tolerance_period_seconds: 5,
-            sleep_duration_seconds: 5,
-            alert_sleep_duration_minutes: 5,
-        },
-        rest: {
-            address: 'http://localhost:1317',
-        }
+    let priceFeederMissCounter: MissCounter;
+    const mockConfig: PriceFeederMissCountConfiguration = {
+        valoper_address: 'kujiravaloper1excmz0f7k9z3ydchv8t2pde8v45hjl2x3ud5q3',
+        miss_tolerance: 5,
+        miss_tolerance_period_seconds: 5,
+        sleep_duration_seconds: 5,
+        alert_sleep_duration_minutes: 5,
+        rest_address: 'http://localhost:1317',
     };
     const alertChannels: AlertChannel[] = [];
 
     beforeEach(() => {
-        priceFeeder = new PriceFeeder('kujira', mockConfig, alertChannels);
+        priceFeederMissCounter = new MissCounter('kujira', mockConfig, alertChannels);
     });
 
     describe('start', () => {
@@ -29,7 +23,7 @@ describe('PriceFeeder', () => {
             const mockMissCounter = { check: jest.fn() };
             jest.spyOn(MissCounter.prototype, 'check').mockImplementation(mockMissCounter.check);
 
-            await priceFeeder.start();
+            await priceFeederMissCounter.check();
 
             expect(mockMissCounter.check).toHaveBeenCalledTimes(1);
         });

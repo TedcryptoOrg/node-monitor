@@ -1,25 +1,21 @@
 import {MonitorCheck} from "./monitorCheck";
 import {Alerter} from "../../Alerter/alerter";
 import {RpcClient} from "../../client/rpcClient";
-import {RpcConfiguration} from "../../type/rpcConfiguration";
 import {Chain, ChainDirectory} from "@tedcryptoorg/cosmos-directory";
-import {BlockAlertConfiguration} from "../../type/blockAlertConfiguration";
+import {BlockAlertConfiguration} from "../../type/config/blockAlertConfiguration";
 
 const chainDirectory = new ChainDirectory(false);
 
 export class BlockCheck implements MonitorCheck {
     private readonly alerter: Alerter
-    private readonly rpcClient: RpcClient
 
     constructor (
         private readonly name: string,
         private readonly chainName: string,
-        private readonly rpcConfiguration: RpcConfiguration,
+        private readonly rpcClient: RpcClient,
         private readonly blockAlertConfiguration: BlockAlertConfiguration,
         private readonly alertChannels: any
     ) {
-        this.rpcClient = new RpcClient(this.rpcConfiguration)
-
         this.alerter = new Alerter(
             this.name,
             'BlockCheck',
@@ -29,7 +25,6 @@ export class BlockCheck implements MonitorCheck {
     }
 
     async check(): Promise<void> {
-        const chain = await this.getChain(this.chainName)
         let missedBlocks = 0
         let previousTimestamp = new Date().getTime()
         let lastBlockHeight = 0
