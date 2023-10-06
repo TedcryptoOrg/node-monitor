@@ -1,9 +1,16 @@
-import * as fs from 'fs'
 import * as readline from 'readline'
-import * as yaml from 'yaml'
-import { type Configuration } from '../src/type/configuration'
-
-const VALID_PROVIDERS = ['kujira', 'ojo']
+import {create as createConfiguration} from "../src/database/dal/configuration";
+import {create as createServerModel} from "../src/database/dal/server";
+import {create as createServiceModel} from "../src/database/dal/service";
+import {create as createMonitorModel} from "../src/database/dal/monitor";
+import {ConfigurationOutput} from "../src/database/models/configuration";
+import {ServerOutput} from "../src/database/models/server";
+import {monitorTypes} from "../src/database/models/monitor";
+import {UrlCheckConfiguration} from "../src/type/config/urlCheckConfiguration";
+import {NodeExporterDiskSpaceUsageConfiguration} from "../src/type/config/nodeExporterDiskSpaceUsageConfiguration";
+import {PriceFeederMissCountConfiguration} from "../src/type/config/priceFeederMissCountConfiguration";
+import {BlockAlertConfiguration} from "../src/type/config/blockAlertConfiguration";
+import {SignMissCheckConfiguration} from "../src/type/config/signMissCheckConfiguration";
 
 async function createConfigurationFile (): Promise<void> {
   const rl = readline.createInterface({
@@ -12,123 +19,158 @@ async function createConfigurationFile (): Promise<void> {
   })
 
   try {
-    const configurationName = await askQuestion(rl, 'Configuration name: ')
+    const configuration = await createConfiguration({
+      name: await askQuestion(rl, 'Configuration name: '),
+      chain: await askQuestion(rl, 'Chain name, e.g.: comoshub, osmosis: '),
+      is_enabled: true
+    });
 
-    const configuration: Configuration = {
-      chainName: await askQuestion(rl, 'Chain name, e.g.: comoshub, osmosis: '),
-      alerts: {},
-      valoperAddress: await askQuestion(rl, 'Your valoper address (leave empty if you don\'t want to monitor): ', (value: string) => {
-        if (value === undefined || value.length === 0) {
-          return undefined
-        }
-        return value
-      })
-    }
-
-    // Create RPC configuration
-    if (await askConfirmation(rl, `Do you want to monitor RPC for ${configurationName}? (Y/N): `)) {
-      configuration.rpc = {
-        address: await askQuestion(rl, 'RPC address[default: http://localhost:26657]: ', undefined, 'http://localhost:26657')
-      }
-    }
-
-    // Create REST configuration
-    if (await askConfirmation(rl, `Do you want to monitor REST for ${configurationName}? (Y/N): `)) {
-      configuration.rest = {
-        address: await askQuestion(rl, 'REST address[default: http://localhost:1317]: ', undefined, 'http://localhost:1317')
-      }
-    }
-
-    // Create Prometheus configuration
-    if (await askConfirmation(rl, `Do you want to monitor Prometheus for ${configurationName}? (Y/N): `)) {
-      configuration.prometheus = {
-        address: await askQuestion(rl, 'Prometheus address[default: http://localhost:26660]: ', undefined, 'http://localhost:26660')
-      }
-    }
-
-    // Create node exporter configuration
-    if (await askConfirmation(rl, `Do you want to monitor node exporter for ${configurationName}? (Y/N): `)) {
-      configuration.node_exporter = {
-        address: await askQuestion(rl, 'Node exporter address[default: http://localhost:9100]: ', undefined, 'http://localhost:9100'),
-        enabled: true,
-        alerts: {}
-      }
-      if (await askConfirmation(rl, `Do you want to monitor disk space for ${configurationName}? (Y/N): `)) {
-        configuration.node_exporter.alerts = {
-          disk_space: {
-            enabled: true,
-            threshold: await askQuestion(rl, 'Disk space threshold (in %)[default: 80]: ', parseInt, 80),
-            check_interval_seconds: await askQuestion(rl, 'Frequency to check (in seconds)[default: 60]: ', parseInt, 60),
-            alert_sleep_duration_minutes: await askQuestion(rl, 'Don\'t alert again before x minutes [default: 10]: ', parseInt, 10)
-          }
-        }
-      }
-    }
-
-    if (configuration.alerts !== undefined && (configuration.rpc !== undefined || configuration.rest !== undefined)) {
-      // Create block alert configuration
-      if (await askConfirmation(rl, `Do you want to monitor block for ${configurationName}? (Y/N): `)) {
-        configuration.alerts.block = {
-          miss_tolerance: await askQuestion(rl, 'Number of blocks before alert (miss tolerance)[default: 5]: ', parseInt, 5),
-          miss_tolerance_period_seconds: await askQuestion(rl, 'Seconds before resetting the counter (miss tolerance period)[default: 3600s (1h)]: ', parseInt, 3600),
-          sleep_duration_seconds: await askQuestion(rl, 'Frequency to check (in seconds)[default: 30]: ', parseInt, 30),
-          alert_sleep_duration_minutes: await askQuestion(rl, 'Don\'t alert again before x minutes [default: 5]: ', parseInt, 5)
-        }
-      }
-
-      // Create Sign miss block configuration
-      if (configuration.valoperAddress && await askConfirmation(rl, `Do you want to configure block sign miss for ${configurationName}? (Y/N): `)) {
-        configuration.alerts.sign_blocks = {
-          miss_tolerance: await askQuestion(rl, 'Number of blocks before alert (miss tolerance)[default: 5]: ', parseInt, 5),
-          miss_tolerance_period_seconds: await askQuestion(rl, 'Seconds before resetting the counter (miss tolerance period)[default: 3600s (1h)]: ', parseInt, 3600),
-          sleep_duration_seconds: await askQuestion(rl, 'Frequency to check (in seconds)[default: 30]: ', parseInt, 30),
-          alert_sleep_duration_minutes: await askQuestion(rl, 'Don\'t alert again before x minutes [default: 5]: ', parseInt, 5)
-        }
-      }
-    }
-
-    // Create price feeder configuration
-    if (VALID_PROVIDERS.includes(configuration.chainName) && await askConfirmation(rl, `Do you want to monitor oracle for ${configurationName}? (Y/N): `)) {
-      if (configuration.valoperAddress === undefined) {
-        throw new Error('You need to provide a valoper address to monitor oracle')
-      }
-      if (configuration.rest === undefined) {
-        throw new Error('You need to provide a rest endpoint to monitor oracle')
-      }
-
-      configuration.priceFeeder = {
-        miss_tolerance: await askQuestion(rl, 'Number of blocks before alert (miss tolerance)[default: 5]: ', parseFloat, 5),
-        miss_tolerance_period_seconds: await askQuestion(rl, 'Seconds before resetting the counter (miss tolerance period)[default: 3600s (1h)]: ', parseInt, 3600),
-        sleep_duration_seconds: await askQuestion(rl, 'Frequency to check (in seconds)[default: 5]: ', parseInt, 5),
-        alert_sleep_duration_minutes: await askQuestion(rl, 'Don\'t alert again before x minutes [default: 5]: ', parseInt, 5)
-      }
-    }
-
-    console.log('\nConfiguration:')
-    console.log(configuration)
-
-    if (await askConfirmation(rl, 'Is the configuration correct? (Y/N): ')) {
-      const yamlContent = yaml.stringify(configuration)
-      const filePath = `config/${configurationName}.yaml`
-      if (fs.existsSync(filePath)) {
-        if (await askConfirmation(rl, 'Configuration file already exists. Do you want to overwrite it? (Y/N): ')) {
-          fs.rmSync(filePath)
-        } else {
-          console.log('Configuration aborted')
-          return
-        }
-      }
-
-      fs.writeFileSync(filePath, yamlContent)
-
-      console.log(`Configuration file saved: ${filePath}`)
-    } else {
-      console.log('Configuration not saved')
-    }
+    await createServer(rl, configuration);
+    await createMonitors(rl, configuration);
   } catch (error) {
-    console.error('An error occurred while creating the configuration.ts file:', error)
+    console.error('An error occurred while creating the configuration:', error)
   } finally {
     rl.close()
+  }
+}
+
+async function createServer(rl: readline.Interface, configuration: ConfigurationOutput): Promise<void> {
+  while (await askConfirmation(rl, 'Do you wanna create a server for this configuration? [Y/N]: ')) {
+    const server = await createServerModel({
+      name: await askQuestion(rl, 'Server name, e.g.: Node 1 (1.1.1.1): '),
+      address: await askQuestion(rl, 'Address (including protocol and port), e.g.: htto://localhost:1317: '),
+      is_enabled: true,
+      configuration_id: configuration.id
+    })
+
+    console.log('Server created!');
+
+    await createServices(rl, server);
+  }
+}
+
+async function createServices(rl: readline.Interface, server: ServerOutput): Promise<void>
+{
+  while (await askConfirmation(rl, 'Do you want to create a service that you run on this server? [Y/N]: ')) {
+    rl.setPrompt(server.address);
+    const address: string = await askQuestion(rl, 'Address to access service, e.g.: htto://localhost:1317: ');
+    const service = await createServiceModel({
+      name: await askQuestion(rl, 'Name of the service, e.g.: REST/RPC/Prometheus/NodeExporter: '),
+      address: address,
+      is_enabled: true,
+      server_id: server.id
+    })
+
+    console.log('Service created!');
+
+    if (await askConfirmation(rl, 'Do you want to monitor this service aliveness? [Y/N]: ')) {
+      rl.setPrompt('Check ' + service.name);
+      const monitorName: string = await askQuestion(rl, 'Name for this monitor, e.g.: Service X');
+
+      await createMonitorModel({
+        name: monitorName,
+        is_enabled: true,
+        type: monitorTypes.urlCheck.name,
+        configuration_id: server.configuration_id,
+        configuration_object: JSON.stringify({
+          address: service.address
+        })
+      })
+
+      console.log('Monitor created!');
+    }
+  }
+}
+
+async function createMonitors(rl: readline.Interface, configuration: ConfigurationOutput): Promise<void>
+{
+  const typeValues = Object.values(monitorTypes);
+  const typeKeys = typeValues.map((value) => {
+    return value.name;
+  });
+  while (await askConfirmation(rl, 'Do you want to create a custom monitor for this configuration?')) {
+    rl.write('Existing types: \n');
+    typeValues.forEach((value, index) => {
+      rl.write(`[${index}] ${value.description}`)
+    });
+    const typeIdx: number = await askQuestion(rl, 'What type is this monitor: ')
+
+    const monitorName: string = await askQuestion(rl, 'Monitor name: ');
+
+    let monitorConfigurationJson: string;
+
+    switch (typeKeys[typeIdx]) {
+      case monitorTypes.urlCheck.name:
+        const urlCheckConfiguration: UrlCheckConfiguration = {
+          name: monitorName,
+          address: await askQuestion(rl, 'Full address (including protocol and port), e.g.: http://localhost:1317: ')
+        }
+
+        monitorConfigurationJson = JSON.stringify(urlCheckConfiguration);
+
+        break;
+      case monitorTypes.blockCheck.name:
+        const blockAlertConfiguration: BlockAlertConfiguration = {
+          miss_tolerance: await askQuestion(rl, 'Number of blocks before alert (miss tolerance)[default: 5]: ', parseInt, 5),
+          miss_tolerance_period_seconds: await askQuestion(rl, 'Seconds before resetting the counter (miss tolerance period)[default: 3600s (1h)]: ', parseInt, 3600),
+          sleep_duration_seconds: await askQuestion(rl, 'Frequency to check (in seconds)[default: 30]: ', parseInt, 30),
+          alert_sleep_duration_minutes: await askQuestion(rl, 'Don\'t alert again before x minutes [default: 5]: ', parseInt, 5),
+          rpc: await askQuestion(rl, 'Full address (including protocol and port), we need REST or RPC to work... [default: http://localhost:26657]: ', undefined, 'http://localhost:26657'),
+        }
+
+        monitorConfigurationJson = JSON.stringify(blockAlertConfiguration);
+
+        break;
+      case monitorTypes.signMissCheck.name:
+        const signMissCheckConfiguration: SignMissCheckConfiguration = {
+          miss_tolerance: await askQuestion(rl, 'Number of blocks before alert (miss tolerance)[default: 5]: ', parseInt, 5),
+          miss_tolerance_period_seconds: await askQuestion(rl, 'Seconds before resetting the counter (miss tolerance period)[default: 3600s (1h)]: ', parseInt, 3600),
+          sleep_duration_seconds: await askQuestion(rl, 'Frequency to check (in seconds)[default: 30]: ', parseInt, 30),
+          alert_sleep_duration_minutes: await askQuestion(rl, 'Don\'t alert again before x minutes [default: 5]: ', parseInt, 5),
+          valoper_address: await askQuestion(rl, 'Validator address to check: '),
+          rest: await askQuestion(rl, 'Full address (including protocol and port), we need REST or RPC to work... [default: http://localhost:26657]: ', undefined, 'http://localhost:26657'),
+          rpc: await askQuestion(rl, 'Full address (including protocol and port), we need REST or RPC to work... [default: http://localhost:26657]: ', undefined, 'http://localhost:26657'),
+        }
+
+        monitorConfigurationJson = JSON.stringify(signMissCheckConfiguration);
+
+        break;
+      case monitorTypes.nodeExporterDiskSpace.name:
+        const nodeExporterDiskSpaceUsageConfiguration: NodeExporterDiskSpaceUsageConfiguration = {
+          address: await askQuestion(rl, 'Full address (including protocol and port)[default: http://localhost:9100/metrics]: ', undefined, 'http://localhost:9100/metrics'),
+          threshold: await askQuestion(rl, 'Disk space threshold (in %)[default: 80]: ', parseInt, 80),
+          check_interval_seconds: await askQuestion(rl, 'Frequency to check (in seconds)[default: 60]: ', parseInt, 60),
+          alert_sleep_duration_minutes: await askQuestion(rl, 'Don\'t alert again before x minutes [default: 10]: ', parseInt, 10)
+        }
+
+        monitorConfigurationJson = JSON.stringify(nodeExporterDiskSpaceUsageConfiguration);
+
+        break;
+      case monitorTypes.priceFeederMissCount.name:
+        const priceFeederMissCountConfiguration: PriceFeederMissCountConfiguration = {
+          miss_tolerance: await askQuestion(rl, 'Number of blocks before alert (miss tolerance)[default: 5]: ', parseFloat, 5),
+          miss_tolerance_period_seconds: await askQuestion(rl, 'Seconds before resetting the counter (miss tolerance period)[default: 3600s (1h)]: ', parseInt, 3600),
+          sleep_duration_seconds: await askQuestion(rl, 'Frequency to check (in seconds)[default: 5]: ', parseInt, 5),
+          alert_sleep_duration_minutes: await askQuestion(rl, 'Don\'t alert again before x minutes [default: 5]: ', parseInt, 5),
+          valoper_address: await askQuestion(rl, 'Validator address to check: '),
+          rest_address: await askQuestion(rl, 'Full address (including protocol and port)[default: http://localhost:1317]: ', undefined, 'http://localhost:1317'),
+        }
+
+        monitorConfigurationJson = JSON.stringify(priceFeederMissCountConfiguration);
+
+        break;
+      default: throw new Error(`Invalid monitor type "${typeKeys[typeIdx]}"`);
+    }
+
+    await createMonitorModel({
+      name: monitorName,
+      is_enabled: true,
+      type: monitorTypes.urlCheck.name,
+      configuration_id: configuration.id,
+      configuration_object: monitorConfigurationJson
+    })
+
+    console.log('Monitor created!');
   }
 }
 

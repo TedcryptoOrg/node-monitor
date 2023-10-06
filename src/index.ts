@@ -1,12 +1,12 @@
-import { ConfigurationFactory } from './config/configurationFactory'
+require('dotenv').config({ path: '.env', override: false })
+
 import { Telegram } from './AlertChannel/telegram'
-import { type Configuration } from './type/configuration'
-import { PriceFeeder } from './monitor/priceFeeder'
 import { type AlertChannel } from './AlertChannel/alertChannel'
 import { NodeMonitor } from './monitor/nodeMonitor'
 import {ChainDirectory} from "@tedcryptoorg/cosmos-directory";
-
-require('dotenv').config({ path: '.env', override: false })
+import {ConfigurationManager} from "./services/configuration/configurationManager";
+import {ConfigurationOutput} from "./database/models/configuration";
+import {database} from "./database/database";
 
 const alertChannels: AlertChannel[] = []
 if (
@@ -21,46 +21,31 @@ if (
   }))
 }
 
-async function startNodeMonitor (name: string, configuration: Configuration): Promise<void> {
-  console.log(`Starting ${name} node monitor...`)
-  console.debug(configuration)
+async function startNodeMonitor (configuration: ConfigurationOutput): Promise<void> {
+  console.log(`Starting ${configuration.name} node monitor...`)
 
-
-  const chain = (await new ChainDirectory().getChainData(configuration.chainName)).chain;
+  const chain = (await new ChainDirectory().getChainData(configuration.chain)).chain;
 
   try {
-    await new NodeMonitor(name, chain, configuration, alertChannels).start()
+    await new NodeMonitor(configuration.name, chain, configuration, alertChannels).start()
   } catch (error) {
-    const message = `🚨 ${name} Node monitor failed to start!\n${error}`
-    console.error(message)
-  }
-}
-
-async function startPriceFeeder (name: string, configuration: Configuration): Promise<void> {
-  console.log(`Starting ${name} price feeder monitor...`)
-
-  try {
-    await new PriceFeeder(name, configuration, alertChannels).start()
-  } catch (error) {
-    const message = `🚨 ${name} Price feeder failed to start!\n${error}`
+    const message = `🚨 ${configuration.name} Node monitor failed!\n${error}`
     console.error(message)
   }
 }
 
 async function main (): Promise<void> {
-  const configurations: Record<string, Configuration> = new ConfigurationFactory().loadConfigurations()
-  for (const configurationName in configurations) {
-    console.log(`Loaded configuration: ${configurationName}`)
-    const configuration = configurations[configurationName]
-    if (configuration === undefined) {
-      throw new Error(`Configuration ${configurationName} not found!`)
-    }
+  const sequelize = database.getDatabase()
 
-    startNodeMonitor(configurationName, configuration)
-    if (Object.prototype.hasOwnProperty.call(configuration, 'priceFeeder')) {
-      startPriceFeeder(configurationName, configuration)
-    }
+  const configurationManager = new ConfigurationManager();
+  const configurations = await configurationManager.getAllConfigurations();
+  if (configurations.length === 0) {
+    throw new Error('No configurations found!');
   }
+  configurations.forEach((configuration) => {
+    console.log(`Loaded configuration: ${configuration.name}`)
+    startNodeMonitor(configuration)
+  })
 }
 
 main().catch((error) => {

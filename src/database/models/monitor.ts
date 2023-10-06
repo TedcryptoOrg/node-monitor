@@ -10,6 +10,29 @@ import {
 import sequelizeConnection from "../config";
 import Configuration from "./configuration";
 
+export const monitorTypes = {
+    urlCheck: {
+        name: 'urlCheck',
+        description: 'Monitor that a specific url is alive (this is automatically added to services created)',
+    },
+    blockCheck: {
+        name: 'blockCheck',
+        description: 'Check how many blocks were missed over a period'
+    },
+    signMissCheck: {
+        name: 'signMissCheck',
+        description: 'Check how much blocks were not signed over a period',
+    },
+    priceFeederMissCount: {
+        name: 'priceFeederMissCount',
+        description: 'Blocks missed in the price feeder over a period',
+    },
+    nodeExporterDiskSpace: {
+        name: 'nodeExporterDiskSpace',
+        description: 'Disk space left',
+    },
+}
+
 interface MonitorAttributes {
     id: number,
     name: string,

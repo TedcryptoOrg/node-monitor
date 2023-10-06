@@ -1,9 +1,9 @@
 import {MonitorCheck} from "../monitorCheck";
 import {AlertChannel} from "../../../AlertChannel/alertChannel";
-import {NodeExporterConfiguration} from "../../../type/nodeExporterConfiguration";
 import axios from "axios";
 import {PrometheusMetrics} from "../../../prometheus/prometheusMetrics";
 import {Alerter} from "../../../Alerter/alerter";
+import {NodeExporterDiskSpaceUsageConfiguration} from "../../../type/config/nodeExporterDiskSpaceUsageConfiguration";
 
 export class DiskSpace implements MonitorCheck {
     private readonly alerter: Alerter
@@ -12,25 +12,18 @@ export class DiskSpace implements MonitorCheck {
 
     constructor (
         private readonly name: string,
-        private readonly nodeExporterConfiguration: NodeExporterConfiguration,
+        private readonly configuration: NodeExporterDiskSpaceUsageConfiguration,
         private readonly alertChannels: AlertChannel[]
     ) {
-        if (this.nodeExporterConfiguration.alerts?.disk_space === undefined) {
-            throw new Error('Disk space alert is not configured');
-        }
-        if (!this.nodeExporterConfiguration.alerts.disk_space.enabled) {
-            throw new Error('Disk space alert is disabled');
-        }
-
         this.alerter = new Alerter(
             this.name,
             'BlockCheck',
             this.alertChannels,
-            this.nodeExporterConfiguration.alerts.disk_space.alert_sleep_duration_minutes
+            this.configuration.alert_sleep_duration_minutes
         )
 
-        this.checkIntervalSeconds = this.nodeExporterConfiguration.alerts.disk_space.check_interval_seconds
-        this.diskSpaceThreshold = this.nodeExporterConfiguration.alerts.disk_space.threshold
+        this.checkIntervalSeconds = this.configuration.check_interval_seconds
+        this.diskSpaceThreshold = this.configuration.threshold
     }
 
     async check (): Promise<void> {
@@ -38,7 +31,7 @@ export class DiskSpace implements MonitorCheck {
             console.log(`[${this.name}][DiskSpace] Running check...`)
 
             const prometheusMetrics = PrometheusMetrics.withMetricsContent(
-                (await axios.get(this.nodeExporterConfiguration.address)).data
+                (await axios.get(this.configuration.address)).data
             )
 
             console.log(`[${this.name}][DiskSpace] Used disk space: ${prometheusMetrics.getUsedDiskSpacePercentage()}%`);

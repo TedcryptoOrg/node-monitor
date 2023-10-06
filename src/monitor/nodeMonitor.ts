@@ -1,5 +1,4 @@
 import { type AlertChannel } from '../AlertChannel/alertChannel'
-import { type Configuration } from '../type/configuration'
 import { BlockCheck } from './checkers/blockCheck'
 import { AbstractMonitor } from './abstractMonitor'
 import { UrlCheck } from './checkers/urlCheck'
@@ -9,82 +8,95 @@ import { RestClient } from '../client/restClient'
 import { type ClientInterface } from '../client/clientInterface'
 import { SignMissCheck } from './checkers/signMissCheck'
 import { type Chain } from '@tedcryptoorg/cosmos-directory'
+import {ConfigurationOutput} from "../database/models/configuration";
+import {monitorTypes} from "../database/models/monitor";
+import {MissCounter} from "./checkers/priceFeeder/missCounter";
 
 export class NodeMonitor extends AbstractMonitor {
-  private client: ClientInterface | undefined
+  private rpcClient: ClientInterface | undefined
+  private restClient: ClientInterface | undefined
 
   constructor (
     protected readonly name: string,
     private readonly chain: Chain,
-    private readonly configuration: Configuration,
+    private readonly configuration: ConfigurationOutput,
     private readonly alertChannels: AlertChannel[]
   ) {
     super()
     console.debug(this.configuration)
 
-    // Service check
-    if (this.configuration.rpc !== undefined) {
-      console.log(`[${this.name}] Starting RPC check...`)
-      this.monitor_params.push(new UrlCheck(this.name, 'RPC', this.configuration.rpc.address, this.alertChannels))
-    }
-    if (this.configuration.rest !== undefined) {
-      console.log(`[${this.name}] Starting REST check...`)
-      this.monitor_params.push(new UrlCheck(this.name, 'REST', this.configuration.rest.address, this.alertChannels))
-    }
-    if (this.configuration.prometheus !== undefined) {
-      console.log(`[${this.name}] Starting Prometheus check...`)
-      this.monitor_params.push(new UrlCheck(this.name, 'Prometheus', this.configuration.prometheus.address, this.alertChannels))
-    }
-    if (this.configuration.node_exporter?.enabled) {
-      this.monitor_params.push(
-        new UrlCheck(this.name, 'NodeExporter', this.configuration.node_exporter.address, this.alertChannels)
-      )
-      if (this.configuration.node_exporter.alerts?.disk_space?.enabled) {
-        this.monitor_params.push(
-          new DiskSpace(this.name, this.configuration.node_exporter, this.alertChannels)
-        )
-      }
-    }
-
-    if (this.configuration.alerts?.block !== undefined) {
-      if (this.configuration.rpc === undefined) {
-        throw new Error('You need to provide a RPC endpoint to monitor block')
-      }
-      console.log(`[${this.name}] Starting block check...`)
-      this.monitor_params.push(new BlockCheck(this.name, this.configuration.chainName, this.configuration.rpc, this.configuration.alerts.block, this.alertChannels))
-    }
-
-    if (this.configuration.alerts?.sign_blocks !== undefined) {
-      if (this.configuration.valoperAddress === undefined) {
-        throw new Error('You need to provide a valoper address to monitor sign miss')
-      }
-
-      const client = this.getNodeClient()
-      console.log(`[${this.name}] Starting sign miss check...`)
-      this.monitor_params.push(new SignMissCheck(
-        this.name,
-        this.chain,
-        this.configuration.valoperAddress,
-        client,
-        this.configuration.alerts.sign_blocks,
-        this.alertChannels
-      ))
-    }
+    configuration.getMonitors().then((monitors) => {
+        monitors.forEach((monitor) => {
+            console.log(`[${this.name}] Loaded monitor: ${monitor.name}`)
+            const monitorConfiguration = JSON.parse(monitor.configuration_object);
+            if (monitorConfiguration === undefined) {
+                throw new Error(`[${this.name}][${monitor.name}] Monitor configuration is not defined.`)
+            }
+            switch(monitor.type) {
+                case monitorTypes.nodeExporterDiskSpace.name:
+                    this.monitor_params.push(new DiskSpace(this.name, monitorConfiguration, this.alertChannels))
+                    break;
+                case monitorTypes.priceFeederMissCount.name:
+                    this.monitor_params.push(new MissCounter(this.name, monitorConfiguration, this.alertChannels))
+                    break;
+                case monitorTypes.blockCheck.name:
+                    this.monitor_params.push(new BlockCheck(
+                        this.name,
+                        this.configuration.chain,
+                        this.getRpcClient(monitorConfiguration),
+                        monitorConfiguration,
+                        this.alertChannels
+                    ))
+                    break;
+                case monitorTypes.urlCheck.name:
+                    this.monitor_params.push(new UrlCheck(this.name, monitorConfiguration, this.alertChannels))
+                    break;
+                case monitorTypes.signMissCheck.name:
+                    this.monitor_params.push(new SignMissCheck(
+                        this.name,
+                        this.chain,
+                        monitorConfiguration,
+                        this.getNodeClient(monitorConfiguration),
+                        this.alertChannels
+                    ))
+            }
+        })
+    });
   }
 
-  private getNodeClient (): ClientInterface {
-    if (this.client === undefined) {
-      if (this.configuration.rpc !== undefined) {
-        this.client = new RpcClient(this.configuration.rpc)
-      }
-      if (this.configuration.rest !== undefined) {
-        this.client = new RestClient(this.configuration.rest)
-      }
-    }
-    if (this.client === undefined) {
-      throw new Error('No client configuration found. Please configure either RPC or REST')
+  private getRpcClient (monitorConfiguration: any): RpcClient {
+    const client = this.getNodeClient(monitorConfiguration, 'rpc');
+    if (client instanceof RpcClient) {
+        return client;
     }
 
-    return this.client
+    throw new Error('No rpc client found.')
+  }
+
+  private getNodeClient (monitorConfiguration: any, type?: string): ClientInterface {
+    if (this.rpcClient === undefined) {
+      if (monitorConfiguration.rpc !== undefined) {
+        this.rpcClient = new RpcClient(monitorConfiguration.rpc)
+      }
+    }
+    if (this.restClient === undefined) {
+      if (monitorConfiguration.rest !== undefined) {
+        this.restClient = new RestClient(monitorConfiguration.rest)
+      }
+    }
+
+    if (type === 'rpc' && this.rpcClient === undefined) {
+        throw new Error('No rpc client found.')
+    }
+    if (type === 'rest' && this.restClient === undefined) {
+        throw new Error('No rest client found.')
+    }
+
+    const client = this.rpcClient || this.restClient;
+    if (client === undefined) {
+        throw new Error('No client found.')
+    }
+
+    return client;
   }
 }
