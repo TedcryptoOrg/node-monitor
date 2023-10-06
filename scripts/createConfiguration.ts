@@ -13,8 +13,6 @@ import { type BlockAlertConfiguration } from '../src/type/config/blockAlertConfi
 import { type SignMissCheckConfiguration } from '../src/type/config/signMissCheckConfiguration'
 import { SERVICE_TYPES } from '../src/database/models/service'
 
-require('dotenv').config({ path: '.env', override: false })
-
 const rl = readline.createInterface({
   input: process.stdin,
   output: process.stdout
@@ -150,12 +148,11 @@ async function createMonitors (rl: readline.Interface, configuration: Configurat
   })
   const choices: Record<string, string> = {}
   typeKeys.forEach((typeKey, index) => {
-    choices[typeKey] = typeValues[index].description
+    choices[typeKey] = typeValues.find((value) => value.name === typeKey)?.description ?? ''
   })
 
   while (await askConfirmation(rl, 'Do you want to create a custom monitor for this configuration? [Y/N]: ')) {
-    const typeIdx = await askChoice(rl, 'What type is this monitor: ', choices)
-    const monitorType = typeKeys[Number(typeIdx)]
+    const monitorType = await askChoice(rl, 'What type is this monitor: ', choices)
     const monitorName: string = await askQuestion(rl, 'Monitor name: ')
 
     let monitorConfigurationJson: string
@@ -251,6 +248,10 @@ async function askChoice (rl: readline.Interface, question: string, choices: obj
   let choiceId: undefined | number
 
   while (choiceId === undefined || !Object.prototype.hasOwnProperty.call(choiceKeys, choiceId)) {
+    if (choiceId !== undefined) {
+      console.log('Invalid choice. Please choose one of the following:')
+    }
+
     rl.write((choicesMessage))
 
     choiceId = await askQuestion(rl, question)
