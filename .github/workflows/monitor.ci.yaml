@@ -1,4 +1,4 @@
-name: Test Monitor
+name: "Monitor: Run tests"
 
 defaults:
   run:
