@@ -8,11 +8,11 @@ on:
   workflow_dispatch: ~
   pull_request:
     paths:
-      - ".github/workflows/monitor.ci.yaml"
+      - ".github/workflows/monitor.static-analysis.yaml"
       - "monitor/**"
   push:
     paths:
-      - ".github/workflows/monitor.ci.yaml"
+      - ".github/workflows/monitor.static-analysis.yaml"
       - "monitor/**"
     branches:
       - "main"

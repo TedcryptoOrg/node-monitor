@@ -35,7 +35,7 @@ help:
 	{ lastLine = $$0 }' $(MAKEFILE_LIST)
 
 SEQUELIZE_IMAGE ?= "calipsaci/sequelize-cli"
-SEQUELIZE_RUN ?= docker run --rm -it --network=node-monitor_default --env-file .env -v .:/app -w /app $(SEQUELIZE_IMAGE)
+SEQUELIZE_RUN ?= docker run --rm -it --network=monitor_default --env-file .env.test -v .:/app -w /app $(SEQUELIZE_IMAGE)
 DOCKER_COMPOSE_EXEC ?= docker compose exec
 DOCKER_NODE_COMPOSE_EXEC ?= docker compose exec node-app
 
