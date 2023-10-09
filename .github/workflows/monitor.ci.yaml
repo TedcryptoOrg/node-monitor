@@ -1,16 +1,27 @@
-name: Tests
+name: "Monitor: Run tests"
+
+defaults:
+  run:
+    working-directory: "monitor"
 
 on:
-  push:
-    branches: [main]
+  workflow_dispatch: ~
   pull_request:
-    branches: ['**']
+    paths:
+      - ".github/workflows/monitor.ci.yaml"
+      - "monitor/**"
+  push:
+    paths:
+      - ".github/workflows/monitor.ci.yaml"
+      - "monitor/**"
+    branches:
+      - "main"
 
 permissions:
   contents: read
 
 concurrency:
-  group: ${{ github.head_ref || github.run_id }}
+  group: ${{ github.head_ref || github.run_id }} ~ "monitor.ci.yaml"
   cancel-in-progress: true
 
 jobs:
@@ -31,5 +42,8 @@ jobs:
         with:
           compose-file: docker-compose.yaml
 
+      - name: "DB migrate"
+        run: make db-migrate
+
       - name: Run tests
-        run: npm test
+        run: make tests

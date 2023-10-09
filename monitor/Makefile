@@ -35,9 +35,9 @@ help:
 	{ lastLine = $$0 }' $(MAKEFILE_LIST)
 
 SEQUELIZE_IMAGE ?= "calipsaci/sequelize-cli"
-SEQUELIZE_RUN ?= docker run --rm -it --network=node-monitor_default --env-file .env -v .:/app -w /app $(SEQUELIZE_IMAGE)
+SEQUELIZE_RUN ?= docker run --rm -it --network=monitor_default -v .:/app -w /app $(SEQUELIZE_IMAGE)
 DOCKER_COMPOSE_EXEC ?= docker compose exec
-DOCKER_NODE_COMPOSE_EXEC ?= docker compose exec node-app
+DOCKER_NODE_COMPOSE_RUN ?= docker compose run node-app
 
 ## [Docker] Start containers
 up:
@@ -49,15 +49,15 @@ stop:
 
 ## [NPM] Install packages
 install:
-	$(DOCKER_NODE_COMPOSE_EXEC) npm install
+	$(DOCKER_NODE_COMPOSE_RUN) npm install
 
 ## [NPM] Run npm command (COMMAND=command make npm-command)
 npm-command:
-	$(DOCKER_NODE_COMPOSE_EXEC) npm $(COMMAND)
+	$(DOCKER_NODE_COMPOSE_RUN) npm $(COMMAND)
 
 ## [Tests] Run tests
 tests:
-	$(DOCKER_NODE_COMPOSE_EXEC) npm test --detectOpenHandles
+	$(DOCKER_NODE_COMPOSE_RUN) npm test --detectOpenHandles
 
 ## [Database] Create a empty migration with name (NAME=name-migration make db-create-migration)
 db-create-migration:
