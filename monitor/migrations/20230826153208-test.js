@@ -96,7 +96,7 @@ module.exports = {
         allowNull: false,
       }
     })
-    await queryInterface.createTable('monitor', {
+    await queryInterface.createTable('monitors', {
       id: {
         type: DataTypes.INTEGER.UNSIGNED,
         autoIncrement: true,
@@ -156,7 +156,7 @@ module.exports = {
           onUpdate: 'cascade'
         }
     );
-    await queryInterface.addConstraint('monitor', {
+    await queryInterface.addConstraint('monitors', {
           fields: ['configuration_id'],
           type: 'foreign key',
           name: 'fk_monitor_configuration_id',
