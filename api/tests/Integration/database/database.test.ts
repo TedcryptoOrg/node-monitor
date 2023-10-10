@@ -3,6 +3,7 @@ import {create as createConfiguration} from "../../../src/database/dal/configura
 import {create as createServer} from "../../../src/database/dal/server";
 import {create as createService} from "../../../src/database/dal/service";
 import {create as createMonitor} from "../../../src/database/dal/monitor";
+import {SERVICE_TYPES} from "../../../src/database/models/service";
 
 beforeAll((done) => {
     setupDatabaseTest(done);
@@ -87,6 +88,7 @@ describe('Test all models and interaction between them', () => {
             name: 'RPC',
             address: 'localhost:26657',
             is_enabled: true,
+            type: SERVICE_TYPES.RPC,
             server_id: server.id
         });
 
