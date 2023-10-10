@@ -3,7 +3,9 @@ import dotenv from "dotenv";
 import cors from "cors";
 import configurationRouter from "./routes/configurations";
 import serverRouter from "./routes/server";
+import serviceRouter from "./routes/service";
 import monitorRouter from "./routes/monitors";
+
 dotenv.config();
 
 const app = express();
@@ -22,6 +24,7 @@ app.get('/', (req: any, res: any) => {
 
 app.use('/api/configurations', configurationRouter);
 app.use('/api/servers', serverRouter);
+app.use('/api/services', serviceRouter);
 app.use('/api/monitors', monitorRouter);
 
 app.use((err: Error, req: Request, res:Response, next: NextFunction) => {

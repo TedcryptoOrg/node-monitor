@@ -1,12 +1,12 @@
-import * as serverDal from "../../database/dal/server";
+import * as serviceDal from "../../database/dal/service";
 
-export const deleteServer = async (req: any, resp: any) => {
+export const deleteService = async (req: any, resp: any) => {
     if (req.params.id === undefined) {
         resp.status(400).send('Missing id')
         return
     }
 
-    await serverDal.deleteServer(Number(req.params.id))
+    await serviceDal.deleteService(Number(req.params.id))
         .then(() => {
             resp.status(200).send()
         }).catch((err: Error) => {

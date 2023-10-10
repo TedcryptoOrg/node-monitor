@@ -4,7 +4,7 @@ import {DataTypes, HasOneGetAssociationMixin, Model, Optional} from 'sequelize'
 import db from "../config";
 import Server from "./server";
 
-export const SERVICE_TYPES = {
+export const SERVICE_TYPES: {RPC: string, REST: string, PROMETHEUS: string, NODE_EXPORTER: string} = {
     RPC: 'RPC',
     REST: 'REST',
     PROMETHEUS: 'prometheus',
