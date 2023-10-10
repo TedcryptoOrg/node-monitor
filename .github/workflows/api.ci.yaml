@@ -30,6 +30,12 @@ jobs:
     steps:
       - uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 # v4
 
+      - uses: aarcangeli/load-dotenv@v1.0.0
+        with:
+          path: "api"
+          filenames: |
+            .env.test
+
       - uses: actions/setup-node@v3
         with:
           node-version: lts/*
@@ -45,7 +51,7 @@ jobs:
       - name: "DB migrate"
         run: |
           npm install -g sequelize-cli && \
-          npx sequelize-cli db:migrate
+          npx sequelize-cli db:migrate --url "mariadb://monitor:monitor@localhost:3306/ted_node_monitor?version=11.0.3&charset=utf8mb4"
 
       - name: Run tests
         run: npm test
