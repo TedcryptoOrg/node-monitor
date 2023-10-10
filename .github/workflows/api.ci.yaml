@@ -30,6 +30,14 @@ jobs:
     steps:
       - uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 # v4
 
+      - uses: aarcangeli/load-dotenv@v1.0.0
+        with:
+          path: "api"
+          filenames: |
+            .env.test
+          quiet: false
+          if-file-not-found: error
+
       - uses: actions/setup-node@v3
         with:
           node-version: lts/*
@@ -40,10 +48,12 @@ jobs:
       - name: "Docker compose"
         uses: isbang/compose-action@v1.5.1
         with:
-          compose-file: docker-compose.yaml
+          compose-file: 'api/docker-compose.yaml'
 
       - name: "DB migrate"
-        run: make db-migrate
+        run: |
+          npm install -g sequelize-cli && \
+          npx sequelize-cli db:migrate --url "${DB_DIALECT}://${DB_USER}:${DB_PASS}@${DB_HOST}:${DB_PORT}/${DB_NAME}?version=11.0.3&charset=utf8mb4"
 
       - name: Run tests
-        run: make tests
+        run: npm test

@@ -20,6 +20,15 @@ export const update = async (id: number, configuration: ConfigurationInput): Pro
     return configurationToUpdate
 }
 
+export const deleteConfiguration = async (id: number): Promise<void> => {
+    const configurationToDelete = await Configuration.findByPk(id)
+    if (configurationToDelete === null) {
+        throw new RecordNotFound(`Configuration with id ${id} not found`)
+    }
+
+    await configurationToDelete.destroy()
+}
+
 export const get = async (id: number): Promise<ConfigurationOutput | null> => {
     return await Configuration.findByPk(id)
 }
