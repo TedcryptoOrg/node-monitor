@@ -43,7 +43,9 @@ jobs:
           compose-file: docker-compose.yaml
 
       - name: "DB migrate"
-        run: make db-migrate
+        run: |
+          npm install -g sequelize-cli && \
+          npx sequelize-cli db:migrate
 
       - name: Run tests
-        run: make tests
+        run: npm test

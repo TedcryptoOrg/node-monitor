@@ -1,6 +1,7 @@
+import { RequestHandler, Request, Response } from 'express';
 import * as configurationDal from "../../database/dal/configuration";
 
-export const create = (req: any, resp: any) => {
+export const create: RequestHandler = (req: Request, resp: Response) => {
     const requiredFields = ["name", "chain"];
     requiredFields.forEach((field) => {
         if (!req.body[field]) {

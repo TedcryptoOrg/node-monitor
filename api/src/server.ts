@@ -1,10 +1,7 @@
-import express from "express";
+import express, {Request, Response, NextFunction} from 'express';
 import dotenv from "dotenv";
 import cors from "cors";
-import {create} from "./controllers/configurations/create";
-import {findAll} from "./controllers/configurations/findAll";
-import {update} from "./controllers/configurations/update";
-
+import configurationRouter from "./routes/configurations";
 dotenv.config();
 
 const app = express();
@@ -22,12 +19,10 @@ app.get('/', (req: any, res: any) => {
     res.send('Hello there!');
 });
 
-// Configuration Router
-const configurationRouter = require("express").Router();
-configurationRouter.post("/", create)
-configurationRouter.get("/", findAll)
-configurationRouter.put("/:id", update)
-
 app.use('/api/configurations', configurationRouter);
+
+app.use((err: Error, req: Request, res:Response, next: NextFunction) => {
+    res.status(500).json({message: err.message});
+});
 
 export const server = app;
