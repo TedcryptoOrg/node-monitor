@@ -1,4 +1,4 @@
-import { create as createConfiguration } from "../../database/dal/configuration";
+import * as configurationDal from "../../database/dal/configuration";
 
 export const create = (req: any, resp: any) => {
     const requiredFields = ["name", "chain"];
@@ -11,7 +11,7 @@ export const create = (req: any, resp: any) => {
         }
     })
 
-    createConfiguration({
+    configurationDal.create({
         name: req.body.name,
         chain: req.body.chain,
         is_enabled: true

@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import cors from "cors";
 import {create} from "./controllers/configurations/create";
 import {findAll} from "./controllers/configurations/findAll";
+import {update} from "./controllers/configurations/update";
 
 dotenv.config();
 
@@ -25,6 +26,7 @@ app.get('/', (req: any, res: any) => {
 const configurationRouter = require("express").Router();
 configurationRouter.post("/", create)
 configurationRouter.get("/", findAll)
+configurationRouter.put("/:id", update)
 
 app.use('/api/configurations', configurationRouter);
 
@@ -32,3 +34,5 @@ app.use('/api/configurations', configurationRouter);
 app.listen(port, () => {
     console.log(`[server]: Server is running at http://localhost:${port}`);
 });
+
+export const server = app;
