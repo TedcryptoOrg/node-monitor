@@ -1,8 +1,9 @@
 import { RequestHandler, Request, Response } from 'express';
-import * as serverDal from "../../database/dal/server";
+import * as serviceDal from "../../database/dal/service";
+import {SERVICE_TYPES} from "../../database/models/service";
 
 export const create: RequestHandler = (req: Request, resp: Response) => {
-    const requiredFields = ["name", "address", "configuration_id"];
+    const requiredFields = ["name", "address", "server_id", "type"];
     requiredFields.forEach((field) => {
         if (!req.body[field]) {
             resp.status(400).send({
@@ -12,13 +13,22 @@ export const create: RequestHandler = (req: Request, resp: Response) => {
         }
     })
 
-    serverDal.create({
+    const validTypes = Object.keys(SERVICE_TYPES);
+    if (!validTypes.includes(req.body.type)) {
+        resp.status(400).send({
+            message: `Invalid type ${req.body.type}`
+        });
+        return;
+    }
+
+    serviceDal.create({
         name: req.body.name,
         address: req.body.address,
-        is_enabled: true,
-        configuration_id: req.body.configuration_id
-    }).then((server) => {
-        resp.status(202).send(server)
+        server_id: req.body.server_id,
+        type: req.body.type,
+        is_enabled: true
+    }).then((service) => {
+        resp.status(202).send(service)
     }).catch((err) => {
         resp.status(500).send({
             message:
