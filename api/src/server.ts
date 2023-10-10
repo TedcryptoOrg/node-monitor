@@ -5,7 +5,6 @@ import configurationRouter from "./routes/configurations";
 dotenv.config();
 
 const app = express();
-const port = process.env.PORT;
 var corsOptions = {
     origin: "http://localhost:8081"
 };

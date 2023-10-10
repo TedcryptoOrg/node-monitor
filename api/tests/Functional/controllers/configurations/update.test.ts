@@ -1,5 +1,5 @@
 import request = require("supertest");
-import {create} from "../../../../src/database/dal/configuration";
+import * as configurationDal from "../../../../src/database/dal/configuration";
 import {ConfigurationInput} from "../../../../src/database/models/configuration";
 import {setupIntegrationTest, teardownIntegrationTest} from "../../../Helper/integrationTest";
 import {server} from "../../../../src/server";
@@ -20,7 +20,7 @@ describe('update configurations controller', () => {
             is_enabled: false
         }
 
-        const configuration = await create({
+        const configuration = await configurationDal.create({
             name: 'test',
             chain: 'chain',
             is_enabled: true
