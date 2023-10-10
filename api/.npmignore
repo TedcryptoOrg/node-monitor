@@ -1,0 +1,11 @@
+**/*
+!/dist/**
+!/lib/**
+!src/models/index.ts
+!index.d.ts
+!index.d.cts
+!CHANGELOG.md
+!LICENSE
+!MIGRATION_GUIDE.md
+!README.md
+!SECURITY.md

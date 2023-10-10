@@ -1,0 +1,49 @@
+name: "API: Run tests"
+
+defaults:
+  run:
+    working-directory: "api"
+
+on:
+  workflow_dispatch: ~
+  pull_request:
+    paths:
+      - ".github/workflows/api.ci.yaml"
+      - "api/**"
+  push:
+    paths:
+      - ".github/workflows/api.ci.yaml"
+      - "api/**"
+    branches:
+      - "main"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.head_ref || github.run_id }} ~ "api.ci.yaml"
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@8ade135a41bc03ea155e62e844d188df1ea18608 # v4
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version: lts/*
+
+      - name: Install modules
+        run: npm install
+
+      - name: "Docker compose"
+        uses: isbang/compose-action@v1.5.1
+        with:
+          compose-file: docker-compose.yaml
+
+      - name: "DB migrate"
+        run: make db-migrate
+
+      - name: Run tests
+        run: make tests
