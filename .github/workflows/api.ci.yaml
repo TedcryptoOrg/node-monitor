@@ -35,6 +35,8 @@ jobs:
           path: "api"
           filenames: |
             .env.test
+          quiet: false
+          if-file-not-found: error
 
       - uses: actions/setup-node@v3
         with:
@@ -51,7 +53,7 @@ jobs:
       - name: "DB migrate"
         run: |
           npm install -g sequelize-cli && \
-          npx sequelize-cli db:migrate --url "mariadb://monitor:monitor@localhost:3306/ted_node_monitor?version=11.0.3&charset=utf8mb4"
+          npx sequelize-cli db:migrate --url "${DB_DIALECT}://${DB_USER}:${DB_PASS}@${DB_HOST}:${DB_PORT}/${DB_NAME}?version=11.0.3&charset=utf8mb4"
 
       - name: Run tests
         run: npm test
