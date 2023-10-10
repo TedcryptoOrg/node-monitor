@@ -48,7 +48,7 @@ jobs:
       - name: "Docker compose"
         uses: isbang/compose-action@v1.5.1
         with:
-          compose-file: docker-compose.yaml
+          compose-file: 'api/docker-compose.yaml'
 
       - name: "DB migrate"
         run: |
