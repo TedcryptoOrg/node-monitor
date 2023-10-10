@@ -1,36 +1,41 @@
-import {createAndResetDatabaseInstance} from "../../Helper/databaseHelper";
+import {setupDatabaseTest, teardownDatabaseTest} from "../../Helper/databaseHelper";
 import {create as createConfiguration} from "../../../src/database/dal/configuration";
 import {create as createServer} from "../../../src/database/dal/server";
 import {create as createService} from "../../../src/database/dal/service";
 import {create as createMonitor} from "../../../src/database/dal/monitor";
 
-describe('Database', () => {
+beforeAll((done) => {
+    setupDatabaseTest(done);
+})
 
-    beforeAll(async () => {
-        await createAndResetDatabaseInstance();
-    })
+afterAll((done) => {
+    teardownDatabaseTest(done);
+});
 
-    it('should create a configuration', async () => {
-        const configuration = await createConfiguration({
+describe('Test all models and interaction between them', () => {
+    it('should create a configuration', () => {
+        createConfiguration({
             name: 'configuration_test',
             chain: 'chain_test',
             is_enabled: true
+        }).then((configuration) => {
+            expect(configuration).not.toBeNull();
+            expect(configuration?.id).toBe(1);
+            expect(configuration?.name).toBe('configuration_test');
+            expect(configuration?.chain).toBe('chain_test');
+            expect(configuration?.is_enabled).toBe(true);
+
+            // test associations
+            configuration?.getMonitors().then((monitors) => {
+                expect(monitors).not.toBeNull();
+                expect(monitors?.length).toBe(0);
+            });
+
+            configuration?.getServers().then((servers) => {
+                expect(servers).not.toBeNull();
+                expect(servers?.length).toBe(0);
+            });
         });
-
-        expect(configuration).not.toBeNull();
-        expect(configuration?.id).toBe(1);
-        expect(configuration?.name).toBe('configuration_test');
-        expect(configuration?.chain).toBe('chain_test');
-        expect(configuration?.is_enabled).toBe(true);
-
-        // test associations
-        const monitors = await configuration?.getMonitors();
-        expect(monitors).not.toBeNull();
-        expect(monitors?.length).toBe(0);
-
-        const servers = await configuration?.getServers();
-        expect(servers).not.toBeNull();
-        expect(servers?.length).toBe(0);
     })
 
     it('should create a server', async () => {

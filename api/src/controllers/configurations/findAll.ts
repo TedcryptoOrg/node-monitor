@@ -1,5 +1,5 @@
 import * as configurationDal from "../../database/dal/configuration";
 
 export const findAll = async (req: any, resp: any) => {
-    resp.send(JSON.stringify(await configurationDal.getAll()))
+    resp.send(await configurationDal.getAll())
 }

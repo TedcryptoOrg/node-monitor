@@ -1,38 +1,5 @@
-import express from "express";
-import dotenv from "dotenv";
-import cors from "cors";
-import {create} from "./controllers/configurations/create";
-import {findAll} from "./controllers/configurations/findAll";
-import {update} from "./controllers/configurations/update";
+import {server} from "./server";
 
-dotenv.config();
-
-const app = express();
-const port = process.env.PORT;
-var corsOptions = {
-    origin: "http://localhost:8081"
-};
-
-// Setting it up
-app.use(cors(corsOptions));
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-
-app.get('/', (req: any, res: any) => {
-    res.send('Hello there!');
+server.listen(process.env.PORT, () => {
+    console.log(`[server]: Server is running at http://localhost:${process.env.PORT}`);
 });
-
-// Configuration Router
-const configurationRouter = require("express").Router();
-configurationRouter.post("/", create)
-configurationRouter.get("/", findAll)
-configurationRouter.put("/:id", update)
-
-app.use('/api/configurations', configurationRouter);
-
-// Listener
-app.listen(port, () => {
-    console.log(`[server]: Server is running at http://localhost:${port}`);
-});
-
-export const server = app;

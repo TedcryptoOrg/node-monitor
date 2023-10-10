@@ -19,6 +19,7 @@ services:
   node-app:
     image: oven/bun:1.0.4-alpine
     working_dir: /app
+    restart: always
     volumes:
       - ./:/app
     command: ["bun", "start:watch"]
