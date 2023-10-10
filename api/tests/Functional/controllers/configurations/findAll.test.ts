@@ -1,5 +1,5 @@
 import request = require("supertest");
-import {create} from "../../../../src/database/dal/configuration";
+import * as configurationDal from "../../../../src/database/dal/configuration";
 import {setupIntegrationTest, teardownIntegrationTest} from "../../../Helper/integrationTest";
 import {server} from "../../../../src/server";
 
@@ -13,7 +13,7 @@ afterAll((done) => {
 
 describe('find all configurations controller', () => {
     it('should find all configurations', async () => {
-        await create({
+        await configurationDal.create({
             name: 'test',
             chain: 'test',
             is_enabled: true
