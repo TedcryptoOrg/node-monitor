@@ -1,9 +1,8 @@
-import * as configurationDal from "./database/dal/configuration";
 import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
-import {create} from "./controllers/configurations/create.ts";
-import {findAll} from "./controllers/configurations/findAll.ts";
+import {create} from "./controllers/configurations/create";
+import {findAll} from "./controllers/configurations/findAll";
 
 dotenv.config();
 
@@ -28,7 +27,6 @@ configurationRouter.post("/", create)
 configurationRouter.get("/", findAll)
 
 app.use('/api/configurations', configurationRouter);
-
 
 // Listener
 app.listen(port, () => {

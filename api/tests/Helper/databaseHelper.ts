@@ -3,7 +3,7 @@ import Server from "../../src/database/models/server";
 import Service from "../../src/database/models/service";
 import Monitor from "../../src/database/models/monitor";
 import {Sequelize} from "sequelize";
-import db from "../../src/database/config.ts";
+import db from "../../src/database/config";
 
 export async function createAndResetDatabaseInstance(): Promise<Sequelize> {
     const sequelize = db.sequelize;

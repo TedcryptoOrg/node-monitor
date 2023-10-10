@@ -1,8 +1,12 @@
 import axios from "axios";
-
-jest.setTimeout(30000);
+import {createAndResetDatabaseInstance} from "../../../Helper/databaseHelper";
 
 describe('create configurations controller', () => {
+
+    beforeAll(async () => {
+        await createAndResetDatabaseInstance();
+    })
+
     it('should create a configuration', () => {
         // create a post object
         const configuration = {
