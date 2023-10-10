@@ -1,4 +1,5 @@
-import * as serverDal from "../../database/dal/server";
+import * as serviceDal from "../../database/dal/service";
+import {SERVICE_TYPES} from "../../database/models/service";
 
 export const update = async (req: any, resp: any) => {
     if (req.params.id === undefined) {
@@ -6,7 +7,7 @@ export const update = async (req: any, resp: any) => {
         return
     }
 
-    const requiredFields = ["name", "address", "configuration_id", "is_enabled"];
+    const requiredFields = ["name", "address", "server_id", "type", "is_enabled"];
     requiredFields.forEach((field) => {
         if (!Object.prototype.hasOwnProperty.call(req.body, field)) {
             resp.status(400).send({
@@ -16,13 +17,22 @@ export const update = async (req: any, resp: any) => {
         }
     })
 
-    serverDal.update(Number(req.params.id), {
+    const validTypes = Object.keys(SERVICE_TYPES);
+    if (!validTypes.includes(req.body.type)) {
+        resp.status(400).send({
+            message: `Invalid type ${req.body.type}`
+        });
+        return;
+    }
+
+    serviceDal.update(Number(req.params.id), {
         name: req.body.name,
         address: req.body.address,
-        configuration_id: req.body.configuration_id,
+        server_id: req.body.configuration_id,
+        type: req.body.type,
         is_enabled: req.body.is_enabled
-    }).then((server) => {
-        resp.status(200).send(server)
+    }).then(() => {
+        resp.status(200).send()
     }).catch((err: Error) => {
         if (err.name === 'RecordNotFound') {
             resp.status(404).send({
