@@ -52,9 +52,8 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
 
   deploy:
-    - name: Deploy to Akash
-      needs: build
       uses: TedcryptoOrg/akash-deploy-action/.github/workflows/deploy.yml@make-deploy-sharable
+      needs: build
       with:
         PROJECT_PATH: "api"
         project_name: "api"
