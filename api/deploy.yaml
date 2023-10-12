@@ -4,7 +4,7 @@ services:
   monitor-api:
     image: joshlopes/tedcrypto-node-monitor-api:latest
     expose:
-      - port: 3002
+      - port: 3000
         as: 80
         to:
           - global: true
@@ -20,7 +20,7 @@ services:
       - DB_PASS=monitor
       - DB_NAME=ted_node_monitor
       - DB_DIALECT=mariadb
-      - PORT=3002
+      - PORT=3000
   database:
     image: mariadb:lts
     expose:
