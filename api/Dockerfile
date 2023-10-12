@@ -9,7 +9,7 @@ COPY . /app
 WORKDIR /app
 
 # Install the dependencies
-RUN bun install
+RUN bun install --production
 
 # Expose the port
 EXPOSE 3000

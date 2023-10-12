@@ -32,7 +32,6 @@
     "typescript": "^5.0.0"
   },
   "dependencies": {
-    "@babel/preset-typescript": "^7.23.0",
     "axios": "^1.5.1",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
