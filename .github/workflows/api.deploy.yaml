@@ -51,12 +51,14 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
 
-      - name: Deploy to Akash
-        uses: TedcryptoOrg/akash-deploy-action/.github/workflows/deploy.yml@make-deploy-sharable
-        with:
-          PROJECT_PATH: "api"
-          project_name: "api"
-        secrets:
-          SEED: ${{ secrets.API_WALLET_SEED }}
-          PASSWORD: ${{ secrets.AKASH_KEYRING_PASSWORD }}
-          ghcr-token: ${{ secrets.GITHUB_TOKEN }}
+  deploy:
+    - name: Deploy to Akash
+      needs: build
+      uses: TedcryptoOrg/akash-deploy-action/.github/workflows/deploy.yml@make-deploy-sharable
+      with:
+        PROJECT_PATH: "api"
+        project_name: "api"
+      secrets:
+        SEED: ${{ secrets.API_WALLET_SEED }}
+        PASSWORD: ${{ secrets.AKASH_KEYRING_PASSWORD }}
+        ghcr-token: ${{ secrets.GITHUB_TOKEN }}
