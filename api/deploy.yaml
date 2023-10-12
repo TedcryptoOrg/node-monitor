@@ -1,0 +1,83 @@
+---
+version: "2.0"
+services:
+  monitor-api:
+    image: joshlopes/tedcrypto-node-monitor-api:latest
+    expose:
+      - port: 3002
+        as: 80
+        to:
+          - global: true
+    command:
+      - bun
+      - start
+    args:
+      - ""
+    env:
+      - DB_HOST=database
+      - DB_PORT=3306
+      - DB_USER=monitor
+      - DB_PASS=monitor
+      - DB_NAME=ted_node_monitor
+      - DB_DIALECT=mariadb
+      - PORT=3002
+  database:
+    image: mariadb:lts
+    expose:
+      - port: 3306
+        as: 3306
+        proto: tcp
+        to:
+          - global: false
+          - service: monitor-api
+    env:
+      - MARIADB_ROOT_PASSWORD=root
+      - MARIADB_DATABASE=ted_node_monitor
+      - MARIADB_USER=monitor
+      - MARIADB_PASSWORD=monitor
+    params:
+      storage:
+        data:
+          mount: /mnt/data
+          readOnly: false
+profiles:
+  compute:
+    monitor-api:
+      resources:
+        cpu:
+          units: 1
+        memory:
+          size: 512Mi
+        storage:
+          - size: 1Gi
+    database:
+      resources:
+        cpu:
+          units: 0.1
+        memory:
+          size: 512Mi
+        storage:
+          - size: 1Gi
+          - name: data
+            size: 512Mi
+            attributes:
+              persistent: true
+              class: beta2
+  placement:
+    dcloud:
+      pricing:
+        monitor-api:
+          denom: uakt
+          amount: 1000
+        database:
+          denom: uakt
+          amount: 1000
+deployment:
+  monitor-api:
+    dcloud:
+      profile: monitor-api
+      count: 1
+  database:
+    dcloud:
+      profile: database
+      count: 1

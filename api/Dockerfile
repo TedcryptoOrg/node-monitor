@@ -1,0 +1,18 @@
+FROM oven/bun:1.0.4-alpine
+
+ENV PORT=3000
+
+# Copy the application files
+COPY . /app
+
+# Set the working directory
+WORKDIR /app
+
+# Install the dependencies
+RUN bun install
+
+# Expose the port
+EXPOSE 3000
+
+# Run the application
+CMD ["bun", "start"]
