@@ -1,0 +1,25 @@
+name: "API: Nuke All"
+
+defaults:
+  run:
+    working-directory: "api"
+
+on:
+  workflow_dispatch: ~
+
+concurrency:
+  group: ${{ github.head_ref || github.run_id }} ~ "api.deploy.yaml"
+  cancel-in-progress: true
+
+jobs:
+  nuke:
+      name: "Nuke all deployments"
+      uses: TedcryptoOrg/akash-deploy-action/.github/workflows/nuke-all.yml@v0.2
+      needs: build
+      with:
+        PROJECT_PATH: "api"
+        project_name: "api"
+      secrets:
+        SEED: ${{ secrets.API_WALLET_SEED }}
+        PASSWORD: ${{ secrets.AKASH_KEYRING_PASSWORD }}
+        ghcr-token: ${{ secrets.GITHUB_TOKEN }}
