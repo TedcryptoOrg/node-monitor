@@ -1,4 +1,4 @@
-FROM oven/bun:1.0.4-alpine
+FROM oven/bun:1.0.6-alpine
 
 ENV PORT=3000
 
