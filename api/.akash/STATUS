@@ -1,0 +1,30 @@
+{
+  "services": {
+    "database": {
+      "name": "database",
+      "available": 1,
+      "total": 1,
+      "uris": null,
+      "observed_generation": 1,
+      "replicas": 1,
+      "updated_replicas": 1,
+      "ready_replicas": 0,
+      "available_replicas": 1
+    },
+    "monitor-api": {
+      "name": "monitor-api",
+      "available": 0,
+      "total": 1,
+      "uris": [
+        "8bfbr9re35ct78ltodrh508urs.ingress.europlots.com"
+      ],
+      "observed_generation": 1,
+      "replicas": 1,
+      "updated_replicas": 1,
+      "ready_replicas": 0,
+      "available_replicas": 0
+    }
+  },
+  "forwarded_ports": null,
+  "ips": null
+}
