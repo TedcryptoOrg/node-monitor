@@ -45,11 +45,11 @@ profiles:
     monitor-api:
       resources:
         cpu:
-          units: 1
+          units: 0.1
         memory:
-          size: 512Mi
+          size: 256Mi
         storage:
-          - size: 1Gi
+          - size: 512Mi
     database:
       resources:
         cpu:
@@ -62,7 +62,7 @@ profiles:
             size: 512Mi
             attributes:
               persistent: true
-              class: beta2
+              class: beta3 #beta1 - HDD, beta2 - SSD, beta3 - NVMI
   placement:
     dcloud:
       pricing:
