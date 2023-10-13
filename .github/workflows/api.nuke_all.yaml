@@ -15,7 +15,6 @@ jobs:
   nuke:
       name: "Nuke all deployments"
       uses: TedcryptoOrg/akash-deploy-action/.github/workflows/nuke-all.yml@v0.2
-      needs: build
       with:
         PROJECT_PATH: "api"
         project_name: "api"
