@@ -51,7 +51,7 @@ jobs:
 
   deploy:
       name: "Deploy to Akash"
-      uses: TedcryptoOrg/akash-deploy-action/.github/workflows/deploy.yml@v0.1
+      uses: TedcryptoOrg/akash-deploy-action/.github/workflows/deploy.yml@main
       needs: build
       with:
         PROJECT_PATH: "api"
