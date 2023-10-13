@@ -48,7 +48,9 @@ jobs:
           context: ./api
           file: ./api/Dockerfile
           push: true
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: |
+            ${{ steps.meta.outputs.tags }}
+            joshlopes/tedcrypto-node-monitor-api:latest
           labels: ${{ steps.meta.outputs.labels }}
 
   deploy:
