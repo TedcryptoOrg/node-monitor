@@ -23,6 +23,15 @@ jobs:
       - name: Check out code
         uses: actions/checkout@v4
 
+      - name: Extract Tag Name
+        id: tag
+        run: |
+          # Extract the tag name from the github.ref context variable
+          FULL_TAG="${{ github.ref }}"
+          TAG_NAME="${FULL_TAG#refs/tags/api-}"
+          echo "Tag Name: $TAG_NAME"
+          echo "::set-output name=tag::$TAG_NAME"
+
       - name: Log in to Docker Hub
         uses: docker/login-action@b4bedf8053341df3b5a9f9e0f2cf4e79e27360c6
         with:
@@ -44,7 +53,7 @@ jobs:
           tags: |
             ${{ steps.meta.outputs.tags }}
             joshlopes/tedcrypto-node-monitor-api:latest
-            joshlopes/tedcrypto-node-monitor-api:${{ github.ref }}
+            joshlopes/tedcrypto-node-monitor-api:${{ steps.tag.outputs.tag }}
           labels: ${{ steps.meta.outputs.labels }}
 
   deploy:
@@ -54,7 +63,7 @@ jobs:
       with:
         PROJECT_PATH: "api"
         project_name: "api"
-        image: joshlopes/tedcrypto-node-monitor-api:${{ github.ref }}
+        image: joshlopes/tedcrypto-node-monitor-api:${{ build.steps.tag.outputs.tag }}
       secrets:
         SEED: ${{ secrets.API_WALLET_SEED }}
         PASSWORD: ${{ secrets.AKASH_KEYRING_PASSWORD }}
