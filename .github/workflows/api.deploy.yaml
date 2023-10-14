@@ -54,8 +54,8 @@ jobs:
       with:
         PROJECT_PATH: "api"
         project_name: "api"
+        image: joshlopes/tedcrypto-node-monitor-api:${{ github.ref }}
       secrets:
         SEED: ${{ secrets.API_WALLET_SEED }}
         PASSWORD: ${{ secrets.AKASH_KEYRING_PASSWORD }}
         ghcr-token: ${{ secrets.GITHUB_TOKEN }}
-        image: joshlopes/tedcrypto-node-monitor-api:${{ github.ref }}
