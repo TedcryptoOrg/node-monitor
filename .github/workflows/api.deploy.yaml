@@ -49,7 +49,6 @@ jobs:
           file: ./api/Dockerfile
           push: true
           tags: |
-            ${{ steps.meta.outputs.tags }}
             joshlopes/tedcrypto-node-monitor-api:latest
             joshlopes/tedcrypto-node-monitor-api:${{ steps.tag.outputs.tag }}
           labels: ${{ steps.meta.outputs.labels }}
