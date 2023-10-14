@@ -7,11 +7,8 @@ defaults:
 on:
   workflow_dispatch: ~
   push:
-      paths:
-        - ".github/workflows/api.deploy.yaml"
-        - "api/**"
-      branches:
-        - "main"
+    tags:
+      - 'api-v*'
 
 concurrency:
   group: ${{ github.head_ref || github.run_id }} ~ "api.deploy.yaml"
@@ -47,6 +44,7 @@ jobs:
           tags: |
             ${{ steps.meta.outputs.tags }}
             joshlopes/tedcrypto-node-monitor-api:latest
+            joshlopes/tedcrypto-node-monitor-api:${{ github.ref }}
           labels: ${{ steps.meta.outputs.labels }}
 
   deploy:
@@ -60,3 +58,4 @@ jobs:
         SEED: ${{ secrets.API_WALLET_SEED }}
         PASSWORD: ${{ secrets.AKASH_KEYRING_PASSWORD }}
         ghcr-token: ${{ secrets.GITHUB_TOKEN }}
+        image: joshlopes/tedcrypto-node-monitor-api:${{ github.ref }}
