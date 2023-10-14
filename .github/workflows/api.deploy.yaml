@@ -63,7 +63,7 @@ jobs:
       with:
         PROJECT_PATH: "api"
         project_name: "api"
-        image: joshlopes/tedcrypto-node-monitor-api:${{ build.steps.tag.outputs.tag }}
+        image: joshlopes/tedcrypto-node-monitor-api:${{ steps.tag.outputs.tag }}
       secrets:
         SEED: ${{ secrets.API_WALLET_SEED }}
         PASSWORD: ${{ secrets.AKASH_KEYRING_PASSWORD }}
