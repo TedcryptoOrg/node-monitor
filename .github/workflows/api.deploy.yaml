@@ -24,7 +24,7 @@ jobs:
 
     steps:
       - name: Check out code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Log in to Docker Hub
         uses: docker/login-action@b4bedf8053341df3b5a9f9e0f2cf4e79e27360c6
