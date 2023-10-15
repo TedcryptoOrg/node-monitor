@@ -1,8 +1,8 @@
-#!/bin/bash
+#!/bin/sh
 set -e
 
 # Install sequelize-cli
-bun install sequelize-cli
+bun install -g sequelize sequelize-cli mariadb
 
 # Function to check MariaDB readiness
 check_mariadb_ready() {
