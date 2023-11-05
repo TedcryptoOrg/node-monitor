@@ -17,7 +17,7 @@ services:
       retries: 120
 
   node-app:
-    image: oven/bun:1.0.7-alpine
+    image: oven/bun:1.0.9-alpine
     working_dir: /app
     restart: always
     volumes:
