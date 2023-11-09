@@ -50,7 +50,7 @@ jobs:
         with:
           compose-file: 'api/docker-compose.yaml'
 
-      - name: Use the reusable workflow
+      - name: "DB Migrate"
         uses: nick-fields/retry@v2
         with:
         max_attempts: 3
