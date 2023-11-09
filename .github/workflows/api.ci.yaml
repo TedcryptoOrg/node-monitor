@@ -57,8 +57,12 @@ jobs:
           retry_on: error
           timeout_seconds: 5
           command: |
-            ls -la && \
-            npm install -g sequelize sequelize-cli mariadb && \
+            cd api && \
+            npm install -g sequelize-cli && \
+            echo "Waiting for DB to be ready..." && \
+            while ! nc -z ${DB_HOST} ${DB_PORT}; do sleep 1; done && \
+            echo "DB is ready!" && \
+            echo "Running migrations..." && \
             npx sequelize-cli db:migrate --url "${DB_DIALECT}://${DB_USER}:${DB_PASS}@${DB_HOST}:${DB_PORT}/${DB_NAME}?version=11.0.3&charset=utf8mb4"
 
       - name: Run tests
