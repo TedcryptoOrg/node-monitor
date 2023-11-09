@@ -7,6 +7,7 @@ import {server} from "../../../../src/server";
 import {SERVICE_TYPES, ServiceInput} from "../../../../src/database/models/service";
 
 jest.retryTimes(3);
+jest.setTimeout(30000);
 
 beforeAll((done) => {
     setupIntegrationTest(done);

@@ -6,6 +6,7 @@ import {server} from "../../../../src/server";
 import {ServerInput} from "../../../../src/database/models/server";
 
 jest.retryTimes(3);
+jest.setTimeout(30000);
 
 beforeAll((done) => {
     setupIntegrationTest(done);

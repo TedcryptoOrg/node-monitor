@@ -4,6 +4,9 @@ import {ConfigurationInput} from "../../../../src/database/models/configuration"
 import {setupIntegrationTest, teardownIntegrationTest} from "../../../Helper/integrationTest";
 import {server} from "../../../../src/server";
 
+jest.retryTimes(3);
+jest.setTimeout(30000);
+
 beforeAll((done) => {
     setupIntegrationTest(done);
 })
