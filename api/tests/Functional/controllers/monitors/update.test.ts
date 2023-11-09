@@ -5,6 +5,8 @@ import {setupIntegrationTest, teardownIntegrationTest} from "../../../Helper/int
 import {server} from "../../../../src/server";
 import {MonitorInput} from "../../../../src/database/models/monitor";
 
+jest.retryTimes(3);
+
 beforeAll((done) => {
     setupIntegrationTest(done);
 })

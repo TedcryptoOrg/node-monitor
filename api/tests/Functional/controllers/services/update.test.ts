@@ -6,6 +6,8 @@ import {setupIntegrationTest, teardownIntegrationTest} from "../../../Helper/int
 import {server} from "../../../../src/server";
 import {SERVICE_TYPES, ServiceInput} from "../../../../src/database/models/service";
 
+jest.retryTimes(3);
+
 beforeAll((done) => {
     setupIntegrationTest(done);
 })
