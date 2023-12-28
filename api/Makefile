@@ -49,6 +49,9 @@ up:
 stop:
 	$(DOCKER_COMPOSE) stop
 
+down:
+	$(DOCKER_COMPOSE) down
+
 shell:
 	$(DOCKER_COMPOSE_EXEC) node-app /bin/sh
 

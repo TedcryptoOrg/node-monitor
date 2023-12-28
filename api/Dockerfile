@@ -1,8 +1,8 @@
-FROM oven/bun:1.0.9-alpine
+FROM oven/bun:1.0.20-alpine
 
 RUN apk --no-cache add mariadb-client
 
-ENV PORT=3000
+ENV PORT=3002
 
 # Copy the application files
 COPY . /app
@@ -14,7 +14,7 @@ WORKDIR /app
 RUN bun install --production
 
 # Expose the port
-EXPOSE 3000
+EXPOSE 3002
 
 COPY docker/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh

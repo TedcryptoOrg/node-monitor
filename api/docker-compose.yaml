@@ -17,12 +17,17 @@ services:
       retries: 120
 
   node-app:
-    image: oven/bun:1.0.9-alpine
+    image: oven/bun:1.0.20-alpine
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - .env
     working_dir: /app
     restart: always
     volumes:
       - ./:/app
-    command: ["bun", "start:watch"]
+    command: ["bun", "start"]
     ports:
       - "3002:3002"
     depends_on:
