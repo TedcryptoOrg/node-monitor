@@ -49,8 +49,13 @@ up:
 stop:
 	$(DOCKER_COMPOSE) stop
 
+## [Docker] Down containers
 down:
 	$(DOCKER_COMPOSE) down
+
+## [Docker] Build containers
+build:
+	$(DOCKER_COMPOSE) build
 
 shell:
 	$(DOCKER_COMPOSE_EXEC) node-app /bin/sh
