@@ -40,6 +40,8 @@ help:
 DOCKER_COMPOSE = docker compose --project-name $(PROJECT_NAME)
 DOCKER_COMPOSE_EXEC ?= $(DOCKER_COMPOSE) exec
 DOCKER_NODE_COMPOSE_RUN ?= $(DOCKER_COMPOSE) run --rm -it node-app
+SEQUELIZE_IMAGE ?= "calipsaci/sequelize-cli"
+SEQUELIZE_RUN ?= docker run --rm -it --network=$(NETWORK) -v .:/app -w /app $(SEQUELIZE_IMAGE)
 
 ## [Docker] Start containers
 up:
@@ -78,7 +80,7 @@ db-create-migration:
 
 ## [Database] Run migrations
 db-migrate:
-	$(DOCKER_NODE_COMPOSE_RUN) bun sequelize-cli db:migrate --url $(DB_DSN)
+	$(SEQUELIZE_RUN) npx sequelize-cli db:migrate --url $(DB_DSN)
 
 ## [Database] Undo last migration
 db-migrate-undo:
