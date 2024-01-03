@@ -8,9 +8,32 @@ import { RestClient } from '../client/restClient'
 import { type ClientInterface } from '../client/clientInterface'
 import { SignMissCheck } from './checkers/signMissCheck'
 import { type Chain } from '@tedcryptoorg/cosmos-directory'
-import { type ConfigurationOutput } from '../database/models/configuration'
-import { monitorTypes } from '../database/models/monitor'
 import { MissCounter } from './checkers/priceFeeder/missCounter'
+import {ApiMonitor } from '../type/api/ApiMonitor'
+import {ApiConfiguration} from "../type/api/ApiConfiguration";
+
+const monitorTypes = {
+  urlCheck: {
+    name: 'urlCheck',
+    description: 'Monitor that a specific url is alive (this is automatically added to services created)',
+  },
+  blockCheck: {
+    name: 'blockCheck',
+    description: 'Check how many blocks were missed over a period'
+  },
+  signMissCheck: {
+    name: 'signMissCheck',
+    description: 'Check how much blocks were not signed over a period',
+  },
+  priceFeederMissCount: {
+    name: 'priceFeederMissCount',
+    description: 'Blocks missed in the price feeder over a period',
+  },
+  nodeExporterDiskSpace: {
+    name: 'nodeExporterDiskSpace',
+    description: 'Disk space left',
+  },
+}
 
 export class NodeMonitor extends AbstractMonitor {
   private rpcClient: ClientInterface | undefined
@@ -19,48 +42,47 @@ export class NodeMonitor extends AbstractMonitor {
   constructor (
     protected readonly name: string,
     private readonly chain: Chain,
-    private readonly configuration: ConfigurationOutput,
+    private readonly configuration: ApiConfiguration,
+    private readonly monitors: ApiMonitor[],
     private readonly alertChannels: AlertChannel[]
   ) {
     super()
-    console.debug(this.configuration)
 
-    configuration.getMonitors().then((monitors) => {
-      monitors.forEach((monitor) => {
-        console.log(`[${this.name}] Loaded monitor: ${monitor.name}`)
-        const monitorConfiguration = JSON.parse(monitor.configuration_object)
-        if (monitorConfiguration === undefined) {
-          throw new Error(`[${this.name}][${monitor.name}] Monitor configuration is not defined.`)
-        }
-        switch (monitor.type) {
-          case monitorTypes.nodeExporterDiskSpace.name:
-            this.monitor_params.push(new DiskSpace(this.name, monitorConfiguration, this.alertChannels))
-            break
-          case monitorTypes.priceFeederMissCount.name:
-            this.monitor_params.push(new MissCounter(this.name, monitorConfiguration, this.alertChannels))
-            break
-          case monitorTypes.blockCheck.name:
-            this.monitor_params.push(new BlockCheck(
-              this.name,
-              this.configuration.chain,
-              this.getRpcClient(monitorConfiguration),
-              monitorConfiguration,
-              this.alertChannels
-            ))
-            break
-          case monitorTypes.urlCheck.name:
-            this.monitor_params.push(new UrlCheck(this.name, monitorConfiguration, this.alertChannels))
-            break
-          case monitorTypes.signMissCheck.name:
-            this.monitor_params.push(new SignMissCheck(
-              this.name,
-              this.chain,
-              monitorConfiguration,
-              this.getNodeClient(monitorConfiguration),
-              this.alertChannels
-            ))
-        }
-      })
+    monitors.forEach((monitor) => {
+      console.log(`[${this.name}] Loaded monitor: ${monitor.name}`)
+      const monitorConfiguration = JSON.parse(monitor.configuration_object)
+      if (monitorConfiguration === undefined) {
+        throw new Error(`[${this.name}][${monitor.name}] Monitor configuration is not defined.`)
+      }
+      switch (monitor.type) {
+        case monitorTypes.nodeExporterDiskSpace.name:
+          this.monitor_params.push(new DiskSpace(this.name, monitorConfiguration, this.alertChannels))
+          break
+        case monitorTypes.priceFeederMissCount.name:
+          this.monitor_params.push(new MissCounter(this.name, monitorConfiguration, this.alertChannels))
+          break
+        case monitorTypes.blockCheck.name:
+          this.monitor_params.push(new BlockCheck(
+            this.name,
+            this.configuration.chain,
+            this.getRpcClient(monitorConfiguration),
+            monitorConfiguration,
+            this.alertChannels
+          ))
+          break
+        case monitorTypes.urlCheck.name:
+          this.monitor_params.push(new UrlCheck(this.name, monitorConfiguration, this.alertChannels))
+          break
+        case monitorTypes.signMissCheck.name:
+          this.monitor_params.push(new SignMissCheck(
+            this.name,
+            this.chain,
+            monitorConfiguration,
+            this.getNodeClient(monitorConfiguration),
+            this.alertChannels
+          ))
+          break
+      }
     })
   }
 

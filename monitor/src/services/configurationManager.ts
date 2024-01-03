@@ -1,0 +1,13 @@
+import axios from "axios";
+import {ApiConfiguration} from "../type/api/ApiConfiguration";
+import {ApiMonitor} from "../type/api/ApiMonitor";
+
+export class ConfigurationManager {
+    async getAllConfigurations(): Promise<ApiConfiguration[]> {
+        return (await axios.get('http://localhost:3002/api/configurations')).data;
+    }
+
+    async getMonitors(configurationId: number): Promise<ApiMonitor[]> {
+        return (await axios.get(`http://localhost:3002/api/configurations/${configurationId}/monitors`)).data;
+    }
+}

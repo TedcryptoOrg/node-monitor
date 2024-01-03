@@ -1,12 +1,14 @@
+import {ApiConfiguration} from "./type/api/ApiConfiguration";
+
 require('dotenv').config({ path: '.env', override: false })
 
 import { Telegram } from './AlertChannel/telegram'
 import { type AlertChannel } from './AlertChannel/alertChannel'
 import { NodeMonitor } from './monitor/nodeMonitor'
 import {ChainDirectory} from "@tedcryptoorg/cosmos-directory";
-import {ConfigurationManager} from "./services/configuration/configurationManager";
-import {ConfigurationOutput} from "./database/models/configuration";
-import {database} from "./database/database";
+import {ConfigurationManager} from "./services/configurationManager";
+import {ApiMonitor} from "./type/api/ApiMonitor";
+import {sleep} from "./util/sleep";
 
 const alertChannels: AlertChannel[] = []
 if (
@@ -21,13 +23,19 @@ if (
   }))
 }
 
-async function startNodeMonitor (configuration: ConfigurationOutput): Promise<void> {
-  console.log(`Starting ${configuration.name} node monitor...`)
-
-  const chain = (await new ChainDirectory().getChainData(configuration.chain)).chain;
+async function startNodeMonitor (configuration: ApiConfiguration, monitors: ApiMonitor[]): Promise<void> {
+  console.log(`Starting ${configuration.name} node monitor with ${monitors.length} monitors...`)
 
   try {
-    await new NodeMonitor(configuration.name, chain, configuration, alertChannels).start()
+    const chain = (await new ChainDirectory().getChainData(configuration.chain)).chain;
+
+    await new NodeMonitor(
+        configuration.name,
+        chain,
+        configuration,
+        monitors,
+        alertChannels
+    ).start()
   } catch (error) {
     const message = `🚨 ${configuration.name} Node monitor failed!\n${error}`
     console.error(message)
@@ -35,17 +43,26 @@ async function startNodeMonitor (configuration: ConfigurationOutput): Promise<vo
 }
 
 async function main (): Promise<void> {
-  const sequelize = database.getDatabase()
+  if (alertChannels.length === 0) {
+    console.warn('No alert channels configured. Please configure at least one alert channel. Continuing in 10 seconds...')
+    await sleep(10000);
+  }
 
   const configurationManager = new ConfigurationManager();
   const configurations = await configurationManager.getAllConfigurations();
   if (configurations.length === 0) {
     throw new Error('No configurations found!');
   }
-  configurations.forEach((configuration) => {
+  for (const configuration of configurations) {
     console.log(`Loaded configuration: ${configuration.name}`)
-    startNodeMonitor(configuration)
-  })
+    const monitors = await configurationManager.getMonitors(configuration.id);
+    if (monitors.length === 0) {
+      console.warn(`No monitors found for configuration: ${configuration.name}`)
+      continue
+    }
+
+    startNodeMonitor(configuration, monitors);
+  }
 }
 
 main().catch((error) => {

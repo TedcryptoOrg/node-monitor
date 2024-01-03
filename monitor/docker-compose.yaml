@@ -1,21 +1,5 @@
 version: '3'
 services:
-  database:
-    image: mariadb:11.1.2
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: ted_node_monitor
-      MYSQL_USER: monitor
-      MYSQL_PASSWORD: monitor
-    ports:
-      - "3306:3306"
-    volumes:
-      - mariadb_data:/var/lib/mysql
-    healthcheck:
-      test: [ "CMD", "/usr/local/bin/healthcheck.sh", "--su-mysql", "--connect", "--innodb_initialized" ]
-      interval: 2s
-      retries: 120
-
   node-app:
     image: node:20.8.0
     working_dir: /app
@@ -25,6 +9,3 @@ services:
     depends_on:
       database:
         condition: service_healthy
-
-volumes:
-  mariadb_data:

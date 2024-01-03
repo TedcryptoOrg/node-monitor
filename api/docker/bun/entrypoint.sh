@@ -17,4 +17,8 @@ done
 #bunx sequelize-cli db:migrate --url "$DB_DIALECT://$DB_USER:$DB_PASS@$DB_HOST:$DB_PORT/$DB_NAME?version=11.0.3&charset=utf8m4"
 
 # Start the app
+if [ "$APP_ENV" = "dev" ]; then
+  bun start:watch
+fi
+
 bun start

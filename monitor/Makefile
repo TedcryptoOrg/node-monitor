@@ -47,6 +47,14 @@ up:
 stop:
 	docker compose stop
 
+## [Docker] Down containers
+down:
+	docker compose down
+
+## [Docker] Build containers
+build:
+	docker compose build
+
 ## [NPM] Install packages
 install:
 	$(DOCKER_NODE_COMPOSE_RUN) npm install
