@@ -3,4 +3,6 @@ export type ApiConfiguration = {
     name: string;
     chain: string;
     is_enabled: boolean;
+    createdAt: string;
+    updatedAt: string;
 }

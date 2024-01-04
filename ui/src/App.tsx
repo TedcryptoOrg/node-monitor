@@ -5,8 +5,9 @@ import { Box } from '@mui/system';
 import { navbarItems } from './Navbar';
 import ConfigurationsComponent from './components/configurations/ConfigurationsComponent';
 import MonitorsComponent from './components/MonitorsComponent';
-import ServersComponent from './components/ServersComponent';
+import ServersComponent from './components/servers/ServersComponent';
 import DashboardComponent from './components/DashboardComponent';
+import ConfigurationOverview from './components/configurations/ConfigurationOverview';
 
 function App() {
     return (
@@ -33,8 +34,10 @@ function App() {
                     <Routes>
                         <Route path="/" element={<DashboardComponent />} />
                         <Route path="/configurations" element={<ConfigurationsComponent />} />
+                        <Route path="/configurations/:id" element={<ConfigurationOverview />} />
                         <Route path="/monitors" element={<MonitorsComponent />} />
                         <Route path="/servers" element={<ServersComponent />} />
+                        <Route path="/servers/:id" element={<ConfigurationOverview />} />
                     </Routes>
                 </Box>
             </Box>

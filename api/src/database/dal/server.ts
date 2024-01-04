@@ -1,6 +1,15 @@
 import Server, {ServerInput, ServerOutput} from "../models/server";
 import {RecordNotFound} from "../../exceptions/recordNotFound";
 
+export async function findByConfigurationId(id: number): Promise<ServerOutput[]> {
+    return await Server.findAll({
+        where: {
+            configuration_id: id
+        }
+    })
+}
+
+
 export const create = async (serverInput: ServerInput): Promise<ServerOutput> => {
     return await Server.create(serverInput)
 }
@@ -11,10 +20,12 @@ export const update = async (id: number, server: ServerInput): Promise<ServerOut
         throw new RecordNotFound(`Configuration with id ${id} not found`)
     }
 
-    serverToUpdate.name = server.name
-    serverToUpdate.is_enabled = server.is_enabled
-    serverToUpdate.address = server.address
-    serverToUpdate.configuration_id = server.configuration_id
+    serverToUpdate.set({
+        name: server.name,
+        is_enabled: server.is_enabled,
+        address: server.address,
+        configuration_id: server.configuration_id
+    })
 
     await serverToUpdate.save();
 

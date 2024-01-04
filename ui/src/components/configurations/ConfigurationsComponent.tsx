@@ -1,14 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
 import UpsertMonitorModal from './UpsertMonitorModal';
 import CustomSnackbar from "../shared/CustomSnackbar";
 import { AlertColor } from '@mui/material';
+import { Link } from 'react-router-dom';
 
 const ConfigurationsComponent: React.FC = () => {
     const [openModal, setOpenModal] = useState(false);
-    const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [configurationsData, setConfigurationsData] = useState([]);
     const [editMonitor, setEditMonitor] = useState(null);
+
+    // snackbar
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarMessage, setSnackbarMessage] = useState('');
     const [snackbarSeverity, setSnackbarSeverity] = useState<AlertColor>('error');
 
@@ -18,7 +21,7 @@ const ConfigurationsComponent: React.FC = () => {
         setSnackbarOpen(true);
     }
 
-    const fetchData = () => {
+    const fetchData = useCallback(() => {
         fetch(`${process.env.REACT_APP_API_HOST}/api/configurations`)
             .then(response => {
                 if (!response.ok) {
@@ -27,7 +30,7 @@ const ConfigurationsComponent: React.FC = () => {
                 return response.json();
             })
             .then(data => setConfigurationsData(data));
-    };
+    }, []);
 
     const handleModalOpen = () => {
         setOpenModal(true);
@@ -48,7 +51,7 @@ const ConfigurationsComponent: React.FC = () => {
 
     useEffect(() => {
         fetchData();
-    }, []);
+    }, [fetchData]);
 
     const handleEdit = (id: number) => {
         console.log('edit' , id , configurationsData)
@@ -99,6 +102,9 @@ const ConfigurationsComponent: React.FC = () => {
                                 <TableCell>{row.chain}</TableCell>
                                 <TableCell>{row.is_enabled ? 'Yes' : 'No'}</TableCell>
                                 <TableCell>
+                                    <Button variant="contained" color="primary" component={Link} to={`/configurations/${row.id}`}>
+                                        View
+                                    </Button>
                                     <Button variant="contained" color="primary" onClick={() => handleEdit(row.id)}>
                                         Edit
                                     </Button>
