@@ -1,0 +1,39 @@
+import { Link } from 'react-router-dom';
+import ListItem from '@mui/material/ListItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import SettingsIcon from '@mui/icons-material/Settings';
+import DnsIcon from '@mui/icons-material/Dns';
+import MonitorHeartIcon from '@mui/icons-material/MonitorHeart';
+
+const NavbarItem = ({ name, icon: Icon, path }: { name: string, icon: any, path: string }) => (
+    <Link to={path}>
+      <ListItem button>
+        <ListItemIcon>
+          <Icon />
+        </ListItemIcon>
+        <ListItemText primary={name} />
+      </ListItem>
+    </Link>
+);
+
+export const navbarItems = [
+  {
+    name: 'Configurations',
+    icon: SettingsIcon,
+    path: '/configurations',
+    component: NavbarItem
+  },
+  {
+    name: 'Monitors',
+    icon: MonitorHeartIcon,
+    path: '/monitors',
+    component: NavbarItem
+  },
+  {
+    name: 'Servers',
+    icon: DnsIcon,
+    path: '/servers',
+    component: NavbarItem
+  },
+];

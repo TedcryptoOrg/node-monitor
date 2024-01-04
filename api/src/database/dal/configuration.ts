@@ -6,15 +6,17 @@ export const create = async (configuration: ConfigurationInput): Promise<Configu
 }
 
 export const update = async (id: number, configuration: ConfigurationInput): Promise<ConfigurationOutput> => {
+    console.log(id, configuration)
     const configurationToUpdate = await Configuration.findByPk(id)
     if (configurationToUpdate === null) {
         throw new RecordNotFound(`Configuration with id ${id} not found`)
     }
 
-    configurationToUpdate.name = configuration.name
-    configurationToUpdate.chain = configuration.chain
-    configurationToUpdate.is_enabled = configuration.is_enabled
-
+    configurationToUpdate.set({
+        name: configuration.name,
+        chain: configuration.chain,
+        is_enabled: configuration.is_enabled
+    })
     await configurationToUpdate.save();
 
     return configurationToUpdate

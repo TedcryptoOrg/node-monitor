@@ -10,7 +10,7 @@ dotenv.config();
 
 const app = express();
 var corsOptions = {
-    origin: "http://localhost:8081"
+    origin: ["http://localhost:3000", "http://192.168.64.1:3000"]
 };
 
 // Setting it up

@@ -5,6 +5,14 @@ export const update = async (req: any, resp: any) => {
         resp.status(400).send('Missing id')
         return
     }
+    configurationDal.get(Number(req.params.id)).then((configuration) => {
+        if (configuration === null) {
+            resp.status(404).send({
+                message: `Configuration with id ${req.params.id} not found`
+            })
+            return
+        }
+    });
 
     const requiredFields = ["name", "chain", "is_enabled"];
     requiredFields.forEach((field) => {
