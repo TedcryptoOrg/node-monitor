@@ -56,8 +56,8 @@ const UpsertMonitorModal: React.FC<AddMonitorModalProps> = (
         };
 
         const url = editMonitor
-            ? `http://localhost:3002/api/configurations/${editMonitor.id}`
-            : 'http://localhost:3002/api/configurations';
+            ? `${process.env.REACT_APP_API_HOST}/api/configurations/${editMonitor.id}`
+            : `${process.env.REACT_APP_API_HOST}/api/configurations`;
         const method = editMonitor ? 'PUT' : 'POST';
 
         fetch(url, {
@@ -97,6 +97,7 @@ const UpsertMonitorModal: React.FC<AddMonitorModalProps> = (
                             fullWidth
                             variant="standard"
                             value={name}
+                            autoComplete={'off'}
                             onChange={e => setName(e.target.value)}
                         />
                         <TextField

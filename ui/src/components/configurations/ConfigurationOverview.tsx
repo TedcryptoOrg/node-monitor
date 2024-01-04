@@ -57,6 +57,7 @@ const ConfigurationOverview: React.FC = () => {
     }
 
     const handleServerModalClose = () => {
+        setEditServer(null);
         setOpenServerModal(false);
     };
 

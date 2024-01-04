@@ -101,6 +101,7 @@ const UpsertServerModal: React.FC<UpsertServerModalProps> = (
                             fullWidth
                             variant="standard"
                             value={name}
+                            autoComplete={'off'}
                             onChange={e => setName(e.target.value)}
                         />
                         <TextField
@@ -111,6 +112,7 @@ const UpsertServerModal: React.FC<UpsertServerModalProps> = (
                             fullWidth
                             variant="standard"
                             value={address}
+                            autoComplete={'off'}
                             onChange={e => setAddress(e.target.value)}
                         />
                         <FormControlLabel

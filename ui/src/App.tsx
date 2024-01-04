@@ -8,6 +8,7 @@ import MonitorsComponent from './components/MonitorsComponent';
 import ServersComponent from './components/servers/ServersComponent';
 import DashboardComponent from './components/DashboardComponent';
 import ConfigurationOverview from './components/configurations/ConfigurationOverview';
+import ServerOverview from "./components/servers/ServerOverview";
 
 function App() {
     return (
@@ -37,7 +38,7 @@ function App() {
                         <Route path="/configurations/:id" element={<ConfigurationOverview />} />
                         <Route path="/monitors" element={<MonitorsComponent />} />
                         <Route path="/servers" element={<ServersComponent />} />
-                        <Route path="/servers/:id" element={<ConfigurationOverview />} />
+                        <Route path="/servers/:id" element={<ServerOverview />} />
                     </Routes>
                 </Box>
             </Box>

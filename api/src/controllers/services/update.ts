@@ -17,7 +17,7 @@ export const update = async (req: any, resp: any) => {
         }
     })
 
-    const validTypes = Object.keys(SERVICE_TYPES);
+    const validTypes = Object.values(SERVICE_TYPES);
     if (!validTypes.includes(req.body.type)) {
         resp.status(400).send({
             message: `Invalid type ${req.body.type}`

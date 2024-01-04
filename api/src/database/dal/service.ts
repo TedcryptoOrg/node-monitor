@@ -1,5 +1,14 @@
 import Service , {ServiceInput, ServiceOutput} from "../models/service";
 
+export async function findByServerId(id: number): Promise<ServiceOutput[]> {
+    return await Service.findAll({
+        where: {
+            server_id: id
+        }
+    })
+}
+
+
 export const create = async (serviceInput: ServiceInput): Promise<ServiceOutput> => {
     return await Service.create(serviceInput)
 }

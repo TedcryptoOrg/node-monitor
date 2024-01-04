@@ -5,8 +5,8 @@ import db from "../config";
 import Server from "./server";
 
 export const SERVICE_TYPES: {RPC: string, REST: string, PROMETHEUS: string, NODE_EXPORTER: string} = {
-    RPC: 'RPC',
-    REST: 'REST',
+    RPC: 'rpc',
+    REST: 'rest',
     PROMETHEUS: 'prometheus',
     NODE_EXPORTER: 'node_exporter',
 }
