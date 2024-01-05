@@ -103,7 +103,7 @@ const ServerOverview: React.FC = () => {
         fetch(`${process.env.REACT_APP_API_HOST}/api/services/${id}`, {
             method: 'DELETE',
         }).then(() => {
-            fetchData()
+            fetchServices()
         }).catch((error) => {
             sendNotification(`Error: ${error}`, 'error')
         });
