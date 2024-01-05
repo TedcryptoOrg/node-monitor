@@ -10,6 +10,9 @@ ENV PORT=3002
 
 FROM bun_base as dev
 
+# Copy the application files
+COPY ../.. /app
+
 # Install the dependencies
 RUN bun install
 
