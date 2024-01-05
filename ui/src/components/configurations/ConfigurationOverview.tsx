@@ -40,7 +40,7 @@ const ConfigurationOverview: React.FC = () => {
         fetchData();
         fetchServers();
         fetchMonitors();
-    }, [id]);
+    }, [fetchData, fetchServers, fetchMonitors]);
 
     // snackbar
     const [snackbarOpen, setSnackbarOpen] = useState(false);

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import { TextField } from '@mui/material';
 import { PriceFeederMissCountConfiguration } from "../../../types/ApiMonitor";
 
@@ -8,12 +8,33 @@ interface PriceFeederMissCountConfigProps {
 }
 
 const PriceFeederMissCountConfig: React.FC<PriceFeederMissCountConfigProps> = ({ config, setConfig }) => {
-    const [missTolerance, setMissTolerance] = useState(config.miss_tolerance || 0);
-    const [missTolerancePeriodSeconds, setMissTolerancePeriodSeconds] = useState(config.miss_tolerance_period_seconds || 0);
-    const [sleepDurationSeconds, setSleepDurationSeconds] = useState(config.sleep_duration_seconds || 0);
-    const [alertSleepDurationMinutes, setAlertSleepDurationMinutes] = useState(config.alert_sleep_duration_minutes || 0);
+    const [missTolerance, setMissTolerance] = useState(config.miss_tolerance || 100);
+    const [missTolerancePeriodSeconds, setMissTolerancePeriodSeconds] = useState(config.miss_tolerance_period_seconds || 3600);
+    const [sleepDurationSeconds, setSleepDurationSeconds] = useState(config.sleep_duration_seconds || 5);
+    const [alertSleepDurationMinutes, setAlertSleepDurationMinutes] = useState(config.alert_sleep_duration_minutes || 60);
     const [valoperAddress, setValoperAddress] = useState(config.valoper_address || '');
     const [restAddress, setRestAddress] = useState(config.rest_address || '');
+
+    useEffect(() => {
+        setMissTolerance(config.miss_tolerance || 100);
+        setMissTolerancePeriodSeconds(config.miss_tolerance_period_seconds || 3600);
+        setSleepDurationSeconds(config.sleep_duration_seconds || 5);
+        setAlertSleepDurationMinutes(config.alert_sleep_duration_minutes || 60);
+        setValoperAddress(config.valoper_address || '');
+        setRestAddress(config.rest_address || '');
+
+        if (config.miss_tolerance === undefined) {
+            setConfig((prevConfig: PriceFeederMissCountConfiguration) => ({
+                ...prevConfig,
+                miss_tolerance: 100,
+                miss_tolerance_period_seconds: 3600,
+                sleep_duration_seconds: 5,
+                alert_sleep_duration_minutes: 60,
+                valoper_address: '',
+                rest_address: ''
+            }));
+        }
+    }, [config, setConfig]);
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = event.target;
@@ -49,6 +70,7 @@ const PriceFeederMissCountConfig: React.FC<PriceFeederMissCountConfigProps> = ({
                 margin="dense"
                 id="miss_tolerance"
                 label="Miss Tolerance"
+                helperText={"Number of blocks to tolerate missing before alerting"}
                 type="number"
                 fullWidth
                 variant="standard"
@@ -60,6 +82,7 @@ const PriceFeederMissCountConfig: React.FC<PriceFeederMissCountConfigProps> = ({
                 margin="dense"
                 id="miss_tolerance_period_seconds"
                 label="Miss Tolerance Period Seconds"
+                helperText={"Number of seconds without missing to reset counter"}
                 type="number"
                 fullWidth
                 variant="standard"
@@ -71,6 +94,7 @@ const PriceFeederMissCountConfig: React.FC<PriceFeederMissCountConfigProps> = ({
                 margin="dense"
                 id="sleep_duration_seconds"
                 label="Sleep Duration Seconds"
+                helperText={"Intervals to run the check"}
                 type="number"
                 fullWidth
                 variant="standard"
@@ -82,6 +106,7 @@ const PriceFeederMissCountConfig: React.FC<PriceFeederMissCountConfigProps> = ({
                 margin="dense"
                 id="alert_sleep_duration_minutes"
                 label="Alert Sleep Duration Minutes"
+                helperText={"Number of minutes between alerts"}
                 type="number"
                 fullWidth
                 variant="standard"
@@ -93,6 +118,7 @@ const PriceFeederMissCountConfig: React.FC<PriceFeederMissCountConfigProps> = ({
                 margin="dense"
                 id="valoper_address"
                 label="Valoper Address"
+                helperText={"Valoper address to check"}
                 type="text"
                 fullWidth
                 variant="standard"

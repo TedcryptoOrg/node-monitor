@@ -44,11 +44,21 @@ const UpsertServiceModal: React.FC<UpsertServiceModalProps> = (
         setAddress(editService ? editService.address : server.address);
         setIsEnabled(editService ? editService.is_enabled : true);
         setType(editService ? editService.type : ServiceTypeEnum.RPC);
+
         if (editService === null) {
             setName(ServiceTypeEnum.RPC);
             setAddress(server.address + ':26657');
         }
     }, [editService, server]);
+
+    const customHandleClose = () => {
+        setName('');
+        setAddress('');
+        setIsEnabled(true);
+        setType(ServiceTypeEnum.RPC);
+
+        handleClose();
+    }
 
     const handleChangeType = (event: SelectChangeEvent) => {
         const selectedType = event.target.value as ServiceTypeEnum;
@@ -65,10 +75,10 @@ const UpsertServiceModal: React.FC<UpsertServiceModalProps> = (
                 setAddress(server.address + ':1317');
                 break;
             case ServiceTypeEnum.PROMETHEUS:
-                setAddress(server.address + ':26660');
+                setAddress(server.address + ':26660/metrics');
                 break;
             case ServiceTypeEnum.NODE_EXPORTER:
-                setAddress(server.address + ':9100');
+                setAddress(server.address + ':9100/metrics');
                 break;
         }
 
@@ -112,7 +122,7 @@ const UpsertServiceModal: React.FC<UpsertServiceModalProps> = (
 
     return (
         <>
-            <Dialog open={open} onClose={handleClose}>
+            <Dialog open={open} onClose={customHandleClose}>
                 <DialogTitle>{editService ? 'Edit' : 'Add'} Service</DialogTitle>
                 <form onSubmit={handleSubmit}>
                     <DialogContent>

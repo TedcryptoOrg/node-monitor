@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
-import UpsertMonitorModal from './UpsertMonitorModal';
+import UpsertConfigurationModal from './UpsertConfigurationModal';
 import CustomSnackbar from "../shared/CustomSnackbar";
 import { AlertColor } from '@mui/material';
 import { Link } from 'react-router-dom';
@@ -82,7 +82,7 @@ const ConfigurationsComponent: React.FC = () => {
             <Button variant="outlined" onClick={handleModalOpen}>
                 Add Monitor
             </Button>
-            <UpsertMonitorModal open={openModal} fetchData={fetchData} editMonitor={editMonitor} handleClose={handleModalClose}/>
+            <UpsertConfigurationModal open={openModal} fetchData={fetchData} editMonitor={editMonitor} handleClose={handleModalClose}/>
             <TableContainer component={Paper}>
                 <Table>
                     <TableHead>

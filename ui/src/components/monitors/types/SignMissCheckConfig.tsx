@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import { TextField } from '@mui/material';
 import { SignMissCheckConfiguration } from "../../../types/ApiMonitor";
 
@@ -8,13 +8,37 @@ interface SignMissCheckConfigProps {
 }
 
 const SignMissCheckConfig: React.FC<SignMissCheckConfigProps> = ({ config, setConfig }) => {
-    const [missTolerance, setMissTolerance] = useState(config.miss_tolerance || 0);
-    const [missTolerancePeriodSeconds, setMissTolerancePeriodSeconds] = useState(config.miss_tolerance_period_seconds || 0);
-    const [sleepDurationSeconds, setSleepDurationSeconds] = useState(config.sleep_duration_seconds || 0);
-    const [alertSleepDurationMinutes, setAlertSleepDurationMinutes] = useState(config.alert_sleep_duration_minutes || 0);
+    const [missTolerance, setMissTolerance] = useState(config.miss_tolerance || 10);
+    const [missTolerancePeriodSeconds, setMissTolerancePeriodSeconds] = useState(config.miss_tolerance_period_seconds || 100);
+    const [sleepDurationSeconds, setSleepDurationSeconds] = useState(config.sleep_duration_seconds || 5);
+    const [alertSleepDurationMinutes, setAlertSleepDurationMinutes] = useState(config.alert_sleep_duration_minutes || 1);
     const [valoperAddress, setValoperAddress] = useState(config.valoper_address || '');
     const [rpc, setRpc] = useState(config.rpc || '');
     const [rest, setRest] = useState(config.rest || '');
+
+    useEffect(() => {
+console.log(config);
+        setMissTolerance(config.miss_tolerance || 10);
+        setMissTolerancePeriodSeconds(config.miss_tolerance_period_seconds || 100);
+        setSleepDurationSeconds(config.sleep_duration_seconds || 5);
+        setAlertSleepDurationMinutes(config.alert_sleep_duration_minutes || 1);
+        setValoperAddress(config.valoper_address || '');
+        setRpc(config.rpc || '');
+        setRest(config.rest || '');
+
+        if (config.miss_tolerance === undefined) {
+            setConfig((prevConfig: SignMissCheckConfiguration) => ({
+                ...prevConfig,
+                miss_tolerance: 10,
+                miss_tolerance_period_seconds: 100,
+                sleep_duration_seconds: 5,
+                alert_sleep_duration_minutes: 1,
+                valoper_address: '',
+                rpc: '',
+                rest: ''
+            }));
+        }
+    }, [config, setConfig]);
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = event.target;

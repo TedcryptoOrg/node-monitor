@@ -35,21 +35,26 @@ const ServerOverview: React.FC = () => {
             .then(data => setServices(data));
     }, [id]);
 
-    const fetchData = useCallback(() => {
-        fetch(`${process.env.REACT_APP_API_HOST}/api/servers/${id}`)
-            .then(response => response.json())
-            .then(data => setServer(data))
-            .catch((error) => {
-                sendNotification(`Error: ${error}`, 'error')
-            });
-
+    const fetchConfiguration = useCallback((id: number) => {
         fetch(`${process.env.REACT_APP_API_HOST}/api/configurations/${id}`)
             .then(response => response.json())
             .then(data => setConfiguration(data))
             .catch((error) => {
                 sendNotification(`Error: ${error}`, 'error')
             });
-    }, [id]);
+    }, [setConfiguration])
+
+    const fetchData = useCallback(() => {
+        fetch(`${process.env.REACT_APP_API_HOST}/api/servers/${id}`)
+            .then(response => response.json())
+            .then(data => {
+                setServer(data)
+                fetchConfiguration(data.configuration_id)
+            })
+            .catch((error) => {
+                sendNotification(`Error: ${error}`, 'error')
+            });
+    }, [id, fetchConfiguration]);
 
     useEffect(() => {
         fetchData();
@@ -81,6 +86,7 @@ const ServerOverview: React.FC = () => {
 
     const handleServiceModalClose = () => {
         setOpenServiceModal(false);
+        setEditService(null)
     };
 
     const handleEditService = (id: number) => {

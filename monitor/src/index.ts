@@ -9,6 +9,8 @@ import {ChainDirectory} from "@tedcryptoorg/cosmos-directory";
 import {ConfigurationManager} from "./services/configurationManager";
 import {ApiMonitor} from "./type/api/ApiMonitor";
 import {sleep} from "./util/sleep";
+import {ServersManager} from "./services/serversManager";
+import {ApiService} from "./type/api/ApiService";
 
 const alertChannels: AlertChannel[] = []
 if (
@@ -23,8 +25,11 @@ if (
   }))
 }
 
-async function startNodeMonitor (configuration: ApiConfiguration, monitors: ApiMonitor[]): Promise<void> {
-  console.log(`Starting ${configuration.name} node monitor with ${monitors.length} monitors...`)
+async function startNodeMonitor (configuration: ApiConfiguration, monitors: ApiMonitor[], services: ApiService[]): Promise<void> {
+  console.log(
+    `Starting ${configuration.name}. \n\n` +
+    `Monitors: \n -${monitors.map(monitor => monitor.name).join('\n -')}\n\n`+
+    `Services: \n -${services.map(service => service.name).join('\n -')}`)
 
   try {
     const chain = (await new ChainDirectory().getChainData(configuration.chain)).chain;
@@ -34,6 +39,7 @@ async function startNodeMonitor (configuration: ApiConfiguration, monitors: ApiM
         chain,
         configuration,
         monitors,
+        services,
         alertChannels
     ).start()
   } catch (error) {
@@ -49,6 +55,8 @@ async function main (): Promise<void> {
   }
 
   const configurationManager = new ConfigurationManager();
+  const serversManager = new ServersManager();
+
   const configurations = await configurationManager.getAllConfigurations();
   if (configurations.length === 0) {
     throw new Error('No configurations found!');
@@ -60,8 +68,13 @@ async function main (): Promise<void> {
       console.warn(`No monitors found for configuration: ${configuration.name}`)
       continue
     }
+    const servers = await configurationManager.getServers(configuration.id);
+    const services: ApiService[] = [];
+    for (const server of servers) {
+      services.push(...await serversManager.getServices(server));
+    }
 
-    startNodeMonitor(configuration, monitors);
+    startNodeMonitor(configuration, monitors, services);
   }
 }
 

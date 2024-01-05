@@ -3,7 +3,7 @@ import {AlertChannel} from "../../../AlertChannel/alertChannel";
 import axios from "axios";
 import {PrometheusMetrics} from "../../../prometheus/prometheusMetrics";
 import {Alerter} from "../../../Alerter/alerter";
-import {NodeExporterDiskSpaceUsageConfiguration} from "../../../type/config/nodeExporterDiskSpaceUsageConfiguration";
+import {NodeExporterDiskSpaceUsageConfiguration} from "../../../type/api/ApiMonitor";
 
 export class DiskSpace implements MonitorCheck {
     private readonly alerter: Alerter
@@ -15,6 +15,8 @@ export class DiskSpace implements MonitorCheck {
         private readonly configuration: NodeExporterDiskSpaceUsageConfiguration,
         private readonly alertChannels: AlertChannel[]
     ) {
+        console.debug(`🔨️[${this.name}] Creating disk space check...`, configuration);
+
         this.alerter = new Alerter(
             this.name,
             'BlockCheck',
@@ -28,7 +30,7 @@ export class DiskSpace implements MonitorCheck {
 
     async check (): Promise<void> {
         while(true) {
-            console.log(`[${this.name}][DiskSpace] Running check...`)
+            console.log(`🏃️[${this.name}][DiskSpace] Running check...`)
 
             const prometheusMetrics = PrometheusMetrics.withMetricsContent(
                 (await axios.get(this.configuration.address)).data
@@ -37,6 +39,7 @@ export class DiskSpace implements MonitorCheck {
             console.log(`[${this.name}][DiskSpace] Used disk space: ${prometheusMetrics.getUsedDiskSpacePercentage()}%`);
 
             if (prometheusMetrics.getUsedDiskSpacePercentage() >= this.diskSpaceThreshold) {
+                console.log(`🔴️[${this.name}][DiskSpace] Used disk space is above threshold ${this.diskSpaceThreshold}.`);
                 await this.alerter.alert(`🚨 [${this.name}] Disk space usage is ${prometheusMetrics.getUsedDiskSpacePercentage()}%`);
             }
 

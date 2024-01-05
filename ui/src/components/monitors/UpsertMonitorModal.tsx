@@ -10,7 +10,7 @@ import {
     FormControlLabel,
     FormLabel,
     MenuItem,
-    Select,
+    Select, SelectChangeEvent,
     TextField
 } from '@mui/material';
 import Switch from '@mui/material/Switch';
@@ -43,11 +43,33 @@ const UpsertMonitorModal: React.FC<UpsertMonitorModalProps> = ({ open, fetchData
     const [configurationObject, setConfigurationObject] = useState(editMonitor ? JSON.parse(editMonitor.configuration_object) : null);
 
     useEffect(() => {
-        setName(editMonitor ? editMonitor.name : '');
+        setName(editMonitor ? editMonitor.name : 'URL Check');
         setIsEnabled(editMonitor ? editMonitor.is_enabled : true);
         setType(editMonitor ? editMonitor.type : MonitorTypeEnum.URL_CHECK);
+
+        console.log(editMonitor);
+
         setConfigurationObject(editMonitor ? JSON.parse(editMonitor.configuration_object) : {});
     }, [editMonitor]);
+
+    const handleChangeType = (event: SelectChangeEvent) => {
+        const selectedType = event.target.value as MonitorTypeEnum;
+
+        setConfigurationObject(editMonitor ? JSON.parse(editMonitor.configuration_object) : {});
+
+        const defaultNames: {[key: string]: string} = {};
+        defaultNames[MonitorTypeEnum.URL_CHECK] = 'URL Check';
+        defaultNames[MonitorTypeEnum.NODE_EXPORTER_DISK_SPACE] = 'Node Exporter Disk Space';
+        defaultNames[MonitorTypeEnum.BLOCK_CHECK] = 'Block Check';
+        defaultNames[MonitorTypeEnum.SIGN_MISS_CHECK] = 'Sign Miss Check';
+        defaultNames[MonitorTypeEnum.PRICE_FEEDER_MISS_COUNT] = 'Price Feeder Miss Count';
+
+        if (name.length === 0 || name === defaultNames[type]) {
+            setName(defaultNames[selectedType] ?? 'Unknown');
+        }
+
+        setType(selectedType);
+    };
 
     const handleSubmit = (event: React.FormEvent) => {
         event.preventDefault();
@@ -123,7 +145,7 @@ const UpsertMonitorModal: React.FC<UpsertMonitorModalProps> = ({ open, fetchData
                             </FormLabel>
                             <Select
                                 value={type}
-                                onChange={e => setType(e.target.value as MonitorTypeEnum)}
+                                onChange={handleChangeType}
                             >
                                 {Object.values(MonitorTypeEnum).map((value) => (
                                     <MenuItem key={value} value={value}>

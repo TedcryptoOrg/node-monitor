@@ -18,7 +18,7 @@ interface AddMonitorModalProps {
     editMonitor: ApiConfiguration|null;
     handleClose: any;
 }
-const UpsertMonitorModal: React.FC<AddMonitorModalProps> = (
+const UpsertConfigurationModal: React.FC<AddMonitorModalProps> = (
     {
         open,
         fetchData,
@@ -132,4 +132,4 @@ const UpsertMonitorModal: React.FC<AddMonitorModalProps> = (
     );
 }
 
-export default UpsertMonitorModal;
+export default UpsertConfigurationModal;

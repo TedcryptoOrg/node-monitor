@@ -11,6 +11,8 @@ import { type Chain } from '@tedcryptoorg/cosmos-directory'
 import { MissCounter } from './checkers/priceFeeder/missCounter'
 import {ApiMonitor } from '../type/api/ApiMonitor'
 import {ApiConfiguration} from "../type/api/ApiConfiguration";
+import {ApiService} from "../type/api/ApiService";
+import {ServiceTypeEnum} from "../type/api/ServiceTypeEnum";
 
 const monitorTypes = {
   urlCheck: {
@@ -44,15 +46,21 @@ export class NodeMonitor extends AbstractMonitor {
     private readonly chain: Chain,
     private readonly configuration: ApiConfiguration,
     private readonly monitors: ApiMonitor[],
+    private readonly services: ApiService[],
     private readonly alertChannels: AlertChannel[]
   ) {
     super()
 
-    monitors.forEach((monitor) => {
-      console.log(`[${this.name}] Loaded monitor: ${monitor.name}`)
+    for (const monitor of monitors) {
+      if (!monitor.is_enabled) {
+        console.log(`❌️ [${this.name}] Monitor ${monitor.name} is disabled. Skipping...`)
+        continue
+      }
+
+      console.log(`😊️[${this.name}] Loaded monitor: ${monitor.name}`)
       const monitorConfiguration = JSON.parse(monitor.configuration_object)
       if (monitorConfiguration === undefined) {
-        throw new Error(`[${this.name}][${monitor.name}] Monitor configuration is not defined.`)
+        throw new Error(`❌️ [${this.name}][${monitor.name}] Monitor configuration is not defined.`)
       }
       switch (monitor.type) {
         case monitorTypes.nodeExporterDiskSpace.name:
@@ -83,7 +91,7 @@ export class NodeMonitor extends AbstractMonitor {
           ))
           break
       }
-    })
+    }
   }
 
   private getRpcClient (monitorConfiguration: any): RpcClient {
@@ -97,13 +105,22 @@ export class NodeMonitor extends AbstractMonitor {
 
   private getNodeClient (monitorConfiguration: any, type?: string): ClientInterface {
     if (this.rpcClient === undefined) {
-      if (monitorConfiguration.rpc !== undefined) {
-        this.rpcClient = new RpcClient(monitorConfiguration.rpc)
+      for (const apiService of this.services) {
+        if (apiService.type === ServiceTypeEnum.RPC) {
+          this.rpcClient = new RpcClient({address: apiService.address})
+          break;
+        }
       }
     }
+
     if (this.restClient === undefined) {
       if (monitorConfiguration.rest !== undefined) {
-        this.restClient = new RestClient(monitorConfiguration.rest)
+        for (const apiService of this.services) {
+          if (apiService.type === ServiceTypeEnum.REST) {
+            this.rpcClient = new RestClient({address: apiService.address})
+            break;
+          }
+        }
       }
     }
 

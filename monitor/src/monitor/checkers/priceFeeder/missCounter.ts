@@ -5,7 +5,7 @@ import { type AlertChannel } from '../../../AlertChannel/alertChannel'
 import { NoRecoverableException } from '../../exception/noRecoverableException'
 import { RecoverableException } from '../../exception/recoverableException'
 import { Alerter } from '../../../Alerter/alerter'
-import {PriceFeederMissCountConfiguration} from "../../../type/config/priceFeederMissCountConfiguration";
+import {PriceFeederMissCountConfiguration} from "../../../type/api/ApiMonitor";
 
 export class MissCounter implements MonitorCheck {
   private readonly staticEndpoints: { kujira: string, ojo: string } = {
@@ -22,6 +22,8 @@ export class MissCounter implements MonitorCheck {
     private readonly configuration: PriceFeederMissCountConfiguration,
     private readonly alertChannels: AlertChannel[]
   ) {
+    console.debug(`🔨️[${this.name}] Creating miss counter check...`, configuration)
+
     if (!Object.prototype.hasOwnProperty.call(this.staticEndpoints, name)) {
       throw new NoRecoverableException(`Blockchain ${name} not supported.`)
     }
@@ -44,18 +46,18 @@ export class MissCounter implements MonitorCheck {
     let previousTimestamp = new Date().getTime()
     let lastMissCounter = previousMissCounter
     while (true) {
-      console.log(`[${this.name}] Running miss counter check...`)
+      console.log(`🏃️[${this.name}] Running miss counter check...`)
       const currentMissCounter = await this.fetchMissCounter()
 
       // Refresh the missing period if we are missing blocks within the period
       const missDifference = currentMissCounter - previousMissCounter
       if (currentMissCounter > lastMissCounter) {
-        console.log(`[${this.name}][Miss Counter] Counter has increased, current missed in this missing period: ${missDifference}. Refreshing previous incident timestamp.`)
+        console.log(`🟡️[${this.name}][Price Feeder Miss] Counter has increased, current missed in this missing period: ${missDifference}. Refreshing previous incident timestamp.`)
         previousTimestamp = new Date().getTime()
 
         // Check if the miss counter exceeds the tolerance
         if (missDifference >= this.configuration.miss_tolerance) {
-          console.log(`[${this.name}]Missing too many price updates...`, missDifference)
+          console.log(`🔴️[${this.name}]Missing too many price updates...`, missDifference)
 
           await this.alerter.alert(`[${this.name}] 🚨 Price tracker monitor alert!\n You are missing too many blocks. Miss counter exceeded: ${missDifference}`)
         }
@@ -64,13 +66,15 @@ export class MissCounter implements MonitorCheck {
 
         const timeDifferentInSeconds = (currentTimestamp - previousTimestamp) / 1000
         const secondsLeftToReset = this.configuration.miss_tolerance_period_seconds - timeDifferentInSeconds
-        console.debug(`[${this.name}][Miss Counter] No more misses happened since last one. Last missed: ${missDifference}. Reset in ${secondsLeftToReset} seconds.`)
+        console.debug(`🟡️[${this.name}][Price Feeder Miss] No more misses happened since last one. Last missed: ${missDifference}. Reset in ${secondsLeftToReset} seconds.`)
         if (secondsLeftToReset <= 0) {
-          console.log(`[${this.name}][Miss Counter] No more misses happened since last one. Last missed: ${missDifference}. Reset monitoring flags`)
+          console.log(`🟢️[${this.name}][Price Feeder Miss] No more misses happened since last one. Last missed: ${missDifference}. Reset monitoring flags`)
           // Reset the miss counter if the tolerance period has passed
           previousMissCounter = currentMissCounter
           previousTimestamp = currentTimestamp
         }
+      } else {
+        console.log(`🟢️[${this.name}][Price Feeder Miss] No misses!`)
       }
 
       lastMissCounter = currentMissCounter
@@ -79,9 +83,8 @@ export class MissCounter implements MonitorCheck {
         break
       }
 
-      // Sleep for the specified duration
-      // @ts-expect-error is already checked, but it keeps complaining
-      await new Promise((resolve) => setTimeout(resolve, this.configuration.priceFeeder.sleep_duration_seconds * 1000))
+      console.log(`🕗️[${this.name}][Price Feeder Miss] Waiting ${this.configuration.sleep_duration_seconds} seconds before checking again...`)
+      await new Promise((resolve) => setTimeout(resolve, this.configuration.sleep_duration_seconds * 1000))
     }
   }
 

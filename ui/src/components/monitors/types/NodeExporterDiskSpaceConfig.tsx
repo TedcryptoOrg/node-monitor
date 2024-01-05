@@ -9,16 +9,26 @@ interface NodeExporterDiskSpaceConfigProps {
 
 const NodeExporterDiskSpaceConfig: React.FC<NodeExporterDiskSpaceConfigProps> = ({ config, setConfig }) => {
     const [address, setAddress] = useState(config.address || '');
-    const [threshold, setThreshold] = useState(config.threshold || '');
-    const [alertSleepDurationMinutes, setAlertSleepDurationMinutes] = useState(config.alert_sleep_duration_minutes || '');
-    const [checkIntervalSeconds, setCheckIntervalSeconds] = useState(config.check_interval_seconds || '');
+    const [threshold, setThreshold] = useState(config.threshold || 80);
+    const [alertSleepDurationMinutes, setAlertSleepDurationMinutes] = useState(config.alert_sleep_duration_minutes || 30);
+    const [checkIntervalSeconds, setCheckIntervalSeconds] = useState(config.check_interval_seconds || 60);
 
     useEffect(() => {
         setAddress(config.address || '');
-        setThreshold(config.threshold || '');
-        setAlertSleepDurationMinutes(config.alert_sleep_duration_minutes || '');
-        setCheckIntervalSeconds(config.check_interval_seconds || '');
-    }, [config]);
+        setThreshold(config.threshold || 0);
+        setAlertSleepDurationMinutes(config.alert_sleep_duration_minutes || 30);
+        setCheckIntervalSeconds(config.check_interval_seconds || 60);
+
+        if (config.address === undefined) {
+            setConfig((prevConfig: NodeExporterDiskSpaceUsageConfiguration) => ({
+                ...prevConfig,
+                address: '',
+                threshold: 0,
+                alert_sleep_duration_minutes: 30,
+                check_interval_seconds: 60
+            }));
+        }
+    }, [config, setConfig]);
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = event.target;
@@ -29,13 +39,13 @@ const NodeExporterDiskSpaceConfig: React.FC<NodeExporterDiskSpaceConfigProps> = 
                 setAddress(value);
                 break;
             case 'threshold':
-                setThreshold(value);
+                setThreshold(parseInt(value));
                 break;
             case 'alert_sleep_duration_minutes':
-                setAlertSleepDurationMinutes(value);
+                setAlertSleepDurationMinutes(parseInt(value));
                 break;
             case 'check_interval_seconds':
-                setCheckIntervalSeconds(value);
+                setCheckIntervalSeconds(parseInt(value));
                 break;
             default:
                 break;
@@ -59,7 +69,8 @@ const NodeExporterDiskSpaceConfig: React.FC<NodeExporterDiskSpaceConfigProps> = 
                 margin="dense"
                 id="threshold"
                 label="Threshold"
-                type="text"
+                helperText={"Threshold percentage to alert on"}
+                type="number"
                 fullWidth
                 variant="standard"
                 value={threshold}
@@ -70,7 +81,8 @@ const NodeExporterDiskSpaceConfig: React.FC<NodeExporterDiskSpaceConfigProps> = 
                 margin="dense"
                 id="alert_sleep_duration_minutes"
                 label="Alert Sleep Duration Minutes"
-                type="text"
+                helperText={"Number of minutes to sleep between alerts"}
+                type="number"
                 fullWidth
                 variant="standard"
                 value={alertSleepDurationMinutes}
@@ -81,7 +93,8 @@ const NodeExporterDiskSpaceConfig: React.FC<NodeExporterDiskSpaceConfigProps> = 
                 margin="dense"
                 id="check_interval_seconds"
                 label="Check Interval Seconds"
-                type="text"
+                helperText={"Interval between checks"}
+                type="number"
                 fullWidth
                 variant="standard"
                 value={checkIntervalSeconds}

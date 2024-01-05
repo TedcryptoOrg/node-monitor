@@ -3,7 +3,7 @@ import {Alerter} from "../../Alerter/alerter";
 import {ClientInterface} from "../../client/clientInterface";
 import {getValConsAddressFromPubKey} from "../../util/validatorTools";
 import {Chain} from "@tedcryptoorg/cosmos-directory";
-import {SignMissCheckConfiguration} from "../../type/config/signMissCheckConfiguration";
+import {SignMissCheckConfiguration} from "../../type/api/ApiMonitor";
 
 export class SignMissCheck implements MonitorCheck {
     private readonly alerter: Alerter;
@@ -14,6 +14,8 @@ export class SignMissCheck implements MonitorCheck {
         private readonly client: ClientInterface,
         private readonly alertChannels: any
     ) {
+        console.debug(`🔨️[${this.name}][${this.chain.name}] Creating sign miss check...`, configuration);
+
         this.alerter = new Alerter(
             this.name,
             'SigningMissCheck',
@@ -28,13 +30,13 @@ export class SignMissCheck implements MonitorCheck {
         let previousTimestamp = new Date().getTime()
         let lastMissCounter = previousMissCounter
         while (true) {
-            console.log(`[${this.name}] Running miss sign counter check...`)
+            console.log(`🏃️[${this.name}] Running miss sign counter check...`)
             const currentMissCounter = await this.fetchMissCounter(validatorConsAddress)
 
             // Refresh the missing period if we are missing blocks within the period
             const missDifference = currentMissCounter - previousMissCounter
             if (currentMissCounter > lastMissCounter) {
-                console.log(`[${this.name}][Sign Miss Counter] Counter has increased, current missed in this missing period: ${missDifference}. Refreshing previous incident timestamp.`)
+                console.log(`🟡️[${this.name}][Sign Miss Counter] Counter has increased, current missed in this missing period: ${missDifference}. Refreshing previous incident timestamp.`)
                 previousTimestamp = new Date().getTime()
 
                 // Check if the miss counter exceeds the tolerance
@@ -48,13 +50,15 @@ export class SignMissCheck implements MonitorCheck {
 
                 const timeDifferentInSeconds = (currentTimestamp - previousTimestamp) / 1000
                 const secondsLeftToReset = this.configuration.miss_tolerance_period_seconds - timeDifferentInSeconds
-                console.debug(`[${this.name}][Sign Miss Counter] No more misses happened since last one. Last missed: ${missDifference}. Reset in ${secondsLeftToReset} seconds.`)
+                console.debug(`🟡️[${this.name}][Sign Miss Counter] No more misses happened since last one. Last missed: ${missDifference}. Reset in ${secondsLeftToReset} seconds.`)
                 if (secondsLeftToReset <= 0) {
-                    console.log(`[${this.name}][Sign Miss Counter] No more misses happened since last one. Last missed: ${missDifference}. Reset monitoring flags`)
+                    console.log(`🟢️[${this.name}][Sign Miss Counter] No more misses happened since last one. Last missed: ${missDifference}. Reset monitoring flags`)
                     // Reset the miss counter if the tolerance period has passed
                     previousMissCounter = currentMissCounter
                     previousTimestamp = currentTimestamp
                 }
+            } else {
+                console.log(`🟢️[${this.name}][Sign Miss Counter] No misses!`)
             }
 
             lastMissCounter = currentMissCounter
@@ -63,7 +67,7 @@ export class SignMissCheck implements MonitorCheck {
                 break
             }
 
-            // Sleep for the specified duration
+            console.log(`🕗️[${this.name}][Sign Miss Counter] Waiting ${this.configuration.sleep_duration_seconds} seconds before checking again...`)
             await new Promise((resolve) => setTimeout(resolve, this.configuration.sleep_duration_seconds * 1000))
         }
     }
