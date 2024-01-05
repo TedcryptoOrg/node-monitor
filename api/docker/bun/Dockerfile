@@ -10,6 +10,8 @@ ENV PORT=3002
 
 FROM bun_base as dev
 
+COPY ../../package.json /app/package.json
+
 # Install the dependencies
 RUN bun install
 
