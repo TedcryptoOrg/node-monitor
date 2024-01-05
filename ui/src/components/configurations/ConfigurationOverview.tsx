@@ -204,6 +204,7 @@ const ConfigurationOverview: React.FC = () => {
                     <TableHead>
                         <TableRow>
                             <TableCell>ID</TableCell>
+                            <TableCell>Type</TableCell>
                             <TableCell>Name</TableCell>
                             <TableCell>Is Enabled</TableCell>
                             <TableCell>Actions</TableCell>
@@ -213,6 +214,7 @@ const ConfigurationOverview: React.FC = () => {
                         {monitors.map((monitor) => (
                             <TableRow key={monitor.id}>
                                 <TableCell>{monitor.id}</TableCell>
+                                <TableCell>{monitor.type}</TableCell>
                                 <TableCell>{monitor.name}</TableCell>
                                 <TableCell>{monitor.is_enabled ? 'Yes' : 'No'}</TableCell>
                                 <TableCell>

@@ -15,7 +15,7 @@ const NodeExporterDiskSpaceConfig: React.FC<NodeExporterDiskSpaceConfigProps> = 
 
     useEffect(() => {
         setAddress(config.address || '');
-        setThreshold(config.threshold || 0);
+        setThreshold(config.threshold || 80);
         setAlertSleepDurationMinutes(config.alert_sleep_duration_minutes || 30);
         setCheckIntervalSeconds(config.check_interval_seconds || 60);
 
