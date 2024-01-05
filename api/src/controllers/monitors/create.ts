@@ -11,6 +11,12 @@ export const create: RequestHandler = (req: Request, resp: Response) => {
             return;
         }
     })
+    // Check if configuration_object is an array or object and stringify it
+    if (Array.isArray(req.body.configuration_object)) {
+        req.body.configuration_object = JSON.stringify(req.body.configuration_object)
+    } else if (typeof req.body.configuration_object === "object") {
+        req.body.configuration_object = JSON.stringify(req.body.configuration_object)
+    }
 
     monitorDal.create({
         name: req.body.name,
