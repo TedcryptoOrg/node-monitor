@@ -10,7 +10,7 @@ dotenv.config();
 
 const app = express();
 var corsOptions = {
-    origin: [process.env.CORS_ORIGIN || '*']
+    origin: process.env.CORS_ORIGIN,
 };
 
 // Setting it up
