@@ -42,13 +42,14 @@ const UpsertServiceModal: React.FC<UpsertServiceModalProps> = (
     const [address, setAddress] = useState(editService ? editService.address : '');
     const [isEnabled, setIsEnabled] = useState(editService ? editService.is_enabled : false);
     const [type, setType] = useState(editService ? editService.type : ServiceTypeEnum.RPC);
-    const [createMonitor, setCreateMonitor] = useState(true);
+    const [createMonitor, setCreateMonitor] = useState(!editService);
 
     useEffect(() => {
         setName(editService ? editService.name : '');
         setAddress(editService ? editService.address : server.address);
         setIsEnabled(editService ? editService.is_enabled : true);
         setType(editService ? editService.type : ServiceTypeEnum.RPC);
+        setCreateMonitor(!editService);
 
         if (editService === null) {
             setName(ServiceTypeEnum.RPC);
