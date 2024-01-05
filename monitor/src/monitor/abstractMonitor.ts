@@ -1,6 +1,8 @@
 import { type Monitor } from './monitor'
 import { type MonitorCheck } from './checkers/monitorCheck'
 import { RecoverableException } from './exception/recoverableException'
+import {AlertChannel} from "../AlertChannel/alertChannel";
+import {Alerter} from "../Alerter/alerter";
 
 interface PromiseParamPair {
   promise: () => Promise<unknown>
@@ -10,6 +12,16 @@ interface PromiseParamPair {
 export abstract class AbstractMonitor implements Monitor {
   protected abstract readonly name: string
   protected monitor_params: MonitorCheck[] = []
+  private readonly alerter: Alerter
+
+  protected constructor(protected readonly alertChannels: AlertChannel[]) {
+    this.alerter = new Alerter(
+        'General',
+        'General',
+        this.alertChannels,
+        1
+    )
+  }
 
   async start (param?: MonitorCheck): Promise<void> {
     const params = param === undefined ? this.monitor_params : [param]
@@ -31,6 +43,11 @@ export abstract class AbstractMonitor implements Monitor {
     } catch (error: any) {
       console.log(`🚨 ${this.name} Node checker ${param.constructor.name} failed to start. Error:\n${error}`);
       console.error(error);
+      try {
+        await this.alerter.alert(`🚨 ${this.name} Node checker ${param.constructor.name} failed to start. Error:\n${error}`);
+      } catch (error) {
+        console.error('Alert failed to alert', error);
+      }
 
       if (error instanceof RecoverableException) {
         console.log('Waiting 5 seconds before retrying...');

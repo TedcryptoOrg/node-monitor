@@ -47,9 +47,9 @@ export class NodeMonitor extends AbstractMonitor {
     private readonly configuration: ApiConfiguration,
     private readonly monitors: ApiMonitor[],
     private readonly services: ApiService[],
-    private readonly alertChannels: AlertChannel[]
+    protected readonly alertChannels: AlertChannel[]
   ) {
-    super()
+    super(alertChannels)
 
     for (const monitor of monitors) {
       if (!monitor.is_enabled) {
