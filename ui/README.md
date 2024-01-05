@@ -16,6 +16,21 @@ bun install
 bun run start
 ```
 
+## Production
+
+To run it in production you need to build the app
+
+```bash
+bun run build
+```
+
+then you need to install serve and serve the build folder
+
+```bash
+npm install -g serve
+serve -s build
+```
+
 ## Environment variables
 
 | Name               | Description        | Default value         |
