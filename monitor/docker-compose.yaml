@@ -6,6 +6,3 @@ services:
     volumes:
       - ./:/app
     command: ["npm", "start"]
-    depends_on:
-      database:
-        condition: service_healthy
