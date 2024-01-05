@@ -106,7 +106,7 @@ export class NodeMonitor extends AbstractMonitor {
   private getNodeClient (monitorConfiguration: any, type?: string): ClientInterface {
     if (this.rpcClient === undefined) {
       for (const apiService of this.services) {
-        if (apiService.type === ServiceTypeEnum.RPC) {
+        if (apiService.is_enabled && apiService.type === ServiceTypeEnum.RPC) {
           this.rpcClient = new RpcClient({address: apiService.address})
           break;
         }
@@ -116,7 +116,7 @@ export class NodeMonitor extends AbstractMonitor {
     if (this.restClient === undefined) {
       if (monitorConfiguration.rest !== undefined) {
         for (const apiService of this.services) {
-          if (apiService.type === ServiceTypeEnum.REST) {
+          if (apiService.is_enabled && apiService.type === ServiceTypeEnum.REST) {
             this.rpcClient = new RestClient({address: apiService.address})
             break;
           }
