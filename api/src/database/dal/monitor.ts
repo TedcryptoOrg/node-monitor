@@ -1,8 +1,12 @@
 import Monitor , {MonitorInput, MonitorOutput} from "../models/monitor";
 import {RecordNotFound} from "../../exceptions/recordNotFound";
 
-export async function findByConfigurationId(id: number) {
+export async function findByConfigurationId(id: number): Promise<MonitorOutput[]> {
     return await Monitor.findAll({where: {configuration_id: id}})
+}
+
+export async function findByServerId(id: number): Promise<MonitorOutput[]> {
+    return await Monitor.findAll({where: {server_id: id}})
 }
 
 export async function getById(id: number): Promise<MonitorOutput> {

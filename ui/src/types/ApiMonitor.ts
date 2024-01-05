@@ -46,5 +46,6 @@ export type ApiMonitor = {
     type: MonitorTypeEnum,
     is_enabled: boolean,
     configuration_id: number,
+    server_id?: number,
     configuration_object: string,
 }

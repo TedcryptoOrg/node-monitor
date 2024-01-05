@@ -113,6 +113,7 @@ const BlockCheckConfiguration: React.FC<BlockCheckConfigurationProps> = ({ confi
                 id="rpc"
                 label="RPC"
                 type="text"
+                autoComplete={'off'}
                 fullWidth
                 variant="standard"
                 value={rpc}

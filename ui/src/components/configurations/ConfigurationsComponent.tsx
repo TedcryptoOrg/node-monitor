@@ -80,7 +80,7 @@ const ConfigurationsComponent: React.FC = () => {
             <h2>Configurations</h2>
             <p>Your main configurations</p>
             <Button variant="outlined" onClick={handleModalOpen}>
-                Add Monitor
+                Add Configuration
             </Button>
             <UpsertConfigurationModal open={openModal} fetchData={fetchData} editMonitor={editMonitor} handleClose={handleModalClose}/>
             <TableContainer component={Paper}>

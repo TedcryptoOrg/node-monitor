@@ -120,6 +120,7 @@ const UpsertMonitorModal: React.FC<UpsertMonitorModalProps> = ({ open, fetchData
                             margin="dense"
                             id="name"
                             label="Name"
+                            autoComplete={'off'}
                             type="text"
                             fullWidth
                             variant="standard"

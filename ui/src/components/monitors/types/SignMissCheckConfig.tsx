@@ -122,6 +122,7 @@ console.log(config);
                 id="valoper_address"
                 label="Valoper Address"
                 type="text"
+                autoComplete={'off'}
                 fullWidth
                 variant="standard"
                 value={valoperAddress}
@@ -134,6 +135,7 @@ console.log(config);
                 label="RPC"
                 type="text"
                 fullWidth
+                autoComplete={'off'}
                 variant="standard"
                 value={rpc}
                 onChange={handleChange}

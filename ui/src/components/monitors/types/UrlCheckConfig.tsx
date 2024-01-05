@@ -49,6 +49,7 @@ const UrlCheckConfig: React.FC<UrlCheckConfigProps> = ({ config, setConfig }) =>
                 label="Name"
                 type="text"
                 fullWidth
+                autoComplete={'off'}
                 variant="standard"
                 value={name}
                 onChange={handleChange}
@@ -58,6 +59,7 @@ const UrlCheckConfig: React.FC<UrlCheckConfigProps> = ({ config, setConfig }) =>
                 margin="dense"
                 id="address"
                 label="Address"
+                autoComplete={'off'}
                 type="text"
                 fullWidth
                 variant="standard"

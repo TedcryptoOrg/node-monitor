@@ -73,6 +73,7 @@ const PriceFeederMissCountConfig: React.FC<PriceFeederMissCountConfigProps> = ({
                 helperText={"Number of blocks to tolerate missing before alerting"}
                 type="number"
                 fullWidth
+                autoComplete={'off'}
                 variant="standard"
                 value={missTolerance}
                 onChange={handleChange}
@@ -84,6 +85,7 @@ const PriceFeederMissCountConfig: React.FC<PriceFeederMissCountConfigProps> = ({
                 label="Miss Tolerance Period Seconds"
                 helperText={"Number of seconds without missing to reset counter"}
                 type="number"
+                autoComplete={'off'}
                 fullWidth
                 variant="standard"
                 value={missTolerancePeriodSeconds}
@@ -95,6 +97,7 @@ const PriceFeederMissCountConfig: React.FC<PriceFeederMissCountConfigProps> = ({
                 id="sleep_duration_seconds"
                 label="Sleep Duration Seconds"
                 helperText={"Intervals to run the check"}
+                autoComplete={'off'}
                 type="number"
                 fullWidth
                 variant="standard"
@@ -118,6 +121,7 @@ const PriceFeederMissCountConfig: React.FC<PriceFeederMissCountConfigProps> = ({
                 margin="dense"
                 id="valoper_address"
                 label="Valoper Address"
+                autoComplete={'off'}
                 helperText={"Valoper address to check"}
                 type="text"
                 fullWidth
@@ -129,6 +133,7 @@ const PriceFeederMissCountConfig: React.FC<PriceFeederMissCountConfigProps> = ({
             <TextField
                 margin="dense"
                 id="rest_address"
+                autoComplete={'off'}
                 label="REST Address"
                 type="text"
                 fullWidth

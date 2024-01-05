@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, {useEffect, useState} from 'react';
 import {
     Button,
     Dialog,
@@ -6,17 +6,21 @@ import {
     DialogContent,
     DialogContentText,
     DialogTitle,
-    TextField,
-    Select,
-    MenuItem,
+    FormControl,
     FormControlLabel,
-    FormControl, FormLabel
+    FormLabel,
+    MenuItem,
+    Select,
+    SelectChangeEvent,
+    TextField
 } from '@mui/material';
-import { ApiService } from '../../types/ApiService';
-import { ServiceTypeEnum } from '../../types/ServiceTypeEnum';
+import {ApiService} from '../../types/ApiService';
+import {ServiceTypeEnum} from '../../types/ServiceTypeEnum';
 import {ApiServer} from "../../types/ApiServer";
 import Switch from "@mui/material/Switch";
-import { SelectChangeEvent } from '@mui/material';
+import monitorService from "../../services/MonitorService";
+import {UrlCheckConfiguration} from "../../types/ApiMonitor";
+import {MonitorTypeEnum} from "../../types/MonitorTypeEnum";
 
 interface UpsertServiceModalProps {
     open: boolean;
@@ -38,6 +42,7 @@ const UpsertServiceModal: React.FC<UpsertServiceModalProps> = (
     const [address, setAddress] = useState(editService ? editService.address : '');
     const [isEnabled, setIsEnabled] = useState(editService ? editService.is_enabled : false);
     const [type, setType] = useState(editService ? editService.type : ServiceTypeEnum.RPC);
+    const [createMonitor, setCreateMonitor] = useState(true);
 
     useEffect(() => {
         setName(editService ? editService.name : '');
@@ -112,6 +117,23 @@ const UpsertServiceModal: React.FC<UpsertServiceModalProps> = (
                 if (response.ok) {
                     fetchData();
                 }
+                if (createMonitor) {
+                    monitorService.upsertMonitor({
+                        name: service.name,
+                        is_enabled: service.is_enabled,
+                        configuration_id: server.configuration_id,
+                        server_id: server.id,
+                        type: MonitorTypeEnum.URL_CHECK,
+                        configuration_object: JSON.stringify({
+                            name: service.name,
+                            address: service.address
+                        } as UrlCheckConfiguration)
+                    }).then(() => {
+                        fetchData();
+                    }).catch((error) => {
+                        console.error('Error:', error);
+                    });
+                }
             })
             .catch((error) => {
                 console.error('Error:', error);
@@ -176,6 +198,16 @@ const UpsertServiceModal: React.FC<UpsertServiceModalProps> = (
                                 />
                             }
                         />
+                        {!editService && <FormControlLabel
+                            label="Create Monitor?"
+                            control={
+                            <Switch
+                                checked={createMonitor}
+                                onChange={e => setCreateMonitor(e.target.checked)}
+                                name="createMonitor"
+                                color="primary"
+                            />}
+                        />}
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={handleClose}>Cancel</Button>

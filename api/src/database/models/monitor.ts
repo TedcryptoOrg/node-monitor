@@ -9,6 +9,7 @@ import {
 } from 'sequelize'
 import db from "../config";
 import Configuration from "./configuration";
+import Server from "./server";
 
 export const monitorTypes = {
     urlCheck: {
@@ -39,6 +40,7 @@ interface MonitorAttributes {
     type: string,
     is_enabled: boolean,
     configuration_id: number,
+    server_id: number|null,
     configuration_object: string,
 }
 
@@ -53,11 +55,13 @@ class Monitor extends Model<MonitorAttributes, MonitorInput> implements MonitorA
     public type!: string
     public is_enabled!: boolean
     public configuration_id!: ForeignKey<Configuration['id']>
+    public server_id!: ForeignKey<Server['id']>|null
     public configuration_object!: string
     public readonly createdAt!: Date;
     public readonly updatedAt!: Date;
 
     public getConfiguration!: HasOneGetAssociationMixin<Configuration>
+    public getServer!: HasOneGetAssociationMixin<Server|null>
 }
 
 Monitor.init({
@@ -69,6 +73,10 @@ Monitor.init({
     configuration_id: {
         type: DataTypes.INTEGER.UNSIGNED,
         allowNull: false,
+    },
+    server_id: {
+        type: DataTypes.INTEGER.UNSIGNED,
+        allowNull: true,
     },
     name: {
         type: DataTypes.STRING,

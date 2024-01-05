@@ -59,6 +59,7 @@ const NodeExporterDiskSpaceConfig: React.FC<NodeExporterDiskSpaceConfigProps> = 
                 id="address"
                 label="Address"
                 type="text"
+                autoComplete={'off'}
                 fullWidth
                 variant="standard"
                 value={address}

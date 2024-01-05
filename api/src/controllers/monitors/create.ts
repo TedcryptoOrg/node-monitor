@@ -23,6 +23,7 @@ export const create: RequestHandler = (req: Request, resp: Response) => {
         type: req.body.type,
         configuration_id: req.body.configuration_id,
         configuration_object: req.body.configuration_object,
+        server_id: req.body.server_id ?? null,
         is_enabled: req.body.is_enabled ?? true
     }).then((monitor) => {
         resp.status(202).send(monitor)
