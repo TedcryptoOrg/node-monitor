@@ -62,6 +62,11 @@ async function main (): Promise<void> {
     throw new Error('No configurations found!');
   }
   for (const configuration of configurations) {
+    if (!configuration.is_enabled) {
+        console.warn(`❌️[${configuration.name}] Configuration is disabled. Skipping...`)
+        continue
+    }
+
     console.log(`Loaded configuration: ${configuration.name}`)
     const monitors = await configurationManager.getMonitors(configuration.id);
     if (monitors.length === 0) {
