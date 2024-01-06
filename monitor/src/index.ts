@@ -11,6 +11,7 @@ import {ApiMonitor} from "./type/api/ApiMonitor";
 import {sleep} from "./util/sleep";
 import {ServersManager} from "./services/serversManager";
 import {ApiService} from "./type/api/ApiService";
+const axios = require('axios').default;
 
 const alertChannels: AlertChannel[] = []
 if (
@@ -23,6 +24,21 @@ if (
     token: process.env.TELEGRAM_TOKEN,
     chatId: process.env.TELEGRAM_CHAT_ID
   }))
+}
+
+async function setupHealthCheckPing(): Promise<void> {
+  if (process.env.HEALTH_CHECK_URL === undefined) {
+    console.warn('Health check url not set. Skipping health check ping setup.')
+    return;
+  }
+
+  setInterval(async () => {
+    try {
+      await axios.get(`${process.env.HEALTHCHECK_URL}/ping`);
+    } catch (error) {
+      console.error('Health check ping failed', error);
+    }
+  }, parseInt(process.env.HEALTHCHECK_INTERVAL_MS ?? '60000'));
 }
 
 async function startNodeMonitor (configuration: ApiConfiguration, monitors: ApiMonitor[], services: ApiService[]): Promise<void> {
@@ -80,6 +96,7 @@ async function main (): Promise<void> {
     }
 
     startNodeMonitor(configuration, monitors, services);
+    setupHealthCheckPing();
   }
 }
 
