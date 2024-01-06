@@ -35,26 +35,28 @@ export abstract class AbstractMonitor implements Monitor {
     }
   }
 
-  async runPromiseWithRetry (pair: PromiseParamPair): Promise<void> {
+  async runPromiseWithRetry (pair: PromiseParamPair, attempt?: number): Promise<void> {
     const { promise, param } = pair;
+    attempt = attempt ?? 1;
     try {
       console.log(`🚀 ${this.name} Node checker ${param.constructor.name} started.`);
       await promise(); // call the function to get the promise and then await it
     } catch (error: any) {
       console.log(`🚨 ${this.name} Node checker ${param.constructor.name} failed to start. Error:\n${error}`);
       console.error(error);
-      try {
-        await this.alerter.alert(`🚨 ${this.name} Node checker ${param.constructor.name} failed to start. Error:\n${error}`);
-      } catch (error) {
-        console.error('Alert failed to alert', error);
+
+      if (attempt >= 3 || !(error instanceof RecoverableException)) {
+        try {
+          await this.alerter.alert(`🚨 ${this.name} Node checker ${param.constructor.name} failed to start. Error:\n${error}`);
+        } catch (error) {
+          console.error('Alert failed to alert', error);
+        }
       }
 
       if (error instanceof RecoverableException) {
         console.log('Waiting 5 seconds before retrying...');
         await new Promise(resolve => setTimeout(resolve, 5000));
-        await this.runPromiseWithRetry(pair);
-      } else {
-        //throw error; // throw the error if it's not a RecoverableException
+        await this.runPromiseWithRetry(pair, attempt+1);
       }
     }
   }
