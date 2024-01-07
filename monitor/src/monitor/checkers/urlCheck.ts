@@ -10,6 +10,7 @@ import {pingMonitor} from "../../services/monitorsManager";
 export class UrlCheck implements MonitorCheck {
   private readonly alerter: Alerter
   private readonly configuration: UrlCheckConfiguration
+  private isOkay: boolean = false
 
   constructor (
     private readonly name: string,
@@ -40,7 +41,9 @@ export class UrlCheck implements MonitorCheck {
         await pingMonitor(this.monitor.id as number, {status: false, last_error: message})
         await this.alerter.alert(`🚨 [${this.name}][${this.configuration.name}] ${message}`)
       } else {
-        await pingMonitor(this.monitor.id as number, {status: true, last_error: null})
+        if (!this.isOkay) {
+          await pingMonitor(this.monitor.id as number, {status: true, last_error: null})
+        }
         console.log(`🟢️[${this.name}][${this.configuration.name}] Is accessible.`)
       }
 

@@ -10,6 +10,9 @@ const chainDirectory = new ChainDirectory(false);
 export class BlockCheck implements MonitorCheck {
     private readonly alerter: Alerter
     private readonly configuration: BlockAlertConfiguration
+    private isOkay: boolean = false
+    private lastTimePing: number = 0
+    private pingInterval: number = 60
 
     constructor (
         private readonly name: string,
@@ -70,18 +73,24 @@ export class BlockCheck implements MonitorCheck {
                     const secondsLeftToReset = this.configuration.miss_tolerance_period_seconds - timeDifferentInSeconds
                     if (secondsLeftToReset <= 0) {
                         const message = `No more misses happened since last one. Last missed: ${missedBlocks}. Reset monitoring flags`
-                        await pingMonitor(this.monitor.id as number, {status: true, last_error: message})
+                        if (!this.isOkay && this.isPingTime()) {
+                            await pingMonitor(this.monitor.id as number, {status: true, last_error: message})
+                        }
                         console.log(`🟢️[${this.name}][BlockCheck] ${message}`)
                         // Reset the miss counter if the tolerance period has passed
                         previousTimestamp = currentTimestamp
                         missedBlocks = 0
                     } else {
                         const message = `No more misses happened since last one. Last missed: ${missedBlocks}. Reset in ${secondsLeftToReset} seconds.`
-                        await pingMonitor(this.monitor.id as number, {status: false, last_error: null})
+                        if (!this.isOkay && this.isPingTime()) {
+                            await pingMonitor(this.monitor.id as number, {status: false, last_error: null})
+                        }
                         console.debug(`🟡️[${this.name}][BlockCheck] ${message}`)
                     }
                 } else {
-                    await pingMonitor(this.monitor.id as number, {status: true, last_error: null})
+                    if (!this.isOkay) {
+                        await pingMonitor(this.monitor.id as number, {status: true, last_error: null})
+                    }
                 }
 
                 lastBlockHeight = currentBlockHeight;
@@ -90,6 +99,17 @@ export class BlockCheck implements MonitorCheck {
             console.log(`🕗️[${this.name}][BlockCheck] Waiting ${this.configuration.sleep_duration_seconds} seconds before checking again...`)
             await new Promise((resolve) => setTimeout(resolve, this.configuration.sleep_duration_seconds * 1000))
         }
+    }
+
+    isPingTime(): boolean
+    {
+        const currentTime = new Date().getTime();
+        if (currentTime - this.lastTimePing >= this.pingInterval * 1000) {
+            this.lastTimePing = currentTime;
+            return true;
+        }
+
+        return false;
     }
 
     async getChain(chainName: string): Promise<Chain> {

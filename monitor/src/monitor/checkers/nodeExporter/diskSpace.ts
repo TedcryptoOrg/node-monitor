@@ -11,6 +11,9 @@ export class DiskSpace implements MonitorCheck {
     private readonly diskSpaceThreshold: number;
     private readonly checkIntervalSeconds: number;
     private readonly configuration: NodeExporterDiskSpaceUsageConfiguration;
+    private isOkay: boolean = false;
+    private lastTimePing: number = 0;
+    private readonly pingInterval: number = 60;
 
     constructor (
         private readonly name: string,
@@ -44,6 +47,7 @@ export class DiskSpace implements MonitorCheck {
             if (prometheusMetrics.getUsedDiskSpacePercentage() >= this.diskSpaceThreshold) {
                 const message = `Used disk space is ${prometheusMetrics.getUsedDiskSpacePercentage()}% above threshold ${this.diskSpaceThreshold}`
                 console.log(`🔴️[${this.name}][DiskSpace] ${message}`);
+                this.isOkay = false;
                 await this.alerter.alert(`🚨 [${this.name}] ${message}`);
                 await pingMonitor(
                     this.monitor.id as number,
@@ -52,11 +56,13 @@ export class DiskSpace implements MonitorCheck {
                         last_error: message
                     });
             } else {
-                await pingMonitor(this.monitor.id as number, {status: true, last_error: null})
+                if (!this.isOkay) {
+                    await pingMonitor(this.monitor.id as number, {status: true, last_error: null})
+                    this.isOkay = true;
+                }
             }
 
             await new Promise(resolve => setTimeout(resolve, 1000 * this.checkIntervalSeconds));
         }
     }
-
 }

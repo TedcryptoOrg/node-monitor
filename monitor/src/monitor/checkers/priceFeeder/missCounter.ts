@@ -18,6 +18,9 @@ export class MissCounter implements MonitorCheck {
   private readonly endpoint: string
   private readonly alerter: Alerter
   private readonly configuration: PriceFeederMissCountConfiguration
+  private isOkay: boolean = false
+  private lastTimePing: number = 0;
+  private readonly pingInterval: number = 60;
 
   constructor (
     private readonly name: string,
@@ -61,6 +64,7 @@ export class MissCounter implements MonitorCheck {
         // Check if the miss counter exceeds the tolerance
         if (missDifference >= this.configuration.miss_tolerance) {
           const message = `Missing too many price updates. Miss counter exceeded: ${missDifference}`
+          this.isOkay = false;
           await pingMonitor(this.monitor.id as number, {status: false, last_error: message})
           console.log(`🔴️[${this.name}] ${message}`)
 
@@ -73,7 +77,10 @@ export class MissCounter implements MonitorCheck {
         const secondsLeftToReset = this.configuration.miss_tolerance_period_seconds - timeDifferentInSeconds
         if (secondsLeftToReset <= 0) {
           const message = `No more misses happened since last one. Last missed: ${missDifference}. Reset monitoring flags`
-          await pingMonitor(this.monitor.id as number, {status: true, last_error: message})
+          if (!this.isOkay && this.isPingTime()) {
+            await pingMonitor(this.monitor.id as number, {status: true, last_error: message})
+            this.isOkay = true;
+          }
           console.log(`🟢️[${this.name}][Price Feeder Miss] ${message}`)
 
           // Reset the miss counter if the tolerance period has passed
@@ -82,18 +89,20 @@ export class MissCounter implements MonitorCheck {
         } else {
           const message = `No more misses happened since last one. Last missed: ${missDifference}. Reset in ${secondsLeftToReset} seconds.`
           console.debug(`🟡️[${this.name}][Price Feeder Miss] ${message}`)
-          await pingMonitor(this.monitor.id as number, {status: false, last_error: null})
+          if (!this.isOkay && this.isPingTime()) {
+            await pingMonitor(this.monitor.id as number, {status: true, last_error: message})
+            this.isOkay = true;
+          }
         }
       } else {
-        await pingMonitor(this.monitor.id as number, {status: true, last_error: null})
+        if (!this.isOkay) {
+          await pingMonitor(this.monitor.id as number, {status: true, last_error: null})
+          this.isOkay = true;
+        }
         console.log(`🟢️[${this.name}][Price Feeder Miss] No misses!`)
       }
 
       lastMissCounter = currentMissCounter
-
-      if (process.env.APP_ENV === 'test') {
-        break
-      }
 
       console.log(`🕗️[${this.name}][Price Feeder Miss] Waiting ${this.configuration.sleep_duration_seconds} seconds before checking again...`)
       await new Promise((resolve) => setTimeout(resolve, this.configuration.sleep_duration_seconds * 1000))
@@ -109,6 +118,17 @@ export class MissCounter implements MonitorCheck {
       console.error(error)
       throw new RecoverableException('Error fetching miss counter. Error: ' + error.message)
     }
+  }
+
+  isPingTime(): boolean
+  {
+    const currentTime = new Date().getTime();
+    if (currentTime - this.lastTimePing >= this.pingInterval * 1000) {
+      this.lastTimePing = currentTime;
+      return true;
+    }
+
+    return false;
   }
 
   private getEndpointUrl (valoperAddress: string): string {

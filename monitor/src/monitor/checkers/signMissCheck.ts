@@ -9,6 +9,9 @@ import {pingMonitor} from "../../services/monitorsManager";
 export class SignMissCheck implements MonitorCheck {
     private readonly alerter: Alerter;
     private readonly configuration: SignMissCheckConfiguration
+    private isOkay: boolean = false;
+    private lastTimePing: number = 0;
+    private readonly pingInterval: number = 60;
 
     constructor (
         private readonly name: string,
@@ -58,16 +61,26 @@ export class SignMissCheck implements MonitorCheck {
                 if (secondsLeftToReset <= 0) {
                     const message = `No more misses happened since last one. Last missed: ${missDifference}. Reset monitoring flags`
                     console.log(`🟢️[${this.name}][Sign Miss Counter] ${message}`)
-                    await pingMonitor(this.monitor.id as number, {status: true, last_error: message})
+                    if (!this.isOkay) {
+                        await pingMonitor(this.monitor.id as number, {status: true, last_error: message})
+                        this.isOkay = true;
+                    }
 
                     // Reset the miss counter if the tolerance period has passed
                     previousMissCounter = currentMissCounter
                     previousTimestamp = currentTimestamp
                 } else {
-                    console.log(`🟡️[${this.name}][Sign Miss Counter] No more misses happened since last one. Last missed: ${missDifference}. Reset in ${secondsLeftToReset} seconds.`)
+                    const message = `No more misses happened since last one. Last missed: ${missDifference}. Reset in ${secondsLeftToReset} seconds.`
+                    console.log(`🟡️[${this.name}][Sign Miss Counter] ${message}`)
+                    if (this.isPingTime()) {
+                        await pingMonitor(this.monitor.id as number, {status: false, last_error: message})
+                    }
                 }
             } else {
-                await pingMonitor(this.monitor.id as number, {status: true, last_error: null})
+                if (!this.isOkay) {
+                    await pingMonitor(this.monitor.id as number, {status: true, last_error: null})
+                    this.isOkay = true;
+                }
                 console.log(`🟢️[${this.name}][Sign Miss Counter] No misses!`)
             }
 
@@ -92,6 +105,17 @@ export class SignMissCheck implements MonitorCheck {
             validator.consensus_pubkey.type,
             validator.consensus_pubkey.value
         )
+    }
+
+    isPingTime(): boolean
+    {
+        const currentTime = new Date().getTime();
+        if (currentTime - this.lastTimePing >= this.pingInterval * 1000) {
+            this.lastTimePing = currentTime;
+            return true;
+        }
+
+        return false;
     }
 
 }
