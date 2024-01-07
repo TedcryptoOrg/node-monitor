@@ -42,6 +42,9 @@ interface MonitorAttributes {
     configuration_id: number,
     server_id: number|null,
     configuration_object: string,
+    last_check?: string|null,
+    status?: boolean,
+    last_error?: string|null,
 }
 
 export interface MonitorInput extends Optional<MonitorAttributes, 'id'> {}
@@ -59,6 +62,9 @@ class Monitor extends Model<MonitorAttributes, MonitorInput> implements MonitorA
     public configuration_object!: string
     public readonly createdAt!: Date;
     public readonly updatedAt!: Date;
+    public last_check!: string
+    public status!: boolean
+    public last_error!: string|null
 
     public getConfiguration!: HasOneGetAssociationMixin<Configuration>
     public getServer!: HasOneGetAssociationMixin<Server|null>
@@ -94,7 +100,20 @@ Monitor.init({
     configuration_object: {
         type: DataTypes.STRING,
         allowNull: false,
-    }
+    },
+    last_check: {
+        type: DataTypes.DATE,
+        allowNull: true,
+    },
+    status: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: true,
+    },
+    last_error: {
+        type: DataTypes.STRING,
+        allowNull: true,
+    },
 }, {
     timestamps: true,
     tableName: 'monitors',

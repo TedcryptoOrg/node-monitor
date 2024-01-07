@@ -5,14 +5,14 @@ import {ApiServer} from "../type/api/ApiServer";
 
 export class ConfigurationManager {
     async getAllConfigurations(): Promise<ApiConfiguration[]> {
-        return (await axios.get('http://localhost:3002/api/configurations')).data;
+        return (await axios.get(`${process.env.API_HOST}/api/configurations`)).data;
     }
 
     async getMonitors(configurationId: number): Promise<ApiMonitor[]> {
-        return (await axios.get(`http://localhost:3002/api/configurations/${configurationId}/monitors`)).data;
+        return (await axios.get(`${process.env.API_HOST}/api/configurations/${configurationId}/monitors`)).data;
     }
 
     async getServers(id: number): Promise<ApiServer[]> {
-        return (await axios.get(`http://localhost:3002/api/configurations/${id}/servers`)).data;
+        return (await axios.get(`${process.env.API_HOST}/api/configurations/${id}/servers`)).data;
     }
 }

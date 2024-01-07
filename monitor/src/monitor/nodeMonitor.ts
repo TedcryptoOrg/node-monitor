@@ -64,28 +64,28 @@ export class NodeMonitor extends AbstractMonitor {
       }
       switch (monitor.type) {
         case monitorTypes.nodeExporterDiskSpace.name:
-          this.monitor_params.push(new DiskSpace(this.name, monitorConfiguration, this.alertChannels))
+          this.monitor_params.push(new DiskSpace(this.name, monitor, this.alertChannels))
           break
         case monitorTypes.priceFeederMissCount.name:
-          this.monitor_params.push(new MissCounter(this.name, monitorConfiguration, this.alertChannels))
+          this.monitor_params.push(new MissCounter(this.name, monitor, this.alertChannels))
           break
         case monitorTypes.blockCheck.name:
           this.monitor_params.push(new BlockCheck(
             this.name,
             this.configuration.chain,
+            monitor,
             this.getRpcClient(monitorConfiguration),
-            monitorConfiguration,
             this.alertChannels
           ))
           break
         case monitorTypes.urlCheck.name:
-          this.monitor_params.push(new UrlCheck(this.name, monitorConfiguration, this.alertChannels))
+          this.monitor_params.push(new UrlCheck(this.name, monitor, this.alertChannels))
           break
         case monitorTypes.signMissCheck.name:
           this.monitor_params.push(new SignMissCheck(
             this.name,
             this.chain,
-            monitorConfiguration,
+            monitor,
             this.getNodeClient(monitorConfiguration),
             this.alertChannels
           ))

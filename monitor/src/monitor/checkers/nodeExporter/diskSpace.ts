@@ -3,19 +3,22 @@ import {AlertChannel} from "../../../AlertChannel/alertChannel";
 import axios from "axios";
 import {PrometheusMetrics} from "../../../prometheus/prometheusMetrics";
 import {Alerter} from "../../../Alerter/alerter";
-import {NodeExporterDiskSpaceUsageConfiguration} from "../../../type/api/ApiMonitor";
+import {ApiMonitor, NodeExporterDiskSpaceUsageConfiguration} from "../../../type/api/ApiMonitor";
+const monitorManager = require('../../../services/monitorsManager')
 
 export class DiskSpace implements MonitorCheck {
     private readonly alerter: Alerter
     private readonly diskSpaceThreshold: number;
     private readonly checkIntervalSeconds: number;
+    private readonly configuration: NodeExporterDiskSpaceUsageConfiguration;
 
     constructor (
         private readonly name: string,
-        private readonly configuration: NodeExporterDiskSpaceUsageConfiguration,
+        private readonly monitor: ApiMonitor,
         private readonly alertChannels: AlertChannel[]
     ) {
-        console.debug(`🔨️[${this.name}] Creating disk space check...`, configuration);
+        this.configuration = JSON.parse(this.monitor.configuration_object) as NodeExporterDiskSpaceUsageConfiguration
+        console.debug(`🔨️[${this.name}] Creating disk space check...`, this.configuration);
 
         this.alerter = new Alerter(
             this.name,
@@ -39,8 +42,17 @@ export class DiskSpace implements MonitorCheck {
             console.log(`[${this.name}][DiskSpace] Used disk space: ${prometheusMetrics.getUsedDiskSpacePercentage()}%`);
 
             if (prometheusMetrics.getUsedDiskSpacePercentage() >= this.diskSpaceThreshold) {
-                console.log(`🔴️[${this.name}][DiskSpace] Used disk space is above threshold ${this.diskSpaceThreshold}.`);
-                await this.alerter.alert(`🚨 [${this.name}] Disk space usage is ${prometheusMetrics.getUsedDiskSpacePercentage()}%`);
+                const message = `Used disk space is ${prometheusMetrics.getUsedDiskSpacePercentage()}% above threshold ${this.diskSpaceThreshold}`
+                console.log(`🔴️[${this.name}][DiskSpace] ${message}`);
+                await this.alerter.alert(`🚨 [${this.name}] ${message}`);
+                await monitorManager.ping(
+                    this.monitor.id as number,
+                    {
+                        status: false,
+                        last_error: message
+                    });
+            } else {
+                await monitorManager.ping(this.monitor.id as number, {status: true, last_error: null})
             }
 
             await new Promise(resolve => setTimeout(resolve, 1000 * this.checkIntervalSeconds));

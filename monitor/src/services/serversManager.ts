@@ -4,6 +4,6 @@ import axios from "axios";
 
 export class ServersManager {
     async getServices(server: ApiServer): Promise<ApiService[]> {
-        return (await axios.get(`http://localhost:3002/api/servers/${server.id}/services`)).data;
+        return (await axios.get(`${process.env.API_HOST}/api/servers/${server.id}/services`)).data;
     }
 }

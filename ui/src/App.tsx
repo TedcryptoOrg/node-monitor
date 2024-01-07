@@ -4,7 +4,7 @@ import { Drawer, List } from '@mui/material';
 import { Box } from '@mui/system';
 import { navbarItems } from './Navbar';
 import ConfigurationsComponent from './components/configurations/ConfigurationsComponent';
-import MonitorsComponent from './components/MonitorsComponent';
+import NetworkStatus from './components/NetworkStatus';
 import ServersComponent from './components/servers/ServersComponent';
 import DashboardComponent from './components/DashboardComponent';
 import ConfigurationOverview from './components/configurations/ConfigurationOverview';
@@ -36,7 +36,7 @@ function App() {
                         <Route path="/" element={<DashboardComponent />} />
                         <Route path="/configurations" element={<ConfigurationsComponent />} />
                         <Route path="/configurations/:id" element={<ConfigurationOverview />} />
-                        <Route path="/monitors" element={<MonitorsComponent />} />
+                        <Route path="/network-status" element={<NetworkStatus />} />
                         <Route path="/servers" element={<ServersComponent />} />
                         <Route path="/servers/:id" element={<ServerOverview />} />
                     </Routes>

@@ -4,6 +4,7 @@ import { findById } from '../controllers/servers/findById'
 import { findServices } from '../controllers/servers/findServices'
 import { findMonitors } from '../controllers/servers/findMonitors'
 import { update } from '../controllers/servers/update'
+import { getMetrics } from '../controllers/servers/getMetrics'
 import { deleteServer } from '../controllers/servers/delete'
 
 // Configuration Router
@@ -14,6 +15,7 @@ serverRouter.get('/', findAll)
 serverRouter.get('/:id', findById)
 serverRouter.put('/:id', update)
 serverRouter.delete('/:id', deleteServer)
+serverRouter.get('/:id/metrics', getMetrics)
 
 // Services
 serverRouter.get('/:id/services', findServices)

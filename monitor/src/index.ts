@@ -1,7 +1,6 @@
-import {ApiConfiguration} from "./type/api/ApiConfiguration";
-
 require('dotenv').config({ path: '.env', override: false })
 
+import {ApiConfiguration} from "./type/api/ApiConfiguration";
 import { Telegram } from './AlertChannel/telegram'
 import { type AlertChannel } from './AlertChannel/alertChannel'
 import { NodeMonitor } from './monitor/nodeMonitor'

@@ -5,7 +5,8 @@ import { type AlertChannel } from '../../../AlertChannel/alertChannel'
 import { NoRecoverableException } from '../../exception/noRecoverableException'
 import { RecoverableException } from '../../exception/recoverableException'
 import { Alerter } from '../../../Alerter/alerter'
-import {PriceFeederMissCountConfiguration} from "../../../type/api/ApiMonitor";
+import {ApiMonitor, PriceFeederMissCountConfiguration} from "../../../type/api/ApiMonitor";
+import monitorManager from "../../../services/monitorsManager";
 
 export class MissCounter implements MonitorCheck {
   private readonly staticEndpoints: { kujira: string, ojo: string } = {
@@ -16,13 +17,15 @@ export class MissCounter implements MonitorCheck {
   private readonly cryptoTools: CryptoTools
   private readonly endpoint: string
   private readonly alerter: Alerter
+  private readonly configuration: PriceFeederMissCountConfiguration
 
   constructor (
     private readonly name: string,
-    private readonly configuration: PriceFeederMissCountConfiguration,
+    private readonly monitor: ApiMonitor,
     private readonly alertChannels: AlertChannel[]
   ) {
-    console.debug(`🔨️[${this.name}] Creating miss counter check...`, configuration)
+    this.configuration = JSON.parse(this.monitor.configuration_object) as PriceFeederMissCountConfiguration
+    console.debug(`🔨️[${this.name}] Creating miss counter check...`, this.configuration)
 
     if (!Object.prototype.hasOwnProperty.call(this.staticEndpoints, name)) {
       throw new NoRecoverableException(`Blockchain ${name} not supported.`)
@@ -57,23 +60,32 @@ export class MissCounter implements MonitorCheck {
 
         // Check if the miss counter exceeds the tolerance
         if (missDifference >= this.configuration.miss_tolerance) {
-          console.log(`🔴️[${this.name}]Missing too many price updates...`, missDifference)
+          const message = `Missing too many price updates. Miss counter exceeded: ${missDifference}`
+          await monitorManager.ping(this.monitor.id as number, {status: false, last_error: message})
+          console.log(`🔴️[${this.name}] ${message}`)
 
-          await this.alerter.alert(`[${this.name}] 🚨 Price tracker monitor alert!\n You are missing too many blocks. Miss counter exceeded: ${missDifference}`)
+          await this.alerter.alert(`[${this.name}][Price Feeder Miss] 🚨 ${message}`)
         }
       } else if (missDifference > 0) {
         const currentTimestamp = new Date().getTime()
 
         const timeDifferentInSeconds = (currentTimestamp - previousTimestamp) / 1000
         const secondsLeftToReset = this.configuration.miss_tolerance_period_seconds - timeDifferentInSeconds
-        console.debug(`🟡️[${this.name}][Price Feeder Miss] No more misses happened since last one. Last missed: ${missDifference}. Reset in ${secondsLeftToReset} seconds.`)
         if (secondsLeftToReset <= 0) {
-          console.log(`🟢️[${this.name}][Price Feeder Miss] No more misses happened since last one. Last missed: ${missDifference}. Reset monitoring flags`)
+          const message = `No more misses happened since last one. Last missed: ${missDifference}. Reset monitoring flags`
+          await monitorManager.ping(this.monitor.id as number, {status: true, last_error: message})
+          console.log(`🟢️[${this.name}][Price Feeder Miss] ${message}`)
+
           // Reset the miss counter if the tolerance period has passed
           previousMissCounter = currentMissCounter
           previousTimestamp = currentTimestamp
+        } else {
+          const message = `No more misses happened since last one. Last missed: ${missDifference}. Reset in ${secondsLeftToReset} seconds.`
+          console.debug(`🟡️[${this.name}][Price Feeder Miss] ${message}`)
+          await monitorManager.ping(this.monitor.id as number, {status: false, last_error: null})
         }
       } else {
+        await monitorManager.ping(this.monitor.id as number, {status: true, last_error: null})
         console.log(`🟢️[${this.name}][Price Feeder Miss] No misses!`)
       }
 

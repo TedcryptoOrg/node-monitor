@@ -19,4 +19,5 @@ class MonitorService {
     }
 }
 
-export default new MonitorService();
+const monitorService = new MonitorService();
+export default monitorService;
