@@ -3,7 +3,7 @@ import {Alerter} from "../../Alerter/alerter";
 import {RpcClient} from "../../client/rpcClient";
 import {Chain, ChainDirectory} from "@tedcryptoorg/cosmos-directory";
 import {ApiMonitor, BlockAlertConfiguration} from "../../type/api/ApiMonitor";
-import monitorsManager from "../../services/monitorsManager";
+import {pingMonitor} from "../../services/monitorsManager";
 
 const chainDirectory = new ChainDirectory(false);
 
@@ -49,14 +49,14 @@ export class BlockCheck implements MonitorCheck {
                     console.log(`🟠️[${this.name}][BlockCheck] Node is syncing...`)
                     const knownBlockHeight = Number((await this.getChain(this.chainName)).params.current_block_height)
                     const message = `Node is syncing... Current height: ${currentBlockHeight}, known block height: ${knownBlockHeight}`
-                    await monitorsManager.ping(this.monitor.id as number, {status: false, last_error: message})
+                    await pingMonitor(this.monitor.id as number, {status: false, last_error: message})
                     await this.alerter.alert(`🚨 ${this.name} ${message}`)
                 } else {
                     missedBlocks++;
                     if (missedBlocks >= this.configuration.miss_tolerance) {
                         const message = `Missed too many blocks. Miss counter: ${missedBlocks}. Miss tolerance: ${this.configuration.miss_tolerance}`
                         console.log(`🔴️[${this.name}][BlockCheck] ${message}`)
-                        await monitorsManager.ping(this.monitor.id as number, {status: false, last_error: message})
+                        await pingMonitor(this.monitor.id as number, {status: false, last_error: message})
                         await this.alerter.alert(`🚨 ${this.name} ${message}`)
                     }
                 }
@@ -70,18 +70,18 @@ export class BlockCheck implements MonitorCheck {
                     const secondsLeftToReset = this.configuration.miss_tolerance_period_seconds - timeDifferentInSeconds
                     if (secondsLeftToReset <= 0) {
                         const message = `No more misses happened since last one. Last missed: ${missedBlocks}. Reset monitoring flags`
-                        await monitorsManager.ping(this.monitor.id as number, {status: true, last_error: message})
+                        await pingMonitor(this.monitor.id as number, {status: true, last_error: message})
                         console.log(`🟢️[${this.name}][BlockCheck] ${message}`)
                         // Reset the miss counter if the tolerance period has passed
                         previousTimestamp = currentTimestamp
                         missedBlocks = 0
                     } else {
                         const message = `No more misses happened since last one. Last missed: ${missedBlocks}. Reset in ${secondsLeftToReset} seconds.`
-                        await monitorsManager.ping(this.monitor.id as number, {status: false, last_error: null})
+                        await pingMonitor(this.monitor.id as number, {status: false, last_error: null})
                         console.debug(`🟡️[${this.name}][BlockCheck] ${message}`)
                     }
                 } else {
-                    await monitorsManager.ping(this.monitor.id as number, {status: true, last_error: null})
+                    await pingMonitor(this.monitor.id as number, {status: true, last_error: null})
                 }
 
                 lastBlockHeight = currentBlockHeight;

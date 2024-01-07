@@ -4,7 +4,7 @@ import axios from "axios";
 import {PrometheusMetrics} from "../../../prometheus/prometheusMetrics";
 import {Alerter} from "../../../Alerter/alerter";
 import {ApiMonitor, NodeExporterDiskSpaceUsageConfiguration} from "../../../type/api/ApiMonitor";
-const monitorManager = require('../../../services/monitorsManager')
+import {pingMonitor} from "../../../services/monitorsManager";
 
 export class DiskSpace implements MonitorCheck {
     private readonly alerter: Alerter
@@ -45,14 +45,14 @@ export class DiskSpace implements MonitorCheck {
                 const message = `Used disk space is ${prometheusMetrics.getUsedDiskSpacePercentage()}% above threshold ${this.diskSpaceThreshold}`
                 console.log(`🔴️[${this.name}][DiskSpace] ${message}`);
                 await this.alerter.alert(`🚨 [${this.name}] ${message}`);
-                await monitorManager.ping(
+                await pingMonitor(
                     this.monitor.id as number,
                     {
                         status: false,
                         last_error: message
                     });
             } else {
-                await monitorManager.ping(this.monitor.id as number, {status: true, last_error: null})
+                await pingMonitor(this.monitor.id as number, {status: true, last_error: null})
             }
 
             await new Promise(resolve => setTimeout(resolve, 1000 * this.checkIntervalSeconds));

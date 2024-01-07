@@ -2,7 +2,7 @@ import { type MonitorCheck } from './monitorCheck'
 import { Alerter } from '../../Alerter/alerter'
 import {ApiMonitor, UrlCheckConfiguration} from "../../type/api/ApiMonitor";
 import axios from "axios";
-import monitorsManager from "../../services/monitorsManager";
+import {pingMonitor} from "../../services/monitorsManager";
 
 /**
  * Checks that port is alive and well
@@ -37,10 +37,10 @@ export class UrlCheck implements MonitorCheck {
       if (!isAccessible) {
         const message = `Is not accessible. Minutes since down: ${minutesSinceDown}`
         console.log(`🔴️[${this.name}][${this.configuration.name}] ${message}`)
-        await monitorsManager.ping(this.monitor.id as number, {status: false, last_error: message})
+        await pingMonitor(this.monitor.id as number, {status: false, last_error: message})
         await this.alerter.alert(`🚨 [${this.name}][${this.configuration.name}] ${message}`)
       } else {
-        await monitorsManager.ping(this.monitor.id as number, {status: true, last_error: null})
+        await pingMonitor(this.monitor.id as number, {status: true, last_error: null})
         console.log(`🟢️[${this.name}][${this.configuration.name}] Is accessible.`)
       }
 

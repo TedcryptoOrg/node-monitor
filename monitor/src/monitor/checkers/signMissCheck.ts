@@ -4,7 +4,7 @@ import {ClientInterface} from "../../client/clientInterface";
 import {getValConsAddressFromPubKey} from "../../util/validatorTools";
 import {Chain} from "@tedcryptoorg/cosmos-directory";
 import {ApiMonitor, SignMissCheckConfiguration} from "../../type/api/ApiMonitor";
-import monitorsManager from "../../services/monitorsManager";
+import {pingMonitor} from "../../services/monitorsManager";
 
 export class SignMissCheck implements MonitorCheck {
     private readonly alerter: Alerter;
@@ -47,7 +47,7 @@ export class SignMissCheck implements MonitorCheck {
                 if (missDifference >= this.configuration.miss_tolerance) {
                     const message = `Missed too many signing blocks. Miss counter: ${missDifference}. Miss tolerance: ${this.configuration.miss_tolerance}`
                     console.log(`[${this.name}][Sign Miss Counter] ${message}`)
-                    await monitorsManager.ping(this.monitor.id as number, {status: false, last_error: message})
+                    await pingMonitor(this.monitor.id as number, {status: false, last_error: message})
                     await this.alerter.alert(`[${this.name}] 🚨 ${message}`)
                 }
             } else if (missDifference > 0) {
@@ -58,7 +58,7 @@ export class SignMissCheck implements MonitorCheck {
                 if (secondsLeftToReset <= 0) {
                     const message = `No more misses happened since last one. Last missed: ${missDifference}. Reset monitoring flags`
                     console.log(`🟢️[${this.name}][Sign Miss Counter] ${message}`)
-                    await monitorsManager.ping(this.monitor.id as number, {status: true, last_error: message})
+                    await pingMonitor(this.monitor.id as number, {status: true, last_error: message})
 
                     // Reset the miss counter if the tolerance period has passed
                     previousMissCounter = currentMissCounter
@@ -67,7 +67,7 @@ export class SignMissCheck implements MonitorCheck {
                     console.log(`🟡️[${this.name}][Sign Miss Counter] No more misses happened since last one. Last missed: ${missDifference}. Reset in ${secondsLeftToReset} seconds.`)
                 }
             } else {
-                await monitorsManager.ping(this.monitor.id as number, {status: true, last_error: null})
+                await pingMonitor(this.monitor.id as number, {status: true, last_error: null})
                 console.log(`🟢️[${this.name}][Sign Miss Counter] No misses!`)
             }
 

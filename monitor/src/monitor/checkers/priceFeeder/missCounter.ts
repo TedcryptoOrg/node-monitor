@@ -6,7 +6,7 @@ import { NoRecoverableException } from '../../exception/noRecoverableException'
 import { RecoverableException } from '../../exception/recoverableException'
 import { Alerter } from '../../../Alerter/alerter'
 import {ApiMonitor, PriceFeederMissCountConfiguration} from "../../../type/api/ApiMonitor";
-import monitorManager from "../../../services/monitorsManager";
+import {pingMonitor} from "../../../services/monitorsManager";
 
 export class MissCounter implements MonitorCheck {
   private readonly staticEndpoints: { kujira: string, ojo: string } = {
@@ -61,7 +61,7 @@ export class MissCounter implements MonitorCheck {
         // Check if the miss counter exceeds the tolerance
         if (missDifference >= this.configuration.miss_tolerance) {
           const message = `Missing too many price updates. Miss counter exceeded: ${missDifference}`
-          await monitorManager.ping(this.monitor.id as number, {status: false, last_error: message})
+          await pingMonitor(this.monitor.id as number, {status: false, last_error: message})
           console.log(`🔴️[${this.name}] ${message}`)
 
           await this.alerter.alert(`[${this.name}][Price Feeder Miss] 🚨 ${message}`)
@@ -73,7 +73,7 @@ export class MissCounter implements MonitorCheck {
         const secondsLeftToReset = this.configuration.miss_tolerance_period_seconds - timeDifferentInSeconds
         if (secondsLeftToReset <= 0) {
           const message = `No more misses happened since last one. Last missed: ${missDifference}. Reset monitoring flags`
-          await monitorManager.ping(this.monitor.id as number, {status: true, last_error: message})
+          await pingMonitor(this.monitor.id as number, {status: true, last_error: message})
           console.log(`🟢️[${this.name}][Price Feeder Miss] ${message}`)
 
           // Reset the miss counter if the tolerance period has passed
@@ -82,10 +82,10 @@ export class MissCounter implements MonitorCheck {
         } else {
           const message = `No more misses happened since last one. Last missed: ${missDifference}. Reset in ${secondsLeftToReset} seconds.`
           console.debug(`🟡️[${this.name}][Price Feeder Miss] ${message}`)
-          await monitorManager.ping(this.monitor.id as number, {status: false, last_error: null})
+          await pingMonitor(this.monitor.id as number, {status: false, last_error: null})
         }
       } else {
-        await monitorManager.ping(this.monitor.id as number, {status: true, last_error: null})
+        await pingMonitor(this.monitor.id as number, {status: true, last_error: null})
         console.log(`🟢️[${this.name}][Price Feeder Miss] No misses!`)
       }
 
