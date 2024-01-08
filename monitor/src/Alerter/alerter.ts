@@ -17,8 +17,13 @@ export class Alerter {
       console.log(`[${this.name}][${this.checkerName}] Sending an alert...`, timeDifferenceInMin, this.alertSleepDurationMinutes)
       // loop alertChannels and alert
       for (const alerter of this.alertChannels) {
-        await alerter.alert(message)
+        try {
+          await alerter.alert(message)
+        } catch (error) {
+          console.error(`[${this.name}][${this.checkerName}] Failed to alert`, error)
+        }
       }
+
       this.lastAlertedPeriod = new Date().getTime()
     } else {
       console.log(`[${this.name}][${this.checkerName}] Alert message sent too recently. Skipping.`, timeDifferenceInMin)

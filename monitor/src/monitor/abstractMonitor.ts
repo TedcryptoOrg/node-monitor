@@ -46,6 +46,7 @@ export abstract class AbstractMonitor implements Monitor {
       console.error(error);
 
       if (attempt >= 3 || !(error instanceof RecoverableException)) {
+        attempt = 0;
         try {
           await this.alerter.alert(`🚨 ${this.name} Node checker ${param.constructor.name} failed to start. Error:\n${error}`);
         } catch (error) {
@@ -54,8 +55,10 @@ export abstract class AbstractMonitor implements Monitor {
       }
 
       if (error instanceof RecoverableException) {
-        console.log('Waiting 5 seconds before retrying...');
-        await new Promise(resolve => setTimeout(resolve, 5000));
+        const sleepInterval = 5 * attempt;
+        console.log(`Waiting ${sleepInterval} seconds before retrying...`);
+        await new Promise(resolve => setTimeout(resolve, sleepInterval * 1000));
+
         await this.runPromiseWithRetry(pair, attempt+1);
       }
     }

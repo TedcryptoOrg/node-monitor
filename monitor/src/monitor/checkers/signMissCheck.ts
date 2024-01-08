@@ -7,11 +7,12 @@ import {ApiMonitor, SignMissCheckConfiguration} from "../../type/api/ApiMonitor"
 import {pingMonitor} from "../../services/monitorsManager";
 
 export class SignMissCheck implements MonitorCheck {
-    private readonly alerter: Alerter;
+    private readonly alerter: Alerter
     private readonly configuration: SignMissCheckConfiguration
-    private isOkay: boolean = false;
-    private lastTimePing: number = 0;
-    private readonly pingInterval: number = 60;
+    private isOkay: boolean = false
+    private isFirstRun: boolean = false
+    private lastTimePing: number = 0
+    private readonly pingInterval: number = 60
 
     constructor (
         private readonly name: string,
@@ -49,9 +50,7 @@ export class SignMissCheck implements MonitorCheck {
                 // Check if the miss counter exceeds the tolerance
                 if (missDifference >= this.configuration.miss_tolerance) {
                     const message = `Missed too many signing blocks. Miss counter: ${missDifference}. Miss tolerance: ${this.configuration.miss_tolerance}`
-                    console.log(`[${this.name}][Sign Miss Counter] ${message}`)
-                    await pingMonitor(this.monitor.id as number, {status: false, last_error: message})
-                    await this.alerter.alert(`[${this.name}] 🚨 ${message}`)
+                    await this.fail(message)
                 }
             } else if (missDifference > 0) {
                 const currentTimestamp = new Date().getTime()
@@ -60,35 +59,55 @@ export class SignMissCheck implements MonitorCheck {
                 const secondsLeftToReset = this.configuration.miss_tolerance_period_seconds - timeDifferentInSeconds
                 if (secondsLeftToReset <= 0) {
                     const message = `No more misses happened since last one. Last missed: ${missDifference}. Reset monitoring flags`
-                    console.log(`🟢️[${this.name}][Sign Miss Counter] ${message}`)
-                    if (!this.isOkay) {
-                        await pingMonitor(this.monitor.id as number, {status: true, last_error: message})
-                        this.isOkay = true;
-                    }
+                    await this.success(message);
 
                     // Reset the miss counter if the tolerance period has passed
                     previousMissCounter = currentMissCounter
                     previousTimestamp = currentTimestamp
                 } else {
                     const message = `No more misses happened since last one. Last missed: ${missDifference}. Reset in ${secondsLeftToReset} seconds.`
-                    console.log(`🟡️[${this.name}][Sign Miss Counter] ${message}`)
-                    if (this.isPingTime()) {
-                        await pingMonitor(this.monitor.id as number, {status: false, last_error: message})
-                    }
+                    await this.warning(message);
                 }
             } else {
-                if (!this.isOkay) {
-                    await pingMonitor(this.monitor.id as number, {status: true, last_error: null})
-                    this.isOkay = true;
-                }
-                console.log(`🟢️[${this.name}][Sign Miss Counter] No misses!`)
+                await this.success('No misses!')
             }
 
             lastMissCounter = currentMissCounter
 
+            this.isFirstRun = false
             console.log(`🕗️[${this.name}][Sign Miss Counter] Waiting ${this.configuration.sleep_duration_seconds} seconds before checking again...`)
             await new Promise((resolve) => setTimeout(resolve, this.configuration.sleep_duration_seconds * 1000))
         }
+    }
+
+    private async fail(message: string): Promise<void>
+    {
+        console.log(`🔴[${this.name}][Sign Miss Counter] ${message}`)
+
+        await pingMonitor(this.monitor.id as number, {status: false, last_error: message})
+        await this.alerter.alert(`[${this.name}] 🚨 ${message}`)
+
+        this.isOkay = false
+    }
+
+    private async warning(message: string): Promise<void>
+    {
+        console.log(`🟡️[${this.name}][Sign Miss Counter] ${message}`)
+        if (this.isPingTime()) {
+            await pingMonitor(this.monitor.id as number, {status: true, last_error: message})
+        }
+    }
+
+    private async success(message: string) {
+        console.log(`🟢️[${this.name}][Sign Miss Counter] ${message}`)
+        if (!this.isOkay) {
+            await pingMonitor(this.monitor.id as number, {status: true, last_error: message})
+            if (!this.isFirstRun) {
+                await this.alerter.alert(`🟢️[${this.name}] ${message}`)
+            }
+        }
+
+        this.isOkay = true;
     }
 
     private async fetchMissCounter (validatorConsAddress: string): Promise<number> {
@@ -117,5 +136,6 @@ export class SignMissCheck implements MonitorCheck {
 
         return false;
     }
+
 
 }

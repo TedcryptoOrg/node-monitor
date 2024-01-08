@@ -11,6 +11,7 @@ export class UrlCheck implements MonitorCheck {
   private readonly alerter: Alerter
   private readonly configuration: UrlCheckConfiguration
   private isOkay: boolean = false
+  private isFirstRun: boolean = true
 
   constructor (
     private readonly name: string,
@@ -33,22 +34,42 @@ export class UrlCheck implements MonitorCheck {
     const minutesSinceDown = 0
 
     while (true) {
-      console.log(`🏃️[${this.name}][${this.configuration.name}] Running url check...`)
+      console.log(`🏃️[${this.name}][Url Check] Running check ${this.monitor.name} url...`)
       const isAccessible = axios.get(this.configuration.address).then(() => true).catch(() => false);
       if (!isAccessible) {
-        const message = `Is not accessible. Minutes since down: ${minutesSinceDown}`
-        console.log(`🔴️[${this.name}][${this.configuration.name}] ${message}`)
-        await pingMonitor(this.monitor.id as number, {status: false, last_error: message})
-        await this.alerter.alert(`🚨 [${this.name}][${this.configuration.name}] ${message}`)
+        await this.fail(`${this.monitor.name} is not accessible. Minutes since down: ${minutesSinceDown}`);
       } else {
-        if (!this.isOkay) {
-          await pingMonitor(this.monitor.id as number, {status: true, last_error: null})
-        }
-        console.log(`🟢️[${this.name}][${this.configuration.name}] Is accessible.`)
+        await this.success(`${this.monitor.name} is accessible`);
       }
 
-      console.log(`🕗️[${this.name}][${this.configuration.name}] Waiting ${checkMin} minutes before checking again...`)
+      this.isFirstRun = false
+
+      console.log(`🕗️[${this.name}][${this.monitor.name}] Waiting ${checkMin} minutes before checking again...`)
       await new Promise((resolve) => setTimeout(resolve, 60000 * checkMin))
     }
+  }
+
+  private async fail(message: string): Promise<void>
+  {
+    console.log(`🔴️[${this.name}][Url Check] ${message}`)
+    await pingMonitor(this.monitor.id as number, {status: false, last_error: message})
+
+    await this.alerter.alert(`🚨 [${this.name}][Url Check] ${message}`)
+
+    this.isOkay = false;
+  }
+
+  private async success(message: string): Promise<void>
+  {
+    console.log(`🟢️[${this.name}][Url Check] ${message}`)
+
+    if (!this.isOkay) {
+      await pingMonitor(this.monitor.id as number, {status: true, last_error: null})
+      if (!this.isFirstRun) {
+        await this.alerter.alert(`🟢️[${this.name}][Url Check] ${message}`)
+      }
+    }
+
+    this.isOkay = true
   }
 }
