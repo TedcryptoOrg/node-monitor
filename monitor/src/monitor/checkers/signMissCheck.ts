@@ -10,7 +10,7 @@ export class SignMissCheck implements MonitorCheck {
     private readonly alerter: Alerter
     private readonly configuration: SignMissCheckConfiguration
     private isOkay: boolean = false
-    private isFirstRun: boolean = false
+    private isFirstRun: boolean = true
     private lastTimePing: number = 0
     private readonly pingInterval: number = 60
 
@@ -96,6 +96,8 @@ export class SignMissCheck implements MonitorCheck {
         if (this.isPingTime()) {
             await pingMonitor(this.monitor.id as number, {status: true, last_error: message})
         }
+
+        this.isOkay = true
     }
 
     private async success(message: string) {
@@ -103,11 +105,11 @@ export class SignMissCheck implements MonitorCheck {
         if (!this.isOkay) {
             await pingMonitor(this.monitor.id as number, {status: true, last_error: message})
             if (!this.isFirstRun) {
-                await this.alerter.alert(`🟢️[${this.name}] ${message}`)
+                await this.alerter.alert(`🟢️[${this.name}][Sign Miss Counter] ${message}`)
             }
         }
 
-        this.isOkay = true;
+        this.isOkay = true
     }
 
     private async fetchMissCounter (validatorConsAddress: string): Promise<number> {

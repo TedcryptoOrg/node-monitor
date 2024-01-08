@@ -107,8 +107,9 @@ export class MissCounter implements MonitorCheck {
     console.debug(`🟡️[${this.name}][Price Feeder Miss] ${message}`)
     if (!this.isOkay && this.isPingTime()) {
       await pingMonitor(this.monitor.id as number, {status: true, last_error: message})
-      this.isOkay = true;
     }
+
+    this.isOkay = true;
   }
 
   async success(message: string): Promise<void> {
