@@ -2,6 +2,7 @@ import express, {Request, Response, NextFunction} from 'express';
 import dotenv from "dotenv";
 import cors from "cors";
 import configurationRouter from "./routes/configurations";
+import auditRouter from "./routes/audit";
 import serverRouter from "./routes/server";
 import serviceRouter from "./routes/service";
 import monitorRouter from "./routes/monitors";
@@ -23,6 +24,7 @@ app.get('/', (req: any, res: any) => {
 });
 
 app.use('/api/configurations', configurationRouter);
+app.use('/api/audit', auditRouter);
 app.use('/api/servers', serverRouter);
 app.use('/api/services', serviceRouter);
 app.use('/api/monitors', monitorRouter);

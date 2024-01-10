@@ -53,18 +53,18 @@ export interface MonitorOutput extends Required<MonitorAttributes> {
 }
 
 class Monitor extends Model<MonitorAttributes, MonitorInput> implements MonitorAttributes {
-    public id!: number
-    public name!: string
-    public type!: string
-    public is_enabled!: boolean
-    public configuration_id!: ForeignKey<Configuration['id']>
-    public server_id!: ForeignKey<Server['id']>|null
-    public configuration_object!: string
-    public readonly createdAt!: Date;
-    public readonly updatedAt!: Date;
-    public last_check!: string
-    public status!: boolean
-    public last_error!: string|null
+    declare id: number
+    declare name: string
+    declare type: string
+    declare is_enabled: boolean
+    declare configuration_id: ForeignKey<Configuration['id']>
+    declare server_id: ForeignKey<Server['id']>|null
+    declare configuration_object: string
+    declare readonly createdAt: Date;
+    declare readonly updatedAt: Date;
+    declare last_check: string
+    declare status: boolean
+    declare last_error: string|null
 
     public getConfiguration!: HasOneGetAssociationMixin<Configuration>
     public getServer!: HasOneGetAssociationMixin<Server|null>

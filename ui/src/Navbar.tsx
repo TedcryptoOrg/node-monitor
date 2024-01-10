@@ -36,4 +36,10 @@ export const navbarItems = [
     path: '/network-status',
     component: NavbarItem
   },
+  {
+    name: 'Audit',
+    icon: MonitorHeartIcon,
+    path: '/audit',
+    component: NavbarItem
+  },
 ];

@@ -9,6 +9,7 @@ import ServersComponent from './components/servers/ServersComponent';
 import DashboardComponent from './components/DashboardComponent';
 import ConfigurationOverview from './components/configurations/ConfigurationOverview';
 import ServerOverview from "./components/servers/ServerOverview";
+import AuditComponent from "./components/AuditComponent";
 
 function App() {
     return (
@@ -39,6 +40,7 @@ function App() {
                         <Route path="/network-status" element={<NetworkStatus />} />
                         <Route path="/servers" element={<ServersComponent />} />
                         <Route path="/servers/:id" element={<ServerOverview />} />
+                        <Route path="/audit" element={<AuditComponent />} />
                     </Routes>
                 </Box>
             </Box>

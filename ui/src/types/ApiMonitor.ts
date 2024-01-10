@@ -48,4 +48,7 @@ export type ApiMonitor = {
     configuration_id: number,
     server_id?: number,
     configuration_object: string,
+    status?: boolean,
+    last_check?: Date,
+    last_error?: string,
 }

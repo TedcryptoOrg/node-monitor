@@ -30,13 +30,13 @@ export interface ServerOutput extends Required<ServerAttributes> {
 }
 
 class Server extends Model<ServerAttributes, ServerInput> implements ServerAttributes{
-    public id!: number
-    public name!: string
-    public address!: string
-    public is_enabled!: boolean
-    public configuration_id!: ForeignKey<Configuration['id']>
-    public readonly createdAt!: Date;
-    public readonly updatedAt!: Date;
+    declare id: number
+    declare name: string
+    declare address: string
+    declare is_enabled: boolean
+    declare configuration_id: ForeignKey<Configuration['id']>
+    declare readonly createdAt: Date;
+    declare readonly updatedAt: Date;
 
     public getConfiguration!: HasOneGetAssociationMixin<Configuration>
     public getServices!: HasManyGetAssociationsMixin<Service>

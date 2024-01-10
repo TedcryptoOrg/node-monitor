@@ -26,12 +26,12 @@ export interface ServiceOutput extends Required<ServiceAttributes> {
 }
 
 class Service extends Model<ServiceAttributes, ServiceInput> implements ServiceAttributes {
-    public id!: number
-    public name!: string
-    public address!: string
-    public is_enabled!: boolean
-    public type!: string
-    public server_id!: number
+    declare id: number
+    declare name: string
+    declare address: string
+    declare is_enabled: boolean
+    declare type: string
+    declare server_id: number
 
     public getServer!: HasOneGetAssociationMixin<Server>
 }

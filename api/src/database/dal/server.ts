@@ -1,8 +1,9 @@
 import Server, {ServerInput, ServerOutput} from "../models/server";
 import {RecordNotFound} from "../../exceptions/recordNotFound";
+import * as AuditDal from "./audit";
 
 export async function get(id: number): Promise<ServerOutput> {
-const server = await Server.findByPk(id)
+    const server = await Server.findByPk(id)
     if (server === null) {
         throw new RecordNotFound(`Server with id ${id} not found`)
     }
@@ -21,6 +22,14 @@ export async function findByConfigurationId(id: number): Promise<ServerOutput[]>
 
 
 export const create = async (serverInput: ServerInput): Promise<ServerOutput> => {
+    await AuditDal.create({
+        monitor_id: null,
+        server_id: serverInput.id ?? null,
+        configuration_id: serverInput.configuration_id ?? null,
+        message: `Server ${serverInput.name} created`,
+        created_at: new Date(),
+    })
+
     return await Server.create(serverInput)
 }
 
@@ -29,6 +38,14 @@ export const update = async (id: number, server: ServerInput): Promise<ServerOut
     if (serverToUpdate === null) {
         throw new RecordNotFound(`Configuration with id ${id} not found`)
     }
+
+    await AuditDal.create({
+        monitor_id: null,
+        server_id: id,
+        configuration_id: server.configuration_id ?? null,
+        message: `Server ${server.name} edited`,
+        created_at: new Date(),
+    })
 
     serverToUpdate.set({
         name: server.name,
@@ -47,6 +64,14 @@ export const deleteServer = async (id: number): Promise<void> => {
     if (server === null) {
         throw new RecordNotFound(`Configuration with id ${id} not found`)
     }
+
+    await AuditDal.create({
+        monitor_id: null,
+        server_id: id,
+        configuration_id: server.configuration_id ?? null,
+        message: `Server ${server.name} deleted`,
+        created_at: new Date(),
+    })
 
     await server.destroy()
 }

@@ -27,12 +27,12 @@ export interface ConfigurationOutput extends Required<ConfigurationAttributes> {
 }
 
 class Configuration extends Model<ConfigurationAttributes, ConfigurationInput> implements ConfigurationAttributes {
-  public id!: number
-  public name!: string
-  public chain!: string
-    public is_enabled!: boolean
-  public readonly createdAt!: Date;
-  public readonly updatedAt!: Date;
+  declare id: number
+  declare name: string
+  declare chain: string
+  declare is_enabled: boolean
+  declare readonly createdAt: Date;
+  declare readonly updatedAt: Date;
 
   public getMonitors!: HasManyGetAssociationsMixin<Monitor>
   public getServers!: HasManyGetAssociationsMixin<Server>

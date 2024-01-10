@@ -1,10 +1,13 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
+import LastFailedComponent from "./dashboard/lastFailedComponent";
+import LastWarningsComponent from "./dashboard/lastWarningComponent";
 
 const DashboardComponent: React.FC = () => {
     return (
         <div>
             <h2>Dashboard</h2>
-            <p>This is the default dashboard.</p>
+            <LastFailedComponent />
+            <LastWarningsComponent />
         </div>
     );
 }

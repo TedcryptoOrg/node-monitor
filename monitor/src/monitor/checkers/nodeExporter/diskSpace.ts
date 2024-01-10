@@ -1,10 +1,9 @@
 import {MonitorCheck} from "../monitorCheck";
 import {AlertChannel} from "../../../AlertChannel/alertChannel";
-import axios from "axios";
-import {PrometheusMetrics} from "../../../prometheus/prometheusMetrics";
 import {Alerter} from "../../../Alerter/alerter";
 import {ApiMonitor, NodeExporterDiskSpaceUsageConfiguration} from "../../../type/api/ApiMonitor";
 import {pingMonitor} from "../../../services/monitorsManager";
+import {ApiMetric} from "../../../type/api/ApiMetric";
 
 export class DiskSpace implements MonitorCheck {
     private readonly alerter: Alerter
@@ -37,16 +36,21 @@ export class DiskSpace implements MonitorCheck {
         while(true) {
             console.log(`🏃️[${this.name}][DiskSpace] Running check...`)
 
-            const prometheusMetrics = PrometheusMetrics.withMetricsContent(
-                (await axios.get(this.configuration.address)).data
-            )
+            if (!this.monitor.server_id) {
+                await this.failed('Server id unknown. Cannot run check')
 
-            console.log(`[${this.name}][DiskSpace] Used disk space: ${prometheusMetrics.getUsedDiskSpacePercentage()}%`);
+                throw new Error(`[${this.name}][DiskSpace] Server id unknown. Cannot run check`)
+            }
 
-            if (prometheusMetrics.getUsedDiskSpacePercentage() >= this.diskSpaceThreshold) {
-                await this.failed(prometheusMetrics)
+            const metricsResponse = await fetch(`${process.env.REACT_APP_API_HOST}/api/servers/${this.monitor.server_id}/metrics`);
+            const metrics: ApiMetric = await metricsResponse.json();
+
+            console.log(`[${this.name}][DiskSpace] Used disk space: ${metrics.usedDiskSpacePercentage}%`);
+
+            if (metrics.usedDiskSpacePercentage >= this.diskSpaceThreshold) {
+                await this.failed(`Used disk space is ${metrics.usedDiskSpacePercentage}% above threshold ${this.diskSpaceThreshold}`)
             } else {
-                await this.success(prometheusMetrics)
+                await this.success(`Used disk space is ${metrics.usedDiskSpace}% below threshold ${this.diskSpaceThreshold}`)
             }
 
             this.isFirstRun = false;
@@ -54,9 +58,8 @@ export class DiskSpace implements MonitorCheck {
         }
     }
 
-    async failed(prometheusMetrics: PrometheusMetrics): Promise<void>
+    async failed(message: string): Promise<void>
     {
-        const message = `Used disk space is ${prometheusMetrics.getUsedDiskSpacePercentage()}% above threshold ${this.diskSpaceThreshold}`
         console.log(`🔴️[${this.name}][DiskSpace] ${message}`);
         this.isOkay = false;
         await this.alerter.alert(`🚨 [${this.name}] ${message}`);
@@ -68,7 +71,7 @@ export class DiskSpace implements MonitorCheck {
             });
     }
 
-    async success(prometheusMetrics: PrometheusMetrics): Promise<void>
+    async success(message: string): Promise<void>
     {
         if (!this.isOkay) {
             // Ping monitor saying all is fine now
@@ -76,8 +79,6 @@ export class DiskSpace implements MonitorCheck {
             this.isOkay = true;
 
             if (!this.isFirstRun) {
-                // If is not the first run also alert telegram saying all is good now
-                const message = `Used disk space is ${prometheusMetrics.getUsedDiskSpacePercentage()}% below threshold ${this.diskSpaceThreshold}`
                 await this.alerter.alert(`🟢️ [${this.name}] ${message}`);
             }
         }
