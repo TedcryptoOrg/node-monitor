@@ -17,6 +17,7 @@ const ConfigurationOverview: React.FC = () => {
     const [configuration, setConfiguration] = useState<ApiConfiguration | null>(null);
     const [servers, setServers] = useState<ApiServer[]>([]);
     const [monitors, setMonitors] = useState<ApiMonitor[]>([]);
+    const firstRender = React.useRef(true);
 
     const fetchMonitors = useCallback(() => {
         fetch(`${process.env.REACT_APP_API_HOST}/api/configurations/${id}/monitors`)
@@ -37,9 +38,12 @@ const ConfigurationOverview: React.FC = () => {
     }, [id]);
 
     useEffect(() => {
-        fetchData();
-        fetchServers();
-        fetchMonitors();
+        if (firstRender.current) {
+            fetchData();
+            fetchServers();
+            fetchMonitors();
+            firstRender.current = false
+        }
     }, [fetchData, fetchServers, fetchMonitors]);
 
     // snackbar
@@ -100,6 +104,7 @@ const ConfigurationOverview: React.FC = () => {
     const [editMonitor, setEditMonitor] = useState<ApiMonitor|null>(null);
 
     const handleMonitorModalOpen = () => {
+        setEditMonitor(null)
         setOpenMonitorModal(true);
     }
 
