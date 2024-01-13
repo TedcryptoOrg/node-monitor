@@ -4,6 +4,7 @@ import UpsertConfigurationModal from './UpsertConfigurationModal';
 import CustomSnackbar from "../shared/CustomSnackbar";
 import { AlertColor } from '@mui/material';
 import { Link } from 'react-router-dom';
+import BooleanIcon from "../shared/BooleanIcon";
 
 const ConfigurationsComponent: React.FC = () => {
     const [openModal, setOpenModal] = useState(false);
@@ -104,7 +105,7 @@ const ConfigurationsComponent: React.FC = () => {
                                 <TableCell>{row.id}</TableCell>
                                 <TableCell>{row.name}</TableCell>
                                 <TableCell>{row.chain}</TableCell>
-                                <TableCell>{row.is_enabled ? 'Yes' : 'No'}</TableCell>
+                                <TableCell><BooleanIcon value={row.is_enabled} /></TableCell>
                                 <TableCell>
                                     <Button variant="contained" color="primary" component={Link} to={`/configurations/${row.id}`}>
                                         View

@@ -1,5 +1,6 @@
 import { RequestHandler, Request, Response } from 'express';
 import * as configurationDal from "../../database/dal/configuration";
+import {renderConfiguration} from "../../views/configuration";
 
 export const create: RequestHandler = (req: Request, resp: Response) => {
     const requiredFields = ["name", "chain"];
@@ -17,7 +18,7 @@ export const create: RequestHandler = (req: Request, resp: Response) => {
         chain: req.body.chain,
         is_enabled: true
     }).then((configuration) => {
-        resp.status(202).send(configuration)
+        resp.status(202).send(renderConfiguration(configuration))
     }).catch((err) => {
         resp.status(500).send({
             message:

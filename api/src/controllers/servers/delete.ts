@@ -7,9 +7,8 @@ export const deleteServer = async (req: any, resp: any) => {
     }
 
     await serverDal.deleteServer(Number(req.params.id))
-        .then(() => {
-            resp.status(200).send()
-        }).catch((err: Error) => {
+        .then(() => resp.status(200).send())
+        .catch((err: Error) => {
             if (err.name === 'RecordNotFound') {
                 resp.status(404).send({
                     message: err.message

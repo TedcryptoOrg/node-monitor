@@ -33,7 +33,7 @@ class Service extends Model<ServiceAttributes, ServiceInput> implements ServiceA
     declare type: string
     declare server_id: number
 
-    public getServer!: HasOneGetAssociationMixin<Server>
+    declare public getServer: HasOneGetAssociationMixin<Server>
 }
 
 Service.init({

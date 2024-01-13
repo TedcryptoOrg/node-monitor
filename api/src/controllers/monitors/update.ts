@@ -23,8 +23,8 @@ export const update = async (req: any, resp: any) => {
         configuration_object: req.body.configuration_object,
         server_id: req.body.server_id ?? null,
         is_enabled: req.body.is_enabled
-    }).then((configuration) => {
-        resp.status(200).send(configuration)
+    }).then(() => {
+        resp.status(200).send()
     }).catch((err: Error) => {
         if (err.name === 'RecordNotFound') {
             resp.status(404).send({

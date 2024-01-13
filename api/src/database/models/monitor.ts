@@ -45,11 +45,14 @@ interface MonitorAttributes {
     last_check?: string|null,
     status?: boolean,
     last_error?: string|null,
+    createdAt?: Date;
+    updatedAt?: Date;
 }
 
 export interface MonitorInput extends Optional<MonitorAttributes, 'id'> {}
 export interface MonitorOutput extends Required<MonitorAttributes> {
     getConfiguration: HasOneGetAssociationMixin<Configuration>
+    getServer: HasOneGetAssociationMixin<Server>
 }
 
 class Monitor extends Model<MonitorAttributes, MonitorInput> implements MonitorAttributes {
@@ -66,8 +69,8 @@ class Monitor extends Model<MonitorAttributes, MonitorInput> implements MonitorA
     declare status: boolean
     declare last_error: string|null
 
-    public getConfiguration!: HasOneGetAssociationMixin<Configuration>
-    public getServer!: HasOneGetAssociationMixin<Server|null>
+    declare public getConfiguration: HasOneGetAssociationMixin<Configuration>
+    declare public getServer: HasOneGetAssociationMixin<Server>
 }
 
 Monitor.init({

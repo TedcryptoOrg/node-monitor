@@ -1,5 +1,6 @@
 import { RequestHandler, Request, Response } from 'express';
 import * as monitorDal from "../../database/dal/monitor";
+import {renderMonitor} from "../../views/monitors";
 
 export const create: RequestHandler = (req: Request, resp: Response) => {
     const requiredFields = ["name", "type", "configuration_id", "configuration_object"];
@@ -26,7 +27,8 @@ export const create: RequestHandler = (req: Request, resp: Response) => {
         server_id: req.body.server_id ?? null,
         is_enabled: req.body.is_enabled ?? true
     }).then((monitor) => {
-        resp.status(202).send(monitor)
+        renderMonitor(monitor)
+            .then((renderedMonitor) => resp.status(202).send(renderedMonitor));
     }).catch((err) => {
         resp.status(500).send({
             message:

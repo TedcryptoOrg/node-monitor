@@ -1,5 +1,6 @@
 import { RequestHandler, Request, Response } from 'express';
 import * as serverDal from "../../database/dal/server";
+import {renderServer} from "../../views/servers";
 
 export const create: RequestHandler = (req: Request, resp: Response) => {
     const requiredFields = ["name", "address", "configuration_id"];
@@ -17,8 +18,8 @@ export const create: RequestHandler = (req: Request, resp: Response) => {
         address: req.body.address,
         is_enabled: true,
         configuration_id: req.body.configuration_id
-    }).then((server) => {
-        resp.status(202).send(server)
+    }).then(async (server) => {
+        resp.status(202).send(await renderServer(server, true))
     }).catch((err) => {
         resp.status(500).send({
             message:

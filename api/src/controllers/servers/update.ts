@@ -1,4 +1,5 @@
 import * as serverDal from "../../database/dal/server";
+import {renderServer} from "../../views/servers";
 
 export const update = async (req: any, resp: any) => {
     if (req.params.id === undefined) {
@@ -21,8 +22,8 @@ export const update = async (req: any, resp: any) => {
         address: req.body.address,
         configuration_id: req.body.configuration_id,
         is_enabled: req.body.is_enabled
-    }).then((server) => {
-        resp.status(200).send(server)
+    }).then(async (server) => {
+        resp.status(200).send(await renderServer(server, true))
     }).catch((err: Error) => {
         if (err.name === 'RecordNotFound') {
             resp.status(404).send({

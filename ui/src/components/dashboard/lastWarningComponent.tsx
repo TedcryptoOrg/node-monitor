@@ -4,16 +4,22 @@ import {Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow}
 
 const LastWarningsComponent: React.FC = () => {
     const [lastWarnings, setLastWarnings] = useState<ApiMonitor[]>([])
+    const firstRender = React.useRef(true);
 
     useEffect(() => {
-        fetch(`${process.env.REACT_APP_API_HOST}/api/monitors/warnings`)
-            .then(response => response.json())
-            .then(data => setLastWarnings(data))
-            .catch((error) => {
-                console.error('Error:', error);
-                setLastWarnings([])
-            });
-    })
+        if (firstRender.current) {
+            fetch(`${process.env.REACT_APP_API_HOST}/api/monitors/warnings`)
+                .then(response => response.json())
+                .then(data => setLastWarnings(data))
+                .catch((error) => {
+                    console.error('Error:', error);
+                    setLastWarnings([])
+                });
+
+            firstRender.current = false;
+            return;
+        }
+    }, [])
 
     return (
         <>

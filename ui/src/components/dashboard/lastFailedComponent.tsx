@@ -4,16 +4,22 @@ import {Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow}
 
 const LastFailedComponent: React.FC = () => {
     const [lastFailed, setLastFailed] = useState<ApiMonitor[]>([])
+    const firstRender = React.useRef(true);
 
     useEffect(() => {
-        fetch(`${process.env.REACT_APP_API_HOST}/api/monitors/last-failed`)
-            .then(response => response.json())
-            .then(data => setLastFailed(data))
-            .catch((error) => {
-                console.error('Error:', error);
-                setLastFailed([])
-            });
-    })
+        if (firstRender.current) {
+            fetch(`${process.env.REACT_APP_API_HOST}/api/monitors/failed`)
+                .then(response => response.json())
+                .then(data => setLastFailed(data))
+                .catch((error) => {
+                    console.error('Error:', error);
+                    setLastFailed([])
+                });
+
+            firstRender.current = false;
+            return;
+        }
+    }, [])
 
     return (
         <>

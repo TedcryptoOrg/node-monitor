@@ -7,6 +7,7 @@ import CustomSnackbar from "../shared/CustomSnackbar";
 import UpsertServerModal from '../servers/UpsertServerModal';
 import {ApiMonitor} from "../../types/ApiMonitor";
 import UpsertMonitorModal from "../monitors/UpsertMonitorModal";
+import BooleanIcon from "../shared/BooleanIcon";
 
 type RouteParams = {
     [key: number]: string;
@@ -140,7 +141,7 @@ const ConfigurationOverview: React.FC = () => {
                 <div>
                     <p>Name: {configuration.name}</p>
                     <p>Chain: {configuration.chain}</p>
-                    <p>Is Enabled: {configuration.is_enabled ? 'Yes' : 'No'}</p>
+                    <p>Is Enabled: <BooleanIcon value={configuration.is_enabled} /></p>
                     <p>Created At: {new Date(configuration.createdAt).toLocaleString()}</p>
                     <p>Updated At: {new Date(configuration.updatedAt).toLocaleString()}</p>
                 </div>
@@ -174,7 +175,7 @@ const ConfigurationOverview: React.FC = () => {
                                 <TableCell>{server.id}</TableCell>
                                 <TableCell>{server.name}</TableCell>
                                 <TableCell>{server.address}</TableCell>
-                                <TableCell>{server.is_enabled ? 'Yes' : 'No'}</TableCell>
+                                <TableCell><BooleanIcon value={server.is_enabled} /></TableCell>
                                 <TableCell>
                                     <Button variant="contained" color="primary" component={Link} to={`/servers/${server.id}`}>
                                         View
@@ -208,9 +209,11 @@ const ConfigurationOverview: React.FC = () => {
                     <TableHead>
                         <TableRow>
                             <TableCell>ID</TableCell>
+                            <TableCell>Server ID</TableCell>
                             <TableCell>Type</TableCell>
                             <TableCell>Name</TableCell>
                             <TableCell>Is Enabled</TableCell>
+                            <TableCell>Status</TableCell>
                             <TableCell>Actions</TableCell>
                         </TableRow>
                     </TableHead>
@@ -218,9 +221,11 @@ const ConfigurationOverview: React.FC = () => {
                         {monitors.map((monitor) => (
                             <TableRow key={monitor.id}>
                                 <TableCell>{monitor.id}</TableCell>
+                                <TableCell>{monitor.server_id}</TableCell>
                                 <TableCell>{monitor.type}</TableCell>
                                 <TableCell>{monitor.name}</TableCell>
-                                <TableCell>{monitor.is_enabled ? 'Yes' : 'No'}</TableCell>
+                                <TableCell><BooleanIcon value={monitor.is_enabled} /></TableCell>
+                                <TableCell><BooleanIcon value={monitor.status ?? true} /></TableCell>
                                 <TableCell>
                                     <Button variant="contained" color="primary"
                                             onClick={() => handleEditMonitor(monitor.id ?? 0)}>

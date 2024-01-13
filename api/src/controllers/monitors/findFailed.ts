@@ -1,10 +1,11 @@
 import * as MonitorDal from '../../database/dal/monitor';
 import { RequestHandler, Request, Response } from 'express';
+import {renderMonitors} from "../../views/monitors";
 
 export const findFailed: RequestHandler = async (req: Request, res: Response): Promise<void> => {
     const monitors = await MonitorDal.findFailed(
         req.body.limit ?? 100
     );
 
-    res.send(monitors);
+    res.send(await renderMonitors(monitors));
 }

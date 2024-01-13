@@ -1,4 +1,5 @@
 import * as configurationDal from "../../database/dal/configuration";
+import {renderConfiguration} from "../../views/configuration";
 
 export const update = async (req: any, resp: any) => {
     if (req.params.id === undefined) {
@@ -30,7 +31,8 @@ export const update = async (req: any, resp: any) => {
         chain: req.body.chain,
         is_enabled: req.body.is_enabled
     }).then((configuration) => {
-        resp.status(200).send(configuration)
+        renderConfiguration(configuration)
+            .then((renderedConfiguration) => resp.status(200).send(renderedConfiguration))
     }).catch((err: Error) => {
         if (err.name === 'RecordNotFound') {
             resp.status(404).send({

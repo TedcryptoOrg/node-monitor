@@ -34,8 +34,8 @@ class Configuration extends Model<ConfigurationAttributes, ConfigurationInput> i
   declare readonly createdAt: Date;
   declare readonly updatedAt: Date;
 
-  public getMonitors!: HasManyGetAssociationsMixin<Monitor>
-  public getServers!: HasManyGetAssociationsMixin<Server>
+  declare public getMonitors: HasManyGetAssociationsMixin<Monitor>
+  declare public getServers: HasManyGetAssociationsMixin<Server>
 
   public static associations: {
       monitors: Association<Configuration, Monitor>

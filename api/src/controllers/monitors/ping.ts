@@ -1,4 +1,5 @@
 import * as monitorDal from "../../database/dal/monitor";
+import {renderConfiguration} from "../../views/configuration";
 
 export const ping = async (req: any, resp: any) => {
     if (req.params.id === undefined) {
@@ -19,9 +20,9 @@ export const ping = async (req: any, resp: any) => {
     monitorDal.ping(Number(req.params.id), {
         status: req.body.status,
         last_error: req.body.last_error ?? null
-    }).then((configuration) => {
-        resp.status(200).send(configuration)
-    }).catch((err: Error) => {
+    })
+        .then(() => resp.status(202).send())
+        .catch((err: Error) => {
         if (err.name === 'RecordNotFound') {
             resp.status(404).send({
                 message: err.message
