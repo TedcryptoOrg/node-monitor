@@ -9,6 +9,7 @@ const ConfigurationsComponent: React.FC = () => {
     const [openModal, setOpenModal] = useState(false);
     const [configurationsData, setConfigurationsData] = useState([]);
     const [editMonitor, setEditMonitor] = useState(null);
+    const firstRender = React.useRef(true);
 
     // snackbar
     const [snackbarOpen, setSnackbarOpen] = useState(false);
@@ -22,14 +23,17 @@ const ConfigurationsComponent: React.FC = () => {
     }
 
     const fetchData = useCallback(() => {
-        fetch(`${process.env.REACT_APP_API_HOST}/api/configurations`)
-            .then(response => {
-                if (!response.ok) {
-                    sendNotification('Failed to fetch configuration data!', 'error')
-                }
-                return response.json();
-            })
-            .then(data => setConfigurationsData(data));
+        if (firstRender.current) {
+            fetch(`${process.env.REACT_APP_API_HOST}/api/configurations`)
+                .then(response => {
+                    if (!response.ok) {
+                        sendNotification('Failed to fetch configuration data!', 'error')
+                    }
+                    return response.json();
+                })
+                .then(data => setConfigurationsData(data));
+            firstRender.current = false
+        }
     }, []);
 
     const handleModalOpen = () => {

@@ -40,7 +40,7 @@ const UpsertMonitorModal: React.FC<UpsertMonitorModalProps> = ({ open, fetchData
     const [name, setName] = useState(editMonitor ? editMonitor.name : '');
     const [isEnabled, setIsEnabled] = useState(editMonitor ? editMonitor.is_enabled : true);
     const [type, setType] = useState(editMonitor ? editMonitor.type : MonitorTypeEnum.URL_CHECK);
-    const [configurationObject, setConfigurationObject] = useState(editMonitor ? JSON.parse(editMonitor.configuration_object) : null);
+    const [configurationObject, setConfigurationObject] = useState(editMonitor ? JSON.parse(editMonitor.configuration_object) : {});
 
     useEffect(() => {
         setName(editMonitor ? editMonitor.name : 'URL Check');
@@ -51,6 +51,14 @@ const UpsertMonitorModal: React.FC<UpsertMonitorModalProps> = ({ open, fetchData
 
         setConfigurationObject(editMonitor ? JSON.parse(editMonitor.configuration_object) : {});
     }, [editMonitor]);
+
+    const customHandleClose = () => {
+        setName('URL Check');
+        setIsEnabled(true);
+        setType(MonitorTypeEnum.URL_CHECK);
+        setConfigurationObject({});
+        handleClose();
+    }
 
     const handleChangeType = (event: SelectChangeEvent) => {
         const selectedType = event.target.value as MonitorTypeEnum;
@@ -103,12 +111,12 @@ const UpsertMonitorModal: React.FC<UpsertMonitorModalProps> = ({ open, fetchData
                 console.error('Error:', error);
             });
 
-        handleClose();
+        customHandleClose();
     };
 
     return (
         <>
-            <Dialog open={open} onClose={handleClose}>
+            <Dialog open={open} onClose={customHandleClose}>
                 <DialogTitle>{editMonitor ? 'Edit' : 'Add'} Monitor</DialogTitle>
                 <form onSubmit={handleSubmit}>
                     <DialogContent>
@@ -162,7 +170,7 @@ const UpsertMonitorModal: React.FC<UpsertMonitorModalProps> = ({ open, fetchData
                         {type === MonitorTypeEnum.PRICE_FEEDER_MISS_COUNT && <PriceFeederMissCountConfig config={configurationObject as PriceFeederMissCountConfiguration} setConfig={setConfigurationObject} />}
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick={handleClose}>Cancel</Button>
+                        <Button onClick={customHandleClose}>Cancel</Button>
                         <Button type="submit">{editMonitor ? 'Edit' : 'Add'}</Button>
                     </DialogActions>
                 </form>

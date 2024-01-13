@@ -104,7 +104,6 @@ const ConfigurationOverview: React.FC = () => {
     const [editMonitor, setEditMonitor] = useState<ApiMonitor|null>(null);
 
     const handleMonitorModalOpen = () => {
-        setEditMonitor(null)
         setOpenMonitorModal(true);
     }
 
@@ -224,11 +223,11 @@ const ConfigurationOverview: React.FC = () => {
                                 <TableCell>{monitor.is_enabled ? 'Yes' : 'No'}</TableCell>
                                 <TableCell>
                                     <Button variant="contained" color="primary"
-                                            onClick={() => handleEditMonitor(monitor.id as number)}>
+                                            onClick={() => handleEditMonitor(monitor.id ?? 0)}>
                                         Edit
                                     </Button>
                                     <Button variant="contained" color="secondary"
-                                            onClick={() => handleRemoveMonitor(monitor.id as number)}>
+                                            onClick={() => handleRemoveMonitor(monitor.id ?? 0)}>
                                         Remove
                                     </Button>
                                 </TableCell>
