@@ -20,6 +20,7 @@ export async function renderConfiguration(configuration: Configuration|Configura
         id: configuration.id,
         name: configuration.name,
         chain: configuration.chain,
+        is_enabled: configuration.is_enabled,
         createdAt: configuration.createdAt,
         updatedAt: configuration.updatedAt,
         monitors: includeMonitors ? await renderMonitors(await configuration.getMonitors()) : undefined,
