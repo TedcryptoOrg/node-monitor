@@ -1,4 +1,6 @@
 import {MonitorTypeEnum} from "./MonitorTypeEnum";
+import {ApiConfiguration} from "./ApiConfiguration";
+import {ApiServer} from "./ApiServer";
 
 export type BlockAlertConfiguration = {
     miss_tolerance: number
@@ -40,13 +42,26 @@ export type SignMissCheckConfiguration = {
     rest?: string
 }
 
-export type ApiMonitor = {
+export type ApiMonitorInput = {
     id?: number,
     name: string,
     type: MonitorTypeEnum,
     is_enabled: boolean,
     configuration_id: number,
     server_id?: number,
+    configuration_object: string,
+    status?: boolean,
+    last_check?: Date,
+    last_error?: string,
+}
+
+export type ApiMonitor = {
+    id?: number,
+    name: string,
+    type: MonitorTypeEnum,
+    is_enabled: boolean,
+    configuration: ApiConfiguration,
+    server: ApiServer|undefined,
     configuration_object: string,
     status?: boolean,
     last_check?: Date,

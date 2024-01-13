@@ -1,7 +1,7 @@
-import {ApiMonitor} from "../types/ApiMonitor";
+import {ApiMonitorInput} from "../types/ApiMonitor";
 
 class MonitorService {
-    async upsertMonitor(monitor: ApiMonitor): Promise<boolean> {
+    async upsertMonitor(monitor: ApiMonitorInput): Promise<boolean> {
         const url = `${process.env.REACT_APP_API_HOST}/api/monitors${monitor.id ? `/${monitor.id}` : ''}`;
 
         return fetch(url, {

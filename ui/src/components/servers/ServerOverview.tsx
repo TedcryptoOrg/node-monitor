@@ -26,7 +26,6 @@ type RouteParams = {
 
 const ServerOverview: React.FC = () => {
     const { id } = useParams<RouteParams>() as { id: string };
-    const [configuration, setConfiguration] = useState<ApiConfiguration | null>(null);
     const [server, setServer] = useState<ApiServer>({} as ApiServer);
     const [services, setServices] = useState<ApiService[]>([]);
     const [openServiceModal, setOpenServiceModal] = useState(false);
@@ -235,7 +234,7 @@ const ServerOverview: React.FC = () => {
                         {monitors.map((monitor) => (
                             <TableRow key={monitor.id}>
                                 <TableCell>{monitor.id}</TableCell>
-                                <TableCell>{monitor.server_id}</TableCell>
+                                <TableCell>{monitor.server?.id}</TableCell>
                                 <TableCell>{monitor.type}</TableCell>
                                 <TableCell>{monitor.name}</TableCell>
                                 <TableCell><BooleanIcon value={monitor.is_enabled}/></TableCell>

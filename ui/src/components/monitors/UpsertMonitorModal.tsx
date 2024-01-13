@@ -15,7 +15,7 @@ import {
 } from '@mui/material';
 import Switch from '@mui/material/Switch';
 import {
-    ApiMonitor,
+    ApiMonitor, ApiMonitorInput,
     BlockAlertConfiguration,
     NodeExporterDiskSpaceUsageConfiguration, PriceFeederMissCountConfiguration, SignMissCheckConfiguration,
     UrlCheckConfiguration
@@ -82,7 +82,7 @@ const UpsertMonitorModal: React.FC<UpsertMonitorModalProps> = ({ open, fetchData
     const handleSubmit = (event: React.FormEvent) => {
         event.preventDefault();
 
-        const monitor: ApiMonitor = {
+        const monitor: ApiMonitorInput = {
             name: name,
             is_enabled: isEnabled,
             configuration_id: configuration.id,

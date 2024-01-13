@@ -147,100 +147,104 @@ const ConfigurationOverview: React.FC = () => {
                 </div>
             )}
 
-            <h3>Servers</h3>
-            <Button variant="outlined" onClick={handleServerModalOpen}>
-                Add Server
-            </Button>
-            <UpsertServerModal
-                open={openServerModal}
-                fetchData={fetchServers}
-                configurationId={id}
-                editServer={editServer}
-                handleClose={handleServerModalClose}
-            />
-            <TableContainer component={Paper}>
-                <Table>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell>ID</TableCell>
-                            <TableCell>Name</TableCell>
-                            <TableCell>Address</TableCell>
-                            <TableCell>Is Enabled</TableCell>
-                            <TableCell>Actions</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {servers.map((server) => (
-                            <TableRow key={server.id}>
-                                <TableCell>{server.id}</TableCell>
-                                <TableCell>{server.name}</TableCell>
-                                <TableCell>{server.address}</TableCell>
-                                <TableCell><BooleanIcon value={server.is_enabled} /></TableCell>
-                                <TableCell>
-                                    <Button variant="contained" color="primary" component={Link} to={`/servers/${server.id}`}>
-                                        View
-                                    </Button>
-                                    <Button variant="contained" color="primary" onClick={() => handleEditServer(server.id ?? 0)}>
-                                        Edit
-                                    </Button>
-                                    <Button variant="contained" color="secondary" onClick={() => handleRemoveServer(server.id ?? 0)}>
-                                        Remove
-                                    </Button>
-                                </TableCell>
+            {servers && (<>
+                <h3>Servers</h3>
+                <Button variant="outlined" onClick={handleServerModalOpen}>
+                    Add Server
+                </Button>
+                <UpsertServerModal
+                    open={openServerModal}
+                    fetchData={fetchServers}
+                    configurationId={id}
+                    editServer={editServer}
+                    handleClose={handleServerModalClose}
+                />
+                <TableContainer component={Paper}>
+                    <Table>
+                        <TableHead>
+                            <TableRow>
+                                <TableCell>ID</TableCell>
+                                <TableCell>Name</TableCell>
+                                <TableCell>Address</TableCell>
+                                <TableCell>Is Enabled</TableCell>
+                                <TableCell>Actions</TableCell>
                             </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
+                        </TableHead>
+                        <TableBody>
+                            {servers.map((server) => (
+                                <TableRow key={server.id}>
+                                    <TableCell>{server.id}</TableCell>
+                                    <TableCell>{server.name}</TableCell>
+                                    <TableCell>{server.address}</TableCell>
+                                    <TableCell><BooleanIcon value={server.is_enabled} /></TableCell>
+                                    <TableCell>
+                                        <Button variant="contained" color="primary" component={Link} to={`/servers/${server.id}`}>
+                                            View
+                                        </Button>
+                                        <Button variant="contained" color="primary" onClick={() => handleEditServer(server.id ?? 0)}>
+                                            Edit
+                                        </Button>
+                                        <Button variant="contained" color="secondary" onClick={() => handleRemoveServer(server.id ?? 0)}>
+                                            Remove
+                                        </Button>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+            </>)}
 
-            <h3>Monitors</h3>
-            <Button variant="outlined" onClick={handleMonitorModalOpen}>
-                Add Monitor
-            </Button>
-            <UpsertMonitorModal
-                open={openMonitorModal}
-                fetchData={fetchMonitors}
-                configuration={configuration as ApiConfiguration}
-                editMonitor={editMonitor}
-                handleClose={handleMonitorModalClose}
-            />
-            <TableContainer component={Paper}>
-                <Table>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell>ID</TableCell>
-                            <TableCell>Server ID</TableCell>
-                            <TableCell>Type</TableCell>
-                            <TableCell>Name</TableCell>
-                            <TableCell>Is Enabled</TableCell>
-                            <TableCell>Status</TableCell>
-                            <TableCell>Actions</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {monitors.map((monitor) => (
-                            <TableRow key={monitor.id}>
-                                <TableCell>{monitor.id}</TableCell>
-                                <TableCell>{monitor.server_id}</TableCell>
-                                <TableCell>{monitor.type}</TableCell>
-                                <TableCell>{monitor.name}</TableCell>
-                                <TableCell><BooleanIcon value={monitor.is_enabled} /></TableCell>
-                                <TableCell><BooleanIcon value={monitor.status ?? true} /></TableCell>
-                                <TableCell>
-                                    <Button variant="contained" color="primary"
-                                            onClick={() => handleEditMonitor(monitor.id ?? 0)}>
-                                        Edit
-                                    </Button>
-                                    <Button variant="contained" color="secondary"
-                                            onClick={() => handleRemoveMonitor(monitor.id ?? 0)}>
-                                        Remove
-                                    </Button>
-                                </TableCell>
+            {monitors && (<>
+                <h3>Monitors</h3>
+                <Button variant="outlined" onClick={handleMonitorModalOpen}>
+                    Add Monitor
+                </Button>
+                <UpsertMonitorModal
+                    open={openMonitorModal}
+                    fetchData={fetchMonitors}
+                    configuration={configuration as ApiConfiguration}
+                    editMonitor={editMonitor}
+                    handleClose={handleMonitorModalClose}
+                />
+                <TableContainer component={Paper}>
+                    <Table>
+                        <TableHead>
+                            <TableRow>
+                                <TableCell>ID</TableCell>
+                                <TableCell>Server ID</TableCell>
+                                <TableCell>Type</TableCell>
+                                <TableCell>Name</TableCell>
+                                <TableCell>Is Enabled</TableCell>
+                                <TableCell>Status</TableCell>
+                                <TableCell>Actions</TableCell>
                             </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
+                        </TableHead>
+                        <TableBody>
+                            {monitors.map((monitor) => (
+                                <TableRow key={monitor.id}>
+                                    <TableCell>{monitor.id}</TableCell>
+                                    <TableCell>{monitor.server?.id}</TableCell>
+                                    <TableCell>{monitor.type}</TableCell>
+                                    <TableCell>{monitor.name}</TableCell>
+                                    <TableCell><BooleanIcon value={monitor.is_enabled} /></TableCell>
+                                    <TableCell><BooleanIcon value={monitor.status ?? true} /></TableCell>
+                                    <TableCell>
+                                        <Button variant="contained" color="primary"
+                                                onClick={() => handleEditMonitor(monitor.id ?? 0)}>
+                                            Edit
+                                        </Button>
+                                        <Button variant="contained" color="secondary"
+                                                onClick={() => handleRemoveMonitor(monitor.id ?? 0)}>
+                                            Remove
+                                        </Button>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+                </>)}
 
             <CustomSnackbar open={snackbarOpen} severity={snackbarSeverity} handleClose={handleCloseSnackBar} message={snackbarMessage} />
         </div>

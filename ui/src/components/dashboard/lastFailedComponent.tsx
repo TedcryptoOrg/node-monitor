@@ -28,6 +28,7 @@ const LastFailedComponent: React.FC = () => {
                 <Table>
                     <TableHead>
                         <TableRow>
+                            <TableCell>Configuration</TableCell>
                             <TableCell>Monitor</TableCell>
                             <TableCell>Message</TableCell>
                         </TableRow>
@@ -35,6 +36,7 @@ const LastFailedComponent: React.FC = () => {
                     <TableBody>
                         {lastFailed.map((monitor, index) => (
                             <TableRow key={index}>
+                                <TableCell>{monitor.configuration.name}</TableCell>
                                 <TableCell>{monitor.name}</TableCell>
                                 <TableCell>{monitor.last_error}</TableCell>
                                 <TableCell>{monitor.last_check?.toLocaleString()}</TableCell>
