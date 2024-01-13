@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {
+    AlertColor,
     Button,
     Dialog,
     DialogActions,
@@ -16,6 +17,7 @@ interface AddMonitorModalProps {
     open: boolean,
     fetchData: () => void;
     editMonitor: ApiConfiguration|null;
+    sendNotification: (message: string, severity: AlertColor) => void;
     handleClose: any;
 }
 const UpsertConfigurationModal: React.FC<AddMonitorModalProps> = (
@@ -23,6 +25,7 @@ const UpsertConfigurationModal: React.FC<AddMonitorModalProps> = (
         open,
         fetchData,
         editMonitor,
+        sendNotification,
         handleClose
     }) => {
     const [name, setName] = useState(editMonitor ? editMonitor.name : '');
@@ -67,7 +70,13 @@ const UpsertConfigurationModal: React.FC<AddMonitorModalProps> = (
             },
             body: JSON.stringify(monitor),
         })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    sendNotification('Failed to add monitor!', 'error');
+                    return;
+                }
+                response.json()
+            })
             .then(data => {
                 fetchData();
                 console.log('Success:', data);

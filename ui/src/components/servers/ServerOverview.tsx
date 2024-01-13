@@ -54,18 +54,12 @@ const ServerOverview: React.FC = () => {
 
     useEffect(() => {
         if (firstRender.current) {
-            fetch(`${process.env.REACT_APP_API_HOST}/api/configurations/${id}`)
-                .then(response => response.json())
-                .then(data => setConfiguration(data))
-                .catch((error) => {
-                    sendNotification(`Error: ${error}`, 'error')
-                });
             fetchData();
             fetchServices();
             fetchMonitors();
             firstRender.current = false
         }
-    }, [id, setConfiguration, fetchData, fetchServices, fetchMonitors]);
+    }, [id, fetchData, fetchServices, fetchMonitors]);
 
     // snackbar
     const [snackbarOpen, setSnackbarOpen] = useState(false);
@@ -157,7 +151,7 @@ const ServerOverview: React.FC = () => {
             {server && (
                 <div>
                     <p>Configuration: <Link
-                        to={`/configurations/${server.configuration_id}`}>{configuration?.name}</Link></p>
+                        to={`/configurations/${server.configuration?.id}`}>{server.configuration?.name}</Link></p>
                     <p>Name: {server.name}</p>
                     <p>Address: {server.address}</p>
                     <p>Is Enabled: <BooleanIcon value={server.is_enabled}/></p>
@@ -220,7 +214,7 @@ const ServerOverview: React.FC = () => {
             <UpsertMonitorModal
                 open={openMonitorModal}
                 fetchData={fetchMonitors}
-                configuration={configuration as ApiConfiguration}
+                configuration={server.configuration as ApiConfiguration}
                 editMonitor={editMonitor}
                 handleClose={handleMonitorModalClose}
             />
@@ -262,7 +256,9 @@ const ServerOverview: React.FC = () => {
                 </Table>
             </TableContainer>
 
-            <CustomSnackbar open={snackbarOpen} severity={snackbarSeverity} handleClose={handleCloseSnackBar}
+            <CustomSnackbar open={snackbarOpen}
+                            severity={snackbarSeverity}
+                            handleClose={handleCloseSnackBar}
                             message={snackbarMessage}/>
         </div>
     );

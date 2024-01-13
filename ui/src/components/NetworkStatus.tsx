@@ -17,33 +17,35 @@ interface Metric {
 
 const NetworkStatus: React.FC = () => {
     const [metrics, setMetrics] = useState<Metric[]>([]);
+    const firstRender = React.useRef(true);
 
     useEffect(() => {
-        const fetchMetrics = async () => {
-            const configurationsResponse = await fetch(`${process.env.REACT_APP_API_HOST}/api/configurations`);
-            const configurations = await configurationsResponse.json();
+        if (firstRender.current) {
+            fetch(`${process.env.REACT_APP_API_HOST}/api/configurations`)
+                .then(response => response.json())
+                .then((data: ApiConfiguration[]) => {
+                    for (const configuration of data) {
+                        if (!configuration.servers) {
+                            continue;
+                        }
 
-            const metricsPromises = configurations.map(async (configuration: any) => {
-                const serversResponse = await fetch(`${process.env.REACT_APP_API_HOST}/api/configurations/${configuration.id}/servers`);
-                const servers = await serversResponse.json();
+                        for (const server of configuration.servers) {
+                            fetch(`${process.env.REACT_APP_API_HOST}/api/servers/${server.id}/metrics`)
+                                .then(response => response.json())
+                                .then((data: any) => {
+                                    setMetrics(metrics => [...metrics, {
+                                        configuration: configuration,
+                                        server: server,
+                                        ...data
+                                    }]);
+                                });
+                        }
+                    }
+                })
 
-                return Promise.all(servers.map(async (server: any) => {
-                    const metricsResponse = await fetch(`${process.env.REACT_APP_API_HOST}/api/servers/${server.id}/metrics`);
-                    const metrics = await metricsResponse.json();
-
-                    return {
-                        ...metrics,
-                        configuration,
-                        server
-                    };
-                }));
-            });
-
-            const metrics = (await Promise.all(metricsPromises)).flat();
-            setMetrics(metrics);
-        };
-
-        fetchMetrics();
+            firstRender.current = false;
+            return;
+        }
     }, []);
 
     const bytesToGigabytes = (bytes: number) => {
@@ -57,6 +59,7 @@ const NetworkStatus: React.FC = () => {
                 <Table>
                     <TableHead>
                         <TableRow>
+                            <TableCell>Configuration</TableCell>
                             <TableCell>Server</TableCell>
                             <TableCell>Total Disk Space</TableCell>
                             <TableCell>Used Disk Space</TableCell>
@@ -70,6 +73,7 @@ const NetworkStatus: React.FC = () => {
                     <TableBody>
                         {metrics.map((metric, index) => (
                             <TableRow key={index}>
+                                <TableCell>{metric.configuration.name}</TableCell>
                                 <TableCell>{metric.server.name}</TableCell>
                                 <TableCell>{bytesToGigabytes(metric.totalDiskSpace)} GB</TableCell>
                                 <TableCell>{bytesToGigabytes(metric.freeDiskSpace)} GB</TableCell>

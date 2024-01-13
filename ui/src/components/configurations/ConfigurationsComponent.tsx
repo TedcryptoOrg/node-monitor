@@ -24,17 +24,14 @@ const ConfigurationsComponent: React.FC = () => {
     }
 
     const fetchData = useCallback(() => {
-        if (firstRender.current) {
-            fetch(`${process.env.REACT_APP_API_HOST}/api/configurations`)
-                .then(response => {
-                    if (!response.ok) {
-                        sendNotification('Failed to fetch configuration data!', 'error')
-                    }
-                    return response.json();
-                })
-                .then(data => setConfigurationsData(data));
-            firstRender.current = false
-        }
+        fetch(`${process.env.REACT_APP_API_HOST}/api/configurations`)
+            .then(response => {
+                if (!response.ok) {
+                    sendNotification('Failed to fetch configuration data!', 'error')
+                }
+                return response.json();
+            })
+            .then(data => setConfigurationsData(data));
     }, []);
 
     const handleModalOpen = () => {
@@ -55,7 +52,10 @@ const ConfigurationsComponent: React.FC = () => {
     };
 
     useEffect(() => {
-        fetchData();
+        if (firstRender.current) {
+            fetchData();
+            firstRender.current = false;
+        }
     }, [fetchData]);
 
     const handleEdit = (id: number) => {
@@ -87,7 +87,13 @@ const ConfigurationsComponent: React.FC = () => {
             <Button variant="outlined" onClick={handleModalOpen}>
                 Add Configuration
             </Button>
-            <UpsertConfigurationModal open={openModal} fetchData={fetchData} editMonitor={editMonitor} handleClose={handleModalClose}/>
+            <UpsertConfigurationModal
+                open={openModal}
+                fetchData={fetchData}
+                editMonitor={editMonitor}
+                sendNotification={sendNotification}
+                handleClose={handleModalClose}
+            />
             <TableContainer component={Paper}>
                 <Table>
                     <TableHead>

@@ -9,7 +9,7 @@ export const create: RequestHandler = (req: Request, resp: Response) => {
             resp.status(400).send({
                 message: `${field} can not be empty!`
             });
-            return;
+            throw new Error(`${field} can not be empty!`);
         }
     })
 

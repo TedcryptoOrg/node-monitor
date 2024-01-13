@@ -122,7 +122,7 @@ const UpsertServiceModal: React.FC<UpsertServiceModalProps> = (
                     monitorService.upsertMonitor({
                         name: service.name,
                         is_enabled: service.is_enabled,
-                        configuration_id: server.configuration_id,
+                        configuration_id: server.configuration.id,
                         server_id: server.id,
                         type: MonitorTypeEnum.URL_CHECK,
                         configuration_object: JSON.stringify({

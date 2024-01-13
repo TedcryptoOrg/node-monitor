@@ -4,15 +4,21 @@ import {ApiAudit} from "../types/ApiAudit";
 
 const AuditComponent: React.FC = () => {
     const [audits, setAudits] = useState<ApiAudit[]>([]);
+    const firstRender = React.useRef(true);
 
     useEffect(() => {
-        fetch(`${process.env.REACT_APP_API_HOST}/api/audit/latest`)
-            .then(response => response.json())
-            .then(data => setAudits(data))
-            .catch((error) => {
-                console.error('Error:', error);
-                setAudits([])
-            });
+        if (firstRender.current) {
+            fetch(`${process.env.REACT_APP_API_HOST}/api/audit/latest`)
+                .then(response => response.json())
+                .then(data => setAudits(data))
+                .catch((error) => {
+                    console.error('Error:', error);
+                    setAudits([])
+                });
+
+            firstRender.current = false;
+            return;
+        }
     }, []);
 
     return (

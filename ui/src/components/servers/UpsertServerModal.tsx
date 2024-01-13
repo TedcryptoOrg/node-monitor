@@ -9,7 +9,7 @@ import {
     FormControlLabel,
     TextField
 } from '@mui/material';
-import {ApiServer} from "../../types/ApiServer";
+import {ApiServer, ApiServerInput} from "../../types/ApiServer";
 import Switch from '@mui/material/Switch';
 
 interface UpsertServerModalProps {
@@ -52,7 +52,7 @@ const UpsertServerModal: React.FC<UpsertServerModalProps> = (
     const handleSubmit = (event: React.FormEvent) => {
         event.preventDefault();
 
-        const server: ApiServer = {
+        const server: ApiServerInput = {
             name: name,
             is_enabled: isEnabled,
             address: address,
