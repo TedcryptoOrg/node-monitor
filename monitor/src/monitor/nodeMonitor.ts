@@ -22,7 +22,7 @@ export class NodeMonitor extends AbstractMonitor {
   ) {
     super(alertChannels)
 
-    for (const monitor of monitors) {
+    for (const monitor of this.monitors) {
       if (!monitor.is_enabled) {
         console.log(`❌️ [${this.name}] Monitor ${monitor.name} is disabled. Skipping...`)
         continue
@@ -42,7 +42,7 @@ export class NodeMonitor extends AbstractMonitor {
               this.name,
               monitor,
               this.alertChannels,
-              monitor.server?.services as ApiService[]
+              this.services
           ))
           break
         case MonitorTypeEnum.BLOCK_CHECK:
@@ -50,7 +50,7 @@ export class NodeMonitor extends AbstractMonitor {
             this.name,
             this.configuration.chain,
             monitor,
-            monitor.server?.services as ApiService[],
+            this.services,
             this.alertChannels
           ))
           break
@@ -62,7 +62,7 @@ export class NodeMonitor extends AbstractMonitor {
             this.name,
             this.chain,
             monitor,
-            monitor.server?.services as ApiService[],
+            this.services,
             this.alertChannels
           ))
           break
