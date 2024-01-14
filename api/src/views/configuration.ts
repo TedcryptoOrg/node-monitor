@@ -23,7 +23,7 @@ export async function renderConfiguration(configuration: Configuration|Configura
         is_enabled: configuration.is_enabled,
         createdAt: configuration.createdAt,
         updatedAt: configuration.updatedAt,
-        monitors: includeMonitors ? await renderMonitors(await configuration.getMonitors()) : undefined,
+        monitors: includeMonitors ? await renderMonitors(await configuration.getMonitors(), true) : undefined,
         servers: includeServers ? await renderServers(await configuration.getServers(), true) : undefined,
     }
 }
