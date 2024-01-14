@@ -30,6 +30,7 @@ export class BlockCheck implements MonitorCheck {
             throw new Error(`[${this.name}][BlockCheck] Server is not defined. Cannot run check`)
         }
         if (!this.monitor.server.services || this.monitor.server.services.length === 0) {
+            console.log(this.monitor)
             throw new Error(`[${this.name}][BlockCheck] Server services are not defined. Cannot run check`)
         }
 
