@@ -1,12 +1,14 @@
 import axios from 'axios'
-import { CryptoTools } from '../../../crypto/crypto_tools'
-import { type MonitorCheck } from '../monitorCheck'
-import { type AlertChannel } from '../../../AlertChannel/alertChannel'
-import { NoRecoverableException } from '../../exception/noRecoverableException'
-import { RecoverableException } from '../../exception/recoverableException'
-import { Alerter } from '../../../Alerter/alerter'
+import {CryptoTools} from '../../../crypto/crypto_tools'
+import {type MonitorCheck} from '../monitorCheck'
+import {type AlertChannel} from '../../../AlertChannel/alertChannel'
+import {NoRecoverableException} from '../../exception/noRecoverableException'
+import {RecoverableException} from '../../exception/recoverableException'
+import {Alerter} from '../../../Alerter/alerter'
 import {ApiMonitor, PriceFeederMissCountConfiguration} from "../../../type/api/ApiMonitor";
 import {pingMonitor} from "../../../services/monitorsManager";
+import {ApiService} from "../../../type/api/ApiService";
+import {ServiceTypeEnum} from "../../../type/api/ServiceTypeEnum";
 
 export class MissCounter implements MonitorCheck {
   private readonly staticEndpoints: { kujira: string, ojo: string } = {
@@ -22,11 +24,13 @@ export class MissCounter implements MonitorCheck {
   private isFirstRun: boolean = false
   private lastTimePing: number = 0;
   private readonly pingInterval: number = 60;
+  private restAddress: string|undefined = undefined;
 
   constructor (
     private readonly name: string,
     private readonly monitor: ApiMonitor,
-    private readonly alertChannels: AlertChannel[]
+    private readonly alertChannels: AlertChannel[],
+    private readonly services: ApiService[]
   ) {
     this.configuration = JSON.parse(this.monitor.configuration_object) as PriceFeederMissCountConfiguration
     console.debug(`🔨️[${this.name}] Creating miss counter check...`, this.configuration)
@@ -128,7 +132,7 @@ export class MissCounter implements MonitorCheck {
 
   async fetchMissCounter (): Promise<number> {
     try {
-      const response = await axios.get(this.configuration.rest_address + this.endpoint)
+      const response = await axios.get(this.getRestAddress() + this.endpoint)
 
       return Number(response.data.miss_counter)
     } catch (error: any) {
@@ -146,6 +150,24 @@ export class MissCounter implements MonitorCheck {
     }
 
     return false;
+  }
+
+  getRestAddress(): string
+  {
+    if (!this.restAddress) {
+      for (const service of this.services) {
+        if (service.type === ServiceTypeEnum.REST) {
+          console.log(`🔨️[${this.name}] Found REST service: ${service.address}`)
+          this.restAddress = service.address;
+          break;
+        }
+      }
+    }
+    if (this.restAddress === undefined) {
+      throw new NoRecoverableException('No REST service found for this monitor');
+    }
+
+    return this.restAddress;
   }
 
   getEndpointUrl (valoperAddress: string): string {

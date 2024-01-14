@@ -19,7 +19,7 @@ export class DiskSpace implements MonitorCheck {
         private readonly alertChannels: AlertChannel[]
     ) {
         this.configuration = JSON.parse(this.monitor.configuration_object) as NodeExporterDiskSpaceUsageConfiguration
-        console.debug(`🔨️[${this.name}] Creating disk space check...`, this.configuration);
+        console.debug(`🔨️[${this.name}][DiskSpace] Creating disk space check...`, this.configuration);
 
         this.alerter = new Alerter(
             this.name,
@@ -36,13 +36,13 @@ export class DiskSpace implements MonitorCheck {
         while(true) {
             console.log(`🏃️[${this.name}][DiskSpace] Running check...`)
 
-            if (!this.monitor.server_id) {
+            if (!this.monitor.server?.id) {
                 await this.failed('Server id unknown. Cannot run check')
 
                 throw new Error(`[${this.name}][DiskSpace] Server id unknown. Cannot run check`)
             }
 
-            const metricsResponse = await fetch(`${process.env.REACT_APP_API_HOST}/api/servers/${this.monitor.server_id}/metrics`);
+            const metricsResponse = await fetch(`${process.env.REACT_APP_API_HOST}/api/servers/${this.monitor.server.id}/metrics`);
             const metrics: ApiMetric = await metricsResponse.json();
 
             console.log(`[${this.name}][DiskSpace] Used disk space: ${metrics.usedDiskSpacePercentage}%`);
@@ -62,7 +62,7 @@ export class DiskSpace implements MonitorCheck {
     {
         console.log(`🔴️[${this.name}][DiskSpace] ${message}`);
         this.isOkay = false;
-        await this.alerter.alert(`🚨 [${this.name}] ${message}`);
+        await this.alerter.alert(`🚨 [${this.name}][DiskSpace] ${message}`);
         await pingMonitor(
             this.monitor.id as number,
             {

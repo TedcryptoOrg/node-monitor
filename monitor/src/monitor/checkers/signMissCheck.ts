@@ -5,6 +5,9 @@ import {getValConsAddressFromPubKey} from "../../util/validatorTools";
 import {Chain} from "@tedcryptoorg/cosmos-directory";
 import {ApiMonitor, SignMissCheckConfiguration} from "../../type/api/ApiMonitor";
 import {pingMonitor} from "../../services/monitorsManager";
+import {ApiService} from "../../type/api/ApiService";
+import {buildClient} from "../../services/clientManager";
+import {ServiceTypeEnum} from "../../type/api/ServiceTypeEnum";
 
 export class SignMissCheck implements MonitorCheck {
     private readonly alerter: Alerter
@@ -13,17 +16,19 @@ export class SignMissCheck implements MonitorCheck {
     private isFirstRun: boolean = true
     private lastTimePing: number = 0
     private readonly pingInterval: number = 60
+    private client: ClientInterface
 
     constructor (
         private readonly name: string,
         private readonly chain: Chain,
         private readonly monitor: ApiMonitor,
-        private readonly client: ClientInterface,
+        private readonly services: ApiService[],
         private readonly alertChannels: any
     ) {
         this.configuration = JSON.parse(this.monitor.configuration_object) as SignMissCheckConfiguration
         console.debug(`🔨️[${this.name}][${this.chain.name}] Creating sign miss check...`, this.configuration);
 
+        this.client = buildClient(this.services, ServiceTypeEnum.REST)
         this.alerter = new Alerter(
             this.name,
             'SigningMissCheck',

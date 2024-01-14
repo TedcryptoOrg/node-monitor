@@ -1,9 +1,20 @@
+import {ApiConfiguration} from "./ApiConfiguration";
+import {ApiService} from "./ApiService";
+
+export type ApiServerInput = {
+    name: string,
+    address: string,
+    is_enabled: boolean,
+    configuration_id: number,
+}
+
 export type ApiServer = {
     id?: number,
     name: string,
     address: string,
     is_enabled: boolean,
-    configuration_id: number,
-    createdAt?: Date;
-    updatedAt?: Date;
+    configuration: ApiConfiguration,
+    services: ApiService[],
+    created_at?: string;
+    updated_at?: string;
 }

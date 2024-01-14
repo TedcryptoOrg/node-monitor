@@ -1,15 +1,19 @@
 import {MonitorCheck} from "./monitorCheck";
 import {Alerter} from "../../Alerter/alerter";
-import {RpcClient} from "../../client/rpcClient";
 import {Chain, ChainDirectory} from "@tedcryptoorg/cosmos-directory";
 import {ApiMonitor, BlockAlertConfiguration} from "../../type/api/ApiMonitor";
 import {pingMonitor} from "../../services/monitorsManager";
+import {buildClient} from "../../services/clientManager";
+import {ServiceTypeEnum} from "../../type/api/ServiceTypeEnum";
+import {ApiService} from "../../type/api/ApiService";
+import {RpcClient} from "../../client/rpcClient";
 
 const chainDirectory = new ChainDirectory(false);
 
 export class BlockCheck implements MonitorCheck {
     private readonly alerter: Alerter
     private readonly configuration: BlockAlertConfiguration
+    private client: RpcClient
     private isOkay: boolean = false
     private isFirstRun: boolean = true
     private lastTimePing: number = 0
@@ -19,11 +23,12 @@ export class BlockCheck implements MonitorCheck {
         private readonly name: string,
         private readonly chainName: string,
         private readonly monitor: ApiMonitor,
-        private readonly rpcClient: RpcClient,
+        private readonly services: ApiService[],
         private readonly alertChannels: any
     ) {
         this.configuration = JSON.parse(this.monitor.configuration_object) as BlockAlertConfiguration
         console.debug(`🔨️[${this.name}][${this.chainName}] Creating block check...`, this.configuration);
+        this.client = buildClient(this.services, ServiceTypeEnum.RPC) as RpcClient;
 
         this.alerter = new Alerter(
             this.name,
@@ -38,17 +43,21 @@ export class BlockCheck implements MonitorCheck {
         let previousTimestamp = new Date().getTime()
         let lastBlockHeight = 0
 
+        if (this.monitor.server?.id) {
+            throw new Error(`[${this.name}][BlockCheck] Server id unknown. Cannot run check`)
+        }
+
         while (true) {
             console.log(`🏃️[${this.name}][BlockCheck] Running check...`)
 
-            const currentBlockHeight = Number(await this.rpcClient.getBlockHeight());
+            const currentBlockHeight = Number(await this.client.getBlockHeight());
             console.log(`🟡️[${this.name}][BlockCheck] Height: ${currentBlockHeight}`)
 
             if (lastBlockHeight >= currentBlockHeight) {
                 console.log(`🟠️[${this.name}][BlockCheck] Block is not increasing`);
                 previousTimestamp = new Date().getTime();
 
-                const isSyncing = await this.rpcClient.isSyncing();
+                const isSyncing = await this.client.isSyncing();
                 if (isSyncing) {
                     console.log(`🟠️[${this.name}][BlockCheck] Node is syncing...`)
                     let message = `Node is syncing... Current height: ${currentBlockHeight}`
