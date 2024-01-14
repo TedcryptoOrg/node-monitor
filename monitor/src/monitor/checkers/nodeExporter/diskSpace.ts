@@ -42,7 +42,7 @@ export class DiskSpace implements MonitorCheck {
                 throw new Error(`[${this.name}][DiskSpace] Server id unknown. Cannot run check`)
             }
 
-            const metricsResponse = await fetch(`${process.env.REACT_APP_API_HOST}/api/servers/${this.monitor.server.id}/metrics`);
+            const metricsResponse = await fetch(`${process.env.API_HOST}/api/servers/${this.monitor.server.id}/metrics`);
             const metrics: ApiMetric = await metricsResponse.json();
 
             console.log(`[${this.name}][DiskSpace] Used disk space: ${metrics.usedDiskSpacePercentage}%`);

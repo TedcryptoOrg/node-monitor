@@ -50,7 +50,6 @@ export class NodeMonitor extends AbstractMonitor {
             this.name,
             this.configuration.chain,
             monitor,
-            this.services,
             this.alertChannels
           ))
           break

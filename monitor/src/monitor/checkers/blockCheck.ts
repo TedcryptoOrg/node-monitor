@@ -5,7 +5,6 @@ import {ApiMonitor, BlockAlertConfiguration} from "../../type/api/ApiMonitor";
 import {pingMonitor} from "../../services/monitorsManager";
 import {buildClient} from "../../services/clientManager";
 import {ServiceTypeEnum} from "../../type/api/ServiceTypeEnum";
-import {ApiService} from "../../type/api/ApiService";
 import {RpcClient} from "../../client/rpcClient";
 
 const chainDirectory = new ChainDirectory(false);
@@ -23,12 +22,18 @@ export class BlockCheck implements MonitorCheck {
         private readonly name: string,
         private readonly chainName: string,
         private readonly monitor: ApiMonitor,
-        private readonly services: ApiService[],
         private readonly alertChannels: any
     ) {
         this.configuration = JSON.parse(this.monitor.configuration_object) as BlockAlertConfiguration
         console.debug(`🔨️[${this.name}][${this.chainName}] Creating block check...`, this.configuration);
-        this.client = buildClient(this.services, ServiceTypeEnum.RPC) as RpcClient;
+        if (!this.monitor.server) {
+            throw new Error(`[${this.name}][BlockCheck] Server is not defined. Cannot run check`)
+        }
+        if (!this.monitor.server.services || this.monitor.server.services.length === 0) {
+            throw new Error(`[${this.name}][BlockCheck] Server services are not defined. Cannot run check`)
+        }
+
+        this.client = buildClient(this.monitor.server.services, ServiceTypeEnum.RPC) as RpcClient;
 
         this.alerter = new Alerter(
             this.name,
