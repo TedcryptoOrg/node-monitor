@@ -12,7 +12,7 @@ export const getMetrics = async (req: any, resp: any): Promise<void> => {
     )
     if (nodeExporter === undefined) {
         resp.status(404).send({'message': 'Node exporter not found'})
-        return;
+        throw new Error('Node exporter not found')
     }
 
     const nodeExporterJson = JSON.parse(JSON.stringify(nodeExporter));

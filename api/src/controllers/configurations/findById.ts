@@ -7,7 +7,7 @@ export const findById = async (req: any, resp: any) => {
         resp.status(404).send({
             message: `Configuration with id ${req.params.id} not found`
         })
-        return
+        throw new Error(`Configuration with id ${req.params.id} not found`)
     }
 
     resp.send(await renderConfiguration(configuration))

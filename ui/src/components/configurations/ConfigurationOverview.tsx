@@ -1,5 +1,16 @@
 import React, {useState, useEffect, useCallback} from 'react';
-import {Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, AlertColor, Button} from '@mui/material';
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    Paper,
+    AlertColor,
+    Button,
+    DialogContent, DialogContentText
+} from '@mui/material';
 import {Link, useParams} from 'react-router-dom';
 import { ApiConfiguration } from '../../types/ApiConfiguration';
 import { ApiServer } from '../../types/ApiServer';
@@ -8,6 +19,7 @@ import UpsertServerModal from '../servers/UpsertServerModal';
 import {ApiMonitor} from "../../types/ApiMonitor";
 import UpsertMonitorModal from "../monitors/UpsertMonitorModal";
 import BooleanIcon from "../shared/BooleanIcon";
+import UpsertConfigurationModal from "./UpsertConfigurationModal";
 
 type RouteParams = {
     [key: number]: string;
@@ -65,6 +77,9 @@ const ConfigurationOverview: React.FC = () => {
 
         setSnackbarOpen(false);
     };
+
+    // Configuration
+    const [openConfigurationModal, setOpenConfigurationModal] = useState(false);
 
     // Upsert server
     const [openServerModal, setOpenServerModal] = useState(false);
@@ -138,14 +153,28 @@ const ConfigurationOverview: React.FC = () => {
         <div>
             <h2>Configuration Overview</h2>
             {configuration && (
-                <div>
-                    <p>Name: {configuration.name}</p>
-                    <p>Chain: {configuration.chain}</p>
-                    <p>Is Enabled: <BooleanIcon value={configuration.is_enabled} /></p>
-                    <p>Created At: {new Date(configuration.createdAt).toLocaleString()}</p>
-                    <p>Updated At: {new Date(configuration.updatedAt).toLocaleString()}</p>
-                </div>
-            )}
+                <DialogContent>
+                    <DialogContentText>
+                        <p>Name: {configuration.name}</p>
+                        <p>Chain: {configuration.chain}</p>
+                        <p>Is Enabled: <BooleanIcon value={configuration.is_enabled}/></p>
+                        <p>Created At: {new Date(configuration.createdAt).toLocaleString()}</p>
+                        <p>Updated At: {new Date(configuration.updatedAt).toLocaleString()}</p>
+                    </DialogContentText>
+                    <DialogContentText>
+                        <UpsertConfigurationModal
+                            open={openConfigurationModal}
+                            fetchData={fetchData}
+                            configuration={configuration}
+                            sendNotification={sendNotification}
+                            handleClose={() => {setOpenConfigurationModal(false)}}
+                            />
+                        <Button variant="contained" color="primary" onClick={() => {setOpenConfigurationModal(true)}}>
+                            Edit
+                        </Button>
+                    </DialogContentText>
+                </DialogContent>
+                )}
 
             {servers && (<>
                 <h3>Servers</h3>
@@ -214,7 +243,7 @@ const ConfigurationOverview: React.FC = () => {
                         <TableHead>
                             <TableRow>
                                 <TableCell>ID</TableCell>
-                                <TableCell>Server ID</TableCell>
+                                <TableCell>Server</TableCell>
                                 <TableCell>Type</TableCell>
                                 <TableCell>Name</TableCell>
                                 <TableCell>Is Enabled</TableCell>
@@ -226,7 +255,11 @@ const ConfigurationOverview: React.FC = () => {
                             {monitors.map((monitor) => (
                                 <TableRow key={monitor.id}>
                                     <TableCell>{monitor.id}</TableCell>
-                                    <TableCell>{monitor.server?.id}</TableCell>
+                                    <TableCell>
+                                        <Link to={`/servers/${monitor.server?.id}`}>
+                                            {monitor.server?.name}
+                                        </Link>
+                                    </TableCell>
                                     <TableCell>{monitor.type}</TableCell>
                                     <TableCell>{monitor.name}</TableCell>
                                     <TableCell><BooleanIcon value={monitor.is_enabled} /></TableCell>

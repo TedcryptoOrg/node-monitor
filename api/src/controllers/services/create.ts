@@ -10,7 +10,7 @@ export const create: RequestHandler = (req: Request, resp: Response) => {
             resp.status(400).send({
                 message: `${field} can not be empty!`
             });
-            return;
+            throw new Error(`${field} can not be empty!`);
         }
     })
 
@@ -19,7 +19,7 @@ export const create: RequestHandler = (req: Request, resp: Response) => {
         resp.status(400).send({
             message: `Invalid type ${req.body.type}`
         });
-        return;
+        throw new Error(`Invalid type ${req.body.type}`);
     }
 
     serviceDal.create({

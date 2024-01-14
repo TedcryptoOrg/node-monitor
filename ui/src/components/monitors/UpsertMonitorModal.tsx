@@ -28,6 +28,7 @@ import NodeExporterDiskSpaceConfig from "./types/NodeExporterDiskSpaceConfig";
 import BlockCheckConfiguration from "./types/BlockCheckConfiguration";
 import SignMissCheckConfig from "./types/SignMissCheckConfig";
 import PriceFeederMissCountConfig from './types/PriceFeederMissCountConfig';
+import {ApiServer} from "../../types/ApiServer";
 
 interface UpsertMonitorModalProps {
     open: boolean;
@@ -52,14 +53,36 @@ const UpsertMonitorModal: React.FC<UpsertMonitorModalProps> = (
     const [type, setType] = useState(editMonitor ? editMonitor.type : MonitorTypeEnum.URL_CHECK);
     const [configurationObject, setConfigurationObject] = useState(editMonitor ? JSON.parse(editMonitor.configuration_object) : {});
     const [loading, setLoading] = useState(true);
+    const [showServer, setShowServer] = useState(false);
+    const [serverId, setServerId] = useState(editMonitor ? editMonitor.server?.id : undefined);
+    const [servers, setServers] = useState<ApiServer[]>([]);
+
+    useEffect(() => {
+        if (configuration) {
+            fetch(`${process.env.REACT_APP_API_HOST}/api/configurations/${configuration.id}/servers`)
+                .then(response => response.json())
+                .then((data: ApiServer[]) => {
+                    setServers(data);
+                });
+        }
+    }, [configuration])
 
     useEffect(() => {
         setName(editMonitor ? editMonitor.name : '');
         setIsEnabled(editMonitor ? editMonitor.is_enabled : true);
         setType(editMonitor ? editMonitor.type : MonitorTypeEnum.URL_CHECK);
         setConfigurationObject(editMonitor ? JSON.parse(editMonitor.configuration_object) : {});
+        setServerId(editMonitor ? editMonitor.server?.id : 0);
         setLoading(false);
     }, [editMonitor]);
+
+    useEffect(() => {
+        const serverTypes = [
+            MonitorTypeEnum.BLOCK_CHECK,
+            MonitorTypeEnum.NODE_EXPORTER_DISK_SPACE,
+        ];
+        setShowServer(serverTypes.includes(type));
+    }, [type]);
 
     const customHandleClose = () => {
         setName('URL Check');
@@ -79,11 +102,17 @@ const UpsertMonitorModal: React.FC<UpsertMonitorModalProps> = (
             sendNotification('Please select a type.', 'error');
             return;
         }
+        const server = servers.find((server) => server.id === serverId);
+        if (showServer && server === undefined) {
+            sendNotification('Please select a server.', 'error');
+            return;
+        }
 
         const monitor: ApiMonitorInput = {
             name: name,
             is_enabled: isEnabled,
             configuration_id: configuration.id,
+            server_id: server?.id,
             type: type,
             configuration_object: JSON.stringify(configurationObject ?? {})
         };
@@ -135,19 +164,41 @@ const UpsertMonitorModal: React.FC<UpsertMonitorModalProps> = (
                             value={name}
                             onChange={e => setName(e.target.value)}
                         />
-                        <FormControlLabel
-                            label="Is Enabled"
-                            control={
-                                <Switch
-                                    checked={isEnabled}
-                                    onChange={e => setIsEnabled(e.target.checked)}
-                                    name="isEnabled"
-                                    color="primary"
-                                />
-                            }
-                        />
-                    </DialogContent>
-                    <DialogContent>
+                        {showServer && (
+                            <DialogContentText>
+                                <FormControl>
+                                    <FormLabel>
+                                        Server
+                                    </FormLabel>
+                                    <Select
+                                        value={serverId}
+                                        onChange={e => setServerId(e.target.value as number)}
+                                    >
+                                        <MenuItem key={0} value={0}>
+                                            None
+                                        </MenuItem>
+                                        {servers.map((server) => (
+                                            <MenuItem key={server.id} value={server.id}>
+                                                {server.name}
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                            </DialogContentText>
+                        )}
+                        <DialogContentText>
+                            <FormControlLabel
+                                label="Is Enabled"
+                                control={
+                                    <Switch
+                                        checked={isEnabled}
+                                        onChange={e => setIsEnabled(e.target.checked)}
+                                        name="isEnabled"
+                                        color="primary"
+                                    />
+                                }
+                            />
+                        </DialogContentText>
                         <FormControl>
                             <FormLabel>
                                 Type

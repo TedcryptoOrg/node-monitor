@@ -8,21 +8,18 @@ interface NodeExporterDiskSpaceConfigProps {
 }
 
 const NodeExporterDiskSpaceConfig: React.FC<NodeExporterDiskSpaceConfigProps> = ({ config, setConfig }) => {
-    const [address, setAddress] = useState(config.address || '');
     const [threshold, setThreshold] = useState(config.threshold || 80);
     const [alertSleepDurationMinutes, setAlertSleepDurationMinutes] = useState(config.alert_sleep_duration_minutes || 30);
     const [checkIntervalSeconds, setCheckIntervalSeconds] = useState(config.check_interval_seconds || 60);
 
     useEffect(() => {
-        setAddress(config.address || '');
         setThreshold(config.threshold || 80);
         setAlertSleepDurationMinutes(config.alert_sleep_duration_minutes || 30);
         setCheckIntervalSeconds(config.check_interval_seconds || 60);
 
-        if (config.address === undefined) {
+        if (config.threshold === undefined) {
             setConfig((prevConfig: NodeExporterDiskSpaceUsageConfiguration) => ({
                 ...prevConfig,
-                address: '',
                 threshold: 0,
                 alert_sleep_duration_minutes: 30,
                 check_interval_seconds: 60
@@ -35,9 +32,6 @@ const NodeExporterDiskSpaceConfig: React.FC<NodeExporterDiskSpaceConfigProps> = 
         setConfig((prevConfig: NodeExporterDiskSpaceUsageConfiguration) => ({ ...prevConfig, [name]: value }));
 
         switch (name) {
-            case 'address':
-                setAddress(value);
-                break;
             case 'threshold':
                 setThreshold(parseInt(value));
                 break;
@@ -54,18 +48,6 @@ const NodeExporterDiskSpaceConfig: React.FC<NodeExporterDiskSpaceConfigProps> = 
 
     return (
         <>
-            <TextField
-                margin="dense"
-                id="address"
-                label="Address"
-                type="text"
-                autoComplete={'off'}
-                fullWidth
-                variant="standard"
-                value={address}
-                onChange={handleChange}
-                name="address"
-            />
             <TextField
                 margin="dense"
                 id="threshold"

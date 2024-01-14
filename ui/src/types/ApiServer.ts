@@ -15,6 +15,6 @@ export type ApiServer = {
     is_enabled: boolean,
     configuration: ApiConfiguration,
     services: ApiService[],
-    createdAt?: Date;
-    updatedAt?: Date;
+    created_at?: string;
+    updated_at?: string;
 }

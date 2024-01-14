@@ -13,30 +13,30 @@ import {
 import {ApiConfiguration} from "../../types/ApiConfiguration";
 import Switch from '@mui/material/Switch';
 
-interface AddMonitorModalProps {
+interface ConfigurationModalProps {
     open: boolean,
     fetchData: () => void;
-    editMonitor: ApiConfiguration|null;
+    configuration: ApiConfiguration|null;
     sendNotification: (message: string, severity: AlertColor) => void;
     handleClose: any;
 }
-const UpsertConfigurationModal: React.FC<AddMonitorModalProps> = (
+const UpsertConfigurationModal: React.FC<ConfigurationModalProps> = (
     {
         open,
         fetchData,
-        editMonitor,
+        configuration,
         sendNotification,
         handleClose
     }) => {
-    const [name, setName] = useState(editMonitor ? editMonitor.name : '');
-    const [chain, setChain] = useState(editMonitor ? editMonitor.chain : '');
-    const [isEnabled, setIsEnabled] = useState(editMonitor ? editMonitor.is_enabled : true);
+    const [name, setName] = useState(configuration ? configuration.name : '');
+    const [chain, setChain] = useState(configuration ? configuration.chain : '');
+    const [isEnabled, setIsEnabled] = useState(configuration ? configuration.is_enabled : true);
 
     useEffect(() => {
-        setName(editMonitor ? editMonitor.name : '');
-        setChain(editMonitor ? editMonitor.chain : '');
-        setIsEnabled(editMonitor ? editMonitor.is_enabled : true);
-    }, [editMonitor]);
+        setName(configuration ? configuration.name : '');
+        setChain(configuration ? configuration.chain : '');
+        setIsEnabled(configuration ? configuration.is_enabled : true);
+    }, [configuration]);
 
     const handleSwitchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setIsEnabled(event.target.checked);
@@ -58,10 +58,10 @@ const UpsertConfigurationModal: React.FC<AddMonitorModalProps> = (
             is_enabled: isEnabled,
         };
 
-        const url = editMonitor
-            ? `${process.env.REACT_APP_API_HOST}/api/configurations/${editMonitor.id}`
+        const url = configuration
+            ? `${process.env.REACT_APP_API_HOST}/api/configurations/${configuration.id}`
             : `${process.env.REACT_APP_API_HOST}/api/configurations`;
-        const method = editMonitor ? 'PUT' : 'POST';
+        const method = configuration ? 'PUT' : 'POST';
 
         fetch(url, {
             method: method,
@@ -133,7 +133,7 @@ const UpsertConfigurationModal: React.FC<AddMonitorModalProps> = (
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={customHandleClose}>Cancel</Button>
-                        <Button type="submit">{editMonitor ? 'Edit' : 'Add'}</Button>
+                        <Button type="submit">{configuration ? 'Edit' : 'Add'}</Button>
                     </DialogActions>
                 </form>
             </Dialog>

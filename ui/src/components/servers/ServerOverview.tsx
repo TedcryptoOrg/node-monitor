@@ -8,7 +8,7 @@ import {
     TableRow,
     Paper,
     Button,
-    AlertColor
+    AlertColor, DialogContent, DialogContentText
 } from '@mui/material';
 import {Link, useParams} from 'react-router-dom';
 import { ApiServer } from '../../types/ApiServer';
@@ -19,6 +19,7 @@ import {ApiConfiguration} from "../../types/ApiConfiguration";
 import BooleanIcon from "../shared/BooleanIcon";
 import UpsertMonitorModal from "../monitors/UpsertMonitorModal";
 import {ApiMonitor} from "../../types/ApiMonitor";
+import UpsertServerModal from "./UpsertServerModal";
 
 type RouteParams = {
     [key: string]: string;
@@ -133,6 +134,9 @@ const ServerOverview: React.FC = () => {
         }
     };
 
+    // Server
+    const [openServerModal, setOpenServerModal] = useState(false);
+
     const handleRemoveMonitor = (id: number) => {
         fetch(`${process.env.REACT_APP_API_HOST}/api/monitors/${id}`, {
             method: 'DELETE',
@@ -148,15 +152,30 @@ const ServerOverview: React.FC = () => {
         <div>
             <h2>Server Overview</h2>
             {server && (
-                <div>
-                    <p>Configuration: <Link
-                        to={`/configurations/${server.configuration?.id}`}>{server.configuration?.name}</Link></p>
-                    <p>Name: {server.name}</p>
-                    <p>Address: {server.address}</p>
-                    <p>Is Enabled: <BooleanIcon value={server.is_enabled}/></p>
-                    <p>Created At: {server.createdAt ? new Date(server.createdAt).toLocaleString() : 'unknown'}</p>
-                    <p>Updated At: {server.updatedAt ? new Date(server.updatedAt).toLocaleString() : 'unknown'}</p>
-                </div>
+                <DialogContent>
+                    <DialogContentText>
+                        <p>Configuration: <Link
+                            to={`/configurations/${server.configuration?.id}`}>{server.configuration?.name}</Link></p>
+                        <p>Name: {server.name}</p>
+                        <p>Address: {server.address}</p>
+                        <p>Is Enabled: <BooleanIcon value={server.is_enabled}/></p>
+                        <p>Created At: {server.created_at ? new Date(server.created_at).toLocaleString() : 'unknown'}</p>
+                        <p>Updated At: {server.updated_at ? new Date(server.updated_at).toLocaleString() : 'unknown'}</p>
+                    </DialogContentText>
+                    <DialogContentText>
+                        <UpsertServerModal
+                            open={openServerModal}
+                            fetchData={fetchData}
+                            configurationId={server.configuration?.id}
+                            sendNotification={sendNotification}
+                            handleClose={() => {setOpenServerModal(false)}}
+                            editServer={server}
+                        />
+                        <Button variant="contained" color="primary" onClick={() => {setOpenServerModal(true)}}>
+                            Edit
+                        </Button>
+                    </DialogContentText>
+                </DialogContent>
             )}
 
             <h3>Services</h3>

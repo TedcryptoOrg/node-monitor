@@ -19,5 +19,7 @@ export async function renderServer(server: Server|ServerOutput, includeServices:
         is_enabled: server.is_enabled,
         configuration: await renderConfiguration(await server.getConfiguration()),
         services: includeServices ? await renderServices(await server.getServices()) : undefined,
+        created_at: server.createdAt,
+        updated_at: server.updatedAt
     }
 }

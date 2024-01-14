@@ -90,7 +90,7 @@ const ConfigurationsComponent: React.FC = () => {
             <UpsertConfigurationModal
                 open={openModal}
                 fetchData={fetchData}
-                editMonitor={editMonitor}
+                configuration={editMonitor}
                 sendNotification={sendNotification}
                 handleClose={handleModalClose}
             />

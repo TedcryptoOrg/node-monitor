@@ -19,7 +19,7 @@ import {ServiceTypeEnum} from '../../types/ServiceTypeEnum';
 import {ApiServer} from "../../types/ApiServer";
 import Switch from "@mui/material/Switch";
 import monitorService from "../../services/MonitorService";
-import {UrlCheckConfiguration} from "../../types/ApiMonitor";
+import {NodeExporterDiskSpaceUsageConfiguration, UrlCheckConfiguration} from "../../types/ApiMonitor";
 import {MonitorTypeEnum} from "../../types/MonitorTypeEnum";
 
 interface UpsertServiceModalProps {
@@ -119,7 +119,8 @@ const UpsertServiceModal: React.FC<UpsertServiceModalProps> = (
                     fetchData();
                 }
                 if (createMonitor) {
-                    monitorService.upsertMonitor({
+                    const promises = [];
+                    promises.push(monitorService.upsertMonitor({
                         name: service.name,
                         is_enabled: service.is_enabled,
                         configuration_id: server.configuration.id,
@@ -129,11 +130,27 @@ const UpsertServiceModal: React.FC<UpsertServiceModalProps> = (
                             name: service.name,
                             address: service.address
                         } as UrlCheckConfiguration)
-                    }).then(() => {
-                        fetchData();
-                    }).catch((error) => {
-                        console.error('Error:', error);
-                    });
+                    }))
+                    if (type === ServiceTypeEnum.NODE_EXPORTER) {
+                        promises.push(monitorService.upsertMonitor({
+                            name: service.name,
+                            is_enabled: service.is_enabled,
+                            configuration_id: server.configuration.id,
+                            server_id: server.id,
+                            type: MonitorTypeEnum.NODE_EXPORTER_DISK_SPACE,
+                            configuration_object: JSON.stringify({
+                                threshold: 80,
+                                alert_sleep_duration_minutes: 30,
+                                check_interval_seconds: 60,
+                            } as NodeExporterDiskSpaceUsageConfiguration)
+                        }))
+                    }
+                    Promise.all(promises)
+                        .then(() => {
+                            fetchData();
+                        }).catch((error) => {
+                            console.error('Error:', error);
+                        });
                 }
             })
             .catch((error) => {

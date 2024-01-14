@@ -3,7 +3,7 @@ import * as configurationDal from "../../database/dal/configuration";
 export const deleteConfiguration = async (req: any, resp: any) => {
     if (req.params.id === undefined) {
         resp.status(400).send('Missing id')
-        return
+        throw new Error('Missing id')
     }
 
     await configurationDal.deleteConfiguration(Number(req.params.id))
