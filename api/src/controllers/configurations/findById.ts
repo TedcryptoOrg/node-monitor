@@ -10,5 +10,5 @@ export const findById = async (req: any, resp: any) => {
         throw new Error(`Configuration with id ${req.params.id} not found`)
     }
 
-    resp.send(await renderConfiguration(configuration))
+    resp.send(await renderConfiguration(configuration, true, true))
 }
