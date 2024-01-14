@@ -12,17 +12,8 @@ const UrlCheckConfig: React.FC<UrlCheckConfigProps> = ({ config, setConfig }) =>
     const [address, setAddress] = useState(config.address || '');
 
     useEffect(() => {
-        console.log(config);
         setName(config.name || '');
         setAddress(config.address || '');
-
-        if (config.name === undefined) {
-            setConfig((prevConfig: UrlCheckConfiguration) => ({
-                ...prevConfig,
-                name: '',
-                address: ''
-            }));
-        }
     }, [config, setConfig]);
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {

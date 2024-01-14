@@ -12,14 +12,12 @@ const BlockCheckConfiguration: React.FC<BlockCheckConfigurationProps> = ({ confi
     const [missTolerancePeriodSeconds, setMissTolerancePeriodSeconds] = useState(config.miss_tolerance_period_seconds || 30);
     const [sleepDurationSeconds, setSleepDurationSeconds] = useState(config.sleep_duration_seconds || 10);
     const [alertSleepDurationMinutes, setAlertSleepDurationMinutes] = useState(config.alert_sleep_duration_minutes || 10);
-    const [rpc, setRpc] = useState(config.rpc || '');
 
     useEffect(() => {
         setMissTolerance(config.miss_tolerance || 10);
         setMissTolerancePeriodSeconds(config.miss_tolerance_period_seconds || 30);
         setSleepDurationSeconds(config.sleep_duration_seconds || 10);
         setAlertSleepDurationMinutes(config.alert_sleep_duration_minutes || 10);
-        setRpc(config.rpc || '');
 
         if (config.miss_tolerance === undefined) {
             setConfig((prevConfig: BlockAlertConfiguration) => ({
@@ -28,7 +26,6 @@ const BlockCheckConfiguration: React.FC<BlockCheckConfigurationProps> = ({ confi
                 miss_tolerance_period_seconds: 30,
                 sleep_duration_seconds: 10,
                 alert_sleep_duration_minutes: 10,
-                rpc: ''
             }));
         }
     }, [config, setConfig]);
@@ -49,9 +46,6 @@ const BlockCheckConfiguration: React.FC<BlockCheckConfigurationProps> = ({ confi
                 break;
             case 'alert_sleep_duration_minutes':
                 setAlertSleepDurationMinutes(Number(value));
-                break;
-            case 'rpc':
-                setRpc(value);
                 break;
             default:
                 break;
@@ -107,18 +101,6 @@ const BlockCheckConfiguration: React.FC<BlockCheckConfigurationProps> = ({ confi
                 value={alertSleepDurationMinutes}
                 onChange={handleChange}
                 name="alert_sleep_duration_minutes"
-            />
-            <TextField
-                margin="dense"
-                id="rpc"
-                label="RPC"
-                type="text"
-                autoComplete={'off'}
-                fullWidth
-                variant="standard"
-                value={rpc}
-                onChange={handleChange}
-                name="rpc"
             />
         </>
     );

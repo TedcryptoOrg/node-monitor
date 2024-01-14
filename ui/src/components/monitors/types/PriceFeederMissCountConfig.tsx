@@ -13,7 +13,6 @@ const PriceFeederMissCountConfig: React.FC<PriceFeederMissCountConfigProps> = ({
     const [sleepDurationSeconds, setSleepDurationSeconds] = useState(config.sleep_duration_seconds || 5);
     const [alertSleepDurationMinutes, setAlertSleepDurationMinutes] = useState(config.alert_sleep_duration_minutes || 60);
     const [valoperAddress, setValoperAddress] = useState(config.valoper_address || '');
-    const [restAddress, setRestAddress] = useState(config.rest_address || '');
 
     useEffect(() => {
         setMissTolerance(config.miss_tolerance || 100);
@@ -21,7 +20,6 @@ const PriceFeederMissCountConfig: React.FC<PriceFeederMissCountConfigProps> = ({
         setSleepDurationSeconds(config.sleep_duration_seconds || 5);
         setAlertSleepDurationMinutes(config.alert_sleep_duration_minutes || 60);
         setValoperAddress(config.valoper_address || '');
-        setRestAddress(config.rest_address || '');
 
         if (config.miss_tolerance === undefined) {
             setConfig((prevConfig: PriceFeederMissCountConfiguration) => ({
@@ -31,7 +29,6 @@ const PriceFeederMissCountConfig: React.FC<PriceFeederMissCountConfigProps> = ({
                 sleep_duration_seconds: 5,
                 alert_sleep_duration_minutes: 60,
                 valoper_address: '',
-                rest_address: ''
             }));
         }
     }, [config, setConfig]);
@@ -55,9 +52,6 @@ const PriceFeederMissCountConfig: React.FC<PriceFeederMissCountConfigProps> = ({
                 break;
             case 'valoper_address':
                 setValoperAddress(value);
-                break;
-            case 'rest_address':
-                setRestAddress(value);
                 break;
             default:
                 break;
@@ -129,18 +123,6 @@ const PriceFeederMissCountConfig: React.FC<PriceFeederMissCountConfigProps> = ({
                 value={valoperAddress}
                 onChange={handleChange}
                 name="valoper_address"
-            />
-            <TextField
-                margin="dense"
-                id="rest_address"
-                autoComplete={'off'}
-                label="REST Address"
-                type="text"
-                fullWidth
-                variant="standard"
-                value={restAddress}
-                onChange={handleChange}
-                name="rest_address"
             />
         </>
     );

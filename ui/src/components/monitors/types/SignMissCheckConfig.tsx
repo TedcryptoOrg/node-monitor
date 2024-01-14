@@ -13,18 +13,13 @@ const SignMissCheckConfig: React.FC<SignMissCheckConfigProps> = ({ config, setCo
     const [sleepDurationSeconds, setSleepDurationSeconds] = useState(config.sleep_duration_seconds || 5);
     const [alertSleepDurationMinutes, setAlertSleepDurationMinutes] = useState(config.alert_sleep_duration_minutes || 1);
     const [valoperAddress, setValoperAddress] = useState(config.valoper_address || '');
-    const [rpc, setRpc] = useState(config.rpc || '');
-    const [rest, setRest] = useState(config.rest || '');
 
     useEffect(() => {
-console.log(config);
         setMissTolerance(config.miss_tolerance || 10);
         setMissTolerancePeriodSeconds(config.miss_tolerance_period_seconds || 100);
         setSleepDurationSeconds(config.sleep_duration_seconds || 5);
         setAlertSleepDurationMinutes(config.alert_sleep_duration_minutes || 1);
         setValoperAddress(config.valoper_address || '');
-        setRpc(config.rpc || '');
-        setRest(config.rest || '');
 
         if (config.miss_tolerance === undefined) {
             setConfig((prevConfig: SignMissCheckConfiguration) => ({
@@ -34,8 +29,6 @@ console.log(config);
                 sleep_duration_seconds: 5,
                 alert_sleep_duration_minutes: 1,
                 valoper_address: '',
-                rpc: '',
-                rest: ''
             }));
         }
     }, [config, setConfig]);
@@ -59,12 +52,6 @@ console.log(config);
                 break;
             case 'valoper_address':
                 setValoperAddress(value);
-                break;
-            case 'rpc':
-                setRpc(value);
-                break;
-            case 'rest':
-                setRest(value);
                 break;
             default:
                 break;
@@ -128,29 +115,6 @@ console.log(config);
                 value={valoperAddress}
                 onChange={handleChange}
                 name="valoper_address"
-            />
-            <TextField
-                margin="dense"
-                id="rpc"
-                label="RPC"
-                type="text"
-                fullWidth
-                autoComplete={'off'}
-                variant="standard"
-                value={rpc}
-                onChange={handleChange}
-                name="rpc"
-            />
-            <TextField
-                margin="dense"
-                id="rest"
-                label="REST"
-                type="text"
-                fullWidth
-                variant="standard"
-                value={rest}
-                onChange={handleChange}
-                name="rest"
             />
         </>
     );

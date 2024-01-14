@@ -215,6 +215,7 @@ const ServerOverview: React.FC = () => {
                 fetchData={fetchMonitors}
                 configuration={server.configuration as ApiConfiguration}
                 editMonitor={editMonitor}
+                sendNotification={sendNotification}
                 handleClose={handleMonitorModalClose}
             />
             <TableContainer component={Paper}>

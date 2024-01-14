@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {
-    Button,
+    AlertColor,
+    Button, CircularProgress,
     Dialog,
     DialogActions,
     DialogContent,
@@ -33,23 +34,31 @@ interface UpsertMonitorModalProps {
     fetchData: () => void;
     editMonitor: ApiMonitor | null;
     handleClose: () => void;
+    sendNotification: (message: string, severity: AlertColor) => void;
     configuration: ApiConfiguration;
 }
 
-const UpsertMonitorModal: React.FC<UpsertMonitorModalProps> = ({ open, fetchData, editMonitor, handleClose, configuration }) => {
+const UpsertMonitorModal: React.FC<UpsertMonitorModalProps> = (
+    {
+        open,
+        fetchData,
+        editMonitor,
+        handleClose,
+        sendNotification,
+        configuration
+    }) => {
     const [name, setName] = useState(editMonitor ? editMonitor.name : '');
     const [isEnabled, setIsEnabled] = useState(editMonitor ? editMonitor.is_enabled : true);
     const [type, setType] = useState(editMonitor ? editMonitor.type : MonitorTypeEnum.URL_CHECK);
     const [configurationObject, setConfigurationObject] = useState(editMonitor ? JSON.parse(editMonitor.configuration_object) : {});
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        setName(editMonitor ? editMonitor.name : 'URL Check');
+        setName(editMonitor ? editMonitor.name : '');
         setIsEnabled(editMonitor ? editMonitor.is_enabled : true);
         setType(editMonitor ? editMonitor.type : MonitorTypeEnum.URL_CHECK);
-
-        console.log(editMonitor);
-
         setConfigurationObject(editMonitor ? JSON.parse(editMonitor.configuration_object) : {});
+        setLoading(false);
     }, [editMonitor]);
 
     const customHandleClose = () => {
@@ -61,26 +70,15 @@ const UpsertMonitorModal: React.FC<UpsertMonitorModalProps> = ({ open, fetchData
     }
 
     const handleChangeType = (event: SelectChangeEvent) => {
-        const selectedType = event.target.value as MonitorTypeEnum;
-
-        setConfigurationObject(editMonitor ? JSON.parse(editMonitor.configuration_object) : {});
-
-        const defaultNames: {[key: string]: string} = {};
-        defaultNames[MonitorTypeEnum.URL_CHECK] = 'URL Check';
-        defaultNames[MonitorTypeEnum.NODE_EXPORTER_DISK_SPACE] = 'Node Exporter Disk Space';
-        defaultNames[MonitorTypeEnum.BLOCK_CHECK] = 'Block Check';
-        defaultNames[MonitorTypeEnum.SIGN_MISS_CHECK] = 'Sign Miss Check';
-        defaultNames[MonitorTypeEnum.PRICE_FEEDER_MISS_COUNT] = 'Price Feeder Miss Count';
-
-        if (name.length === 0 || name === defaultNames[type]) {
-            setName(defaultNames[selectedType] ?? 'Unknown');
-        }
-
-        setType(selectedType);
+        setType(event.target.value as MonitorTypeEnum);
     };
 
     const handleSubmit = (event: React.FormEvent) => {
         event.preventDefault();
+        if (type === undefined) {
+            sendNotification('Please select a type.', 'error');
+            return;
+        }
 
         const monitor: ApiMonitorInput = {
             name: name,
@@ -102,14 +100,16 @@ const UpsertMonitorModal: React.FC<UpsertMonitorModalProps> = ({ open, fetchData
             },
             body: JSON.stringify(monitor),
         })
-            .then(response => response.json())
-            .then(data => {
-                fetchData();
-                console.log('Success:', data);
+            .then(response => {
+                if (response.ok) {
+                    sendNotification(`${editMonitor ? 'Edited' : 'Added'} monitor.`, 'success');
+                    fetchData();
+                } else {
+                    sendNotification(`Failed to ${editMonitor ? 'edit' : 'add'} monitor.`, 'error');
+                }
+
+                return
             })
-            .catch((error) => {
-                console.error('Error:', error);
-            });
 
         customHandleClose();
     };
@@ -163,11 +163,17 @@ const UpsertMonitorModal: React.FC<UpsertMonitorModalProps> = ({ open, fetchData
                                 ))}
                             </Select>
                         </FormControl>
-                        {type === MonitorTypeEnum.URL_CHECK && <UrlCheckConfig config={configurationObject as UrlCheckConfiguration} setConfig={setConfigurationObject} />}
-                        {type === MonitorTypeEnum.NODE_EXPORTER_DISK_SPACE && <NodeExporterDiskSpaceConfig config={configurationObject as NodeExporterDiskSpaceUsageConfiguration} setConfig={setConfigurationObject} />}
-                        {type === MonitorTypeEnum.BLOCK_CHECK && <BlockCheckConfiguration config={configurationObject as BlockAlertConfiguration} setConfig={setConfigurationObject} />}
-                        {type === MonitorTypeEnum.SIGN_MISS_CHECK && <SignMissCheckConfig config={configurationObject as SignMissCheckConfiguration} setConfig={setConfigurationObject} />}
-                        {type === MonitorTypeEnum.PRICE_FEEDER_MISS_COUNT && <PriceFeederMissCountConfig config={configurationObject as PriceFeederMissCountConfiguration} setConfig={setConfigurationObject} />}
+                        {loading ? (
+                            <DialogContent>
+                                <CircularProgress />
+                            </DialogContent>
+                        ) : (
+                            (type === MonitorTypeEnum.URL_CHECK && (<UrlCheckConfig config={configurationObject as UrlCheckConfiguration} setConfig={setConfigurationObject} />))
+                            || (type === MonitorTypeEnum.NODE_EXPORTER_DISK_SPACE && (<NodeExporterDiskSpaceConfig config={configurationObject as NodeExporterDiskSpaceUsageConfiguration} setConfig={setConfigurationObject} />))
+                            || (type === MonitorTypeEnum.BLOCK_CHECK && (<BlockCheckConfiguration config={configurationObject as BlockAlertConfiguration} setConfig={setConfigurationObject} />))
+                            || (type === MonitorTypeEnum.SIGN_MISS_CHECK && (<SignMissCheckConfig config={configurationObject as SignMissCheckConfiguration} setConfig={setConfigurationObject} />))
+                            || (type === MonitorTypeEnum.PRICE_FEEDER_MISS_COUNT && (<PriceFeederMissCountConfig config={configurationObject as PriceFeederMissCountConfiguration} setConfig={setConfigurationObject} />))
+                        )}
                     </DialogContent>
                     <DialogActions>
                         <Button onClick={customHandleClose}>Cancel</Button>

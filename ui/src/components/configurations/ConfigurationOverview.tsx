@@ -157,6 +157,7 @@ const ConfigurationOverview: React.FC = () => {
                     fetchData={fetchServers}
                     configurationId={id}
                     editServer={editServer}
+                    sendNotification={sendNotification}
                     handleClose={handleServerModalClose}
                 />
                 <TableContainer component={Paper}>
@@ -205,6 +206,7 @@ const ConfigurationOverview: React.FC = () => {
                     fetchData={fetchMonitors}
                     configuration={configuration as ApiConfiguration}
                     editMonitor={editMonitor}
+                    sendNotification={sendNotification}
                     handleClose={handleMonitorModalClose}
                 />
                 <TableContainer component={Paper}>

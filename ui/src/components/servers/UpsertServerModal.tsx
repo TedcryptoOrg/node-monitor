@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {
+    AlertColor,
     Button,
     Dialog,
     DialogActions,
@@ -17,6 +18,7 @@ interface UpsertServerModalProps {
     fetchData: () => void;
     configurationId: number;
     editServer?: ApiServer|null;
+    sendNotification: (message: string, severity: AlertColor) => void;
     handleClose: any;
 }
 
@@ -26,6 +28,7 @@ const UpsertServerModal: React.FC<UpsertServerModalProps> = (
         fetchData,
         editServer,
         handleClose,
+        sendNotification,
         configurationId
     }) => {
     const [name, setName] = useState(editServer ? editServer.name : '');
@@ -71,10 +74,15 @@ const UpsertServerModal: React.FC<UpsertServerModalProps> = (
             },
             body: JSON.stringify(server),
         })
-            .then(response => response.json())
-            .then(data => {
+            .then(response => {
+                if (!response.ok) {
+                    sendNotification(`Failed to ${editServer ? 'edit' : 'add'} server.`, 'error');
+                } else {
+                    sendNotification(`${editServer ? 'Edited' : 'Added'} server.`, 'success');
+                }
                 fetchData();
-                console.log('Success:', data);
+
+                return response;
             })
             .catch((error) => {
                 console.error('Error:', error);
