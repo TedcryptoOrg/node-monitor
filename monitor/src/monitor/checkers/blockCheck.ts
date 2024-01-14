@@ -49,10 +49,6 @@ export class BlockCheck implements MonitorCheck {
         let previousTimestamp = new Date().getTime()
         let lastBlockHeight = 0
 
-        if (this.monitor.server?.id) {
-            throw new Error(`[${this.name}][BlockCheck] Server id unknown. Cannot run check`)
-        }
-
         while (true) {
             console.log(`🏃️[${this.name}][BlockCheck] Running check...`)
 
