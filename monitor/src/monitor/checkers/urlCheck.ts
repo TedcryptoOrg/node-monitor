@@ -66,7 +66,7 @@ export class UrlCheck implements MonitorCheck {
     if (!this.isOkay) {
       await pingMonitor(this.monitor.id as number, {status: true, last_error: null})
       if (!this.isFirstRun) {
-        await this.alerter.alert(`🟢️[${this.name}][Url Check] ${message}`)
+        await this.alerter.resolve(`🟢️[${this.name}][Url Check] ${message}`)
       }
     }
 

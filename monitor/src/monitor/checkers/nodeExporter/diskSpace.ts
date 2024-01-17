@@ -79,7 +79,7 @@ export class DiskSpace implements MonitorCheck {
             this.isOkay = true;
 
             if (!this.isFirstRun) {
-                await this.alerter.alert(`🟢️ [${this.name}] ${message}`);
+                await this.alerter.resolve(`🟢️ [${this.name}] ${message}`);
             }
         }
     }

@@ -134,7 +134,7 @@ export class BlockCheck implements MonitorCheck {
         if (!this.isOkay) {
             await pingMonitor(this.monitor.id as number, {status: true, last_error: null})
             if (!this.isFirstRun) {
-                await this.alerter.alert(`🟢️[${this.name}][BlockCheck] ${message}!`);
+                await this.alerter.resolve(`🟢️[${this.name}][BlockCheck] ${message}!`);
             }
         }
 

@@ -123,7 +123,7 @@ export class MissCounter implements MonitorCheck {
       // If not okay then ping monitor saying all is fine now and alert TG
       await pingMonitor(this.monitor.id as number, {status: true, last_error: null})
       if (!this.isFirstRun) {
-        await this.alerter.alert(`🟢️[${this.name}][Price Feeder Miss] ${message}`);
+        await this.alerter.resolve(`🟢️[${this.name}][Price Feeder Miss] ${message}`);
       }
     }
 

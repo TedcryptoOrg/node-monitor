@@ -110,7 +110,7 @@ export class SignMissCheck implements MonitorCheck {
         if (!this.isOkay) {
             await pingMonitor(this.monitor.id as number, {status: true, last_error: null})
             if (!this.isFirstRun) {
-                await this.alerter.alert(`🟢️[${this.name}][Sign Miss Counter] ${message}`)
+                await this.alerter.resolve(`🟢️[${this.name}][Sign Miss Counter] ${message}`)
             }
         }
 
