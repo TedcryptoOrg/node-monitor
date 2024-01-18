@@ -13,6 +13,7 @@ export abstract class AbstractMonitor implements Monitor {
   protected abstract readonly name: string
   protected monitor_params: MonitorCheck[] = []
   private readonly alerter: Alerter
+  private readonly isErrored: Record<string, boolean> = {}
 
   protected constructor(protected readonly alertChannels: AlertChannel[]) {
     this.alerter = new Alerter(
@@ -41,14 +42,21 @@ export abstract class AbstractMonitor implements Monitor {
     try {
       console.log(`🚀 ${this.name} Node checker ${param.constructor.name} started.`);
       await promise(); // call the function to get the promise and then await it
+
+      if (this.isErrored[param.constructor.name]) {
+        console.log(`✅ ${this.name} Node checker ${param.constructor.name} recovered.`);
+        this.isErrored[param.constructor.name] = false;
+        await this.alerter.resolve(`✅ ${this.name} Node checker ${param.constructor.name} recovered.`);
+      }
     } catch (error: any) {
       console.log(`🚨 ${this.name} Node checker ${param.constructor.name} failed to start. Error:\n${error}`);
       console.error(error);
+      this.isErrored[param.constructor.name] = true;
 
       if (attempt >= 3 || !(error instanceof RecoverableException)) {
         attempt = 0;
         try {
-          await this.alerter.alert(`🚨 ${this.name} Node checker ${param.constructor.name} failed to start. Error:\n${error}`);
+          await this.alerter.alert(`🚨[${this.name}][${param.constructor.name}] Node checker failed to start. Error:\n${error}`);
         } catch (error) {
           console.error('Alert failed to alert', error);
         }
