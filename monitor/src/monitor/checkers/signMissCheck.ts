@@ -90,7 +90,7 @@ export class SignMissCheck implements MonitorCheck {
         console.log(`🔴[${this.name}][Sign Miss Counter] ${message}`)
 
         await pingMonitor(this.monitor.id as number, {status: false, last_error: message})
-        await this.alerter.alert(`[${this.name}] 🚨 ${message}`)
+        await this.alerter.alert(`🚨[${this.name}][Sign Miss Counter] ${message}`)
 
         this.isOkay = false
     }
@@ -101,8 +101,6 @@ export class SignMissCheck implements MonitorCheck {
         if (this.isPingTime()) {
             await pingMonitor(this.monitor.id as number, {status: true, last_error: message})
         }
-
-        this.isOkay = true
     }
 
     private async success(message: string) {

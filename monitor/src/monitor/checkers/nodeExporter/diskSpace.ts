@@ -4,6 +4,10 @@ import {Alerter} from "../../../Alerter/alerter";
 import {ApiMonitor, NodeExporterDiskSpaceUsageConfiguration} from "../../../type/api/ApiMonitor";
 import {pingMonitor} from "../../../services/monitorsManager";
 import {ApiMetric} from "../../../type/api/ApiMetric";
+import {NoRecoverableException} from "../../exception/noRecoverableException";
+import {RecoverableException} from "../../exception/recoverableException";
+import {ApiServer} from "../../../type/api/ApiServer";
+import {sleep} from "../../../util/sleep";
 
 export class DiskSpace implements MonitorCheck {
     private readonly alerter: Alerter
@@ -12,6 +16,8 @@ export class DiskSpace implements MonitorCheck {
     private readonly configuration: NodeExporterDiskSpaceUsageConfiguration;
     private isOkay: boolean = false;
     private isFirstRun: boolean = true;
+    private lastTimePing: number = 0
+    private pingInterval: number = 60
 
     constructor (
         private readonly name: string,
@@ -39,11 +45,10 @@ export class DiskSpace implements MonitorCheck {
             if (!this.monitor.server?.id) {
                 await this.failed('Server id unknown. Cannot run check')
 
-                throw new Error(`[${this.name}][DiskSpace] Server id unknown. Cannot run check`)
+                throw new NoRecoverableException(`[${this.name}][DiskSpace] Server id unknown. Cannot run check`)
             }
 
-            const metricsResponse = await fetch(`${process.env.API_HOST}/api/servers/${this.monitor.server.id}/metrics`);
-            const metrics: ApiMetric = await metricsResponse.json();
+            const metrics = await this.fetchMetrics(this.monitor.server);
 
             console.log(`[${this.name}][DiskSpace] Used disk space: ${metrics.usedDiskSpacePercentage}%`);
 
@@ -71,6 +76,21 @@ export class DiskSpace implements MonitorCheck {
             });
     }
 
+    async warning(message: string): Promise<void>
+    {
+        console.debug(`🟡️[${this.name}][DiskSpace] ${message}`);
+        if (this.isPingTime()) {
+            await pingMonitor(
+                this.monitor.id as number,
+                {
+                    status: true,
+                    last_error: message
+                });
+        }
+
+        this.isOkay = true;
+    }
+
     async success(message: string): Promise<void>
     {
         if (!this.isOkay) {
@@ -81,6 +101,39 @@ export class DiskSpace implements MonitorCheck {
             if (!this.isFirstRun) {
                 await this.alerter.resolve(`🟢️ [${this.name}] ${message}`);
             }
+        }
+    }
+
+    isPingTime(): boolean
+    {
+        const currentTime = new Date().getTime();
+        if (currentTime - this.lastTimePing >= this.pingInterval * 1000) {
+            this.lastTimePing = currentTime;
+            return true;
+        }
+
+        return false;
+    }
+
+
+    async fetchMetrics(server: ApiServer, attempts: number = 0): Promise<ApiMetric>
+    {
+        try {
+            const metricsResponse = await fetch(`${process.env.API_HOST}/api/servers/${server.id}/metrics`);
+
+            return await metricsResponse.json();
+        } catch (exception: any) {
+            console.error(exception);
+            await this.warning(`Error fetching metrics. Error: ${exception.message}`)
+
+            if (attempts >= 5) {
+                throw new NoRecoverableException(`[${this.name}] Error fetching metrics. Error: ${exception.message}`);
+            }
+
+            attempts = attempts + 1;
+            await sleep(2000 * attempts);
+
+            return await this.fetchMetrics(server, attempts);
         }
     }
 }

@@ -115,7 +115,7 @@ export class BlockCheck implements MonitorCheck {
     {
         console.log(`🔴️[${this.name}][BlockCheck] ${message}`)
         await pingMonitor(this.monitor.id as number, {status: false, last_error: message})
-        await this.alerter.alert(`🚨 ${this.name} ${message}`)
+        await this.alerter.alert(`🚨[${this.name}][BlockCheck] ${message}`)
 
         this.isOkay = false;
     }
