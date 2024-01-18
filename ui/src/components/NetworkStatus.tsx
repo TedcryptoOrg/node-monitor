@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from '@mui/material';
 import {ApiConfiguration} from "../types/ApiConfiguration";
 import {ApiServer} from "../types/ApiServer";
+import {Link} from "react-router-dom";
 
 interface Metric {
     configuration: ApiConfiguration,
@@ -73,8 +74,16 @@ const NetworkStatus: React.FC = () => {
                     <TableBody>
                         {metrics.map((metric, index) => (
                             <TableRow key={index}>
-                                <TableCell>{metric.configuration.name}</TableCell>
-                                <TableCell>{metric.server.name}</TableCell>
+                                <TableCell>
+                                    <Link to={`/configuration/${metric.configuration.id}`}>
+                                        {metric.configuration.name}
+                                    </Link>
+                                </TableCell>
+                                <TableCell>
+                                    <Link to={`/server/${metric.server.id}`}>
+                                        {metric.server.name}
+                                    </Link>
+                                </TableCell>
                                 <TableCell>{bytesToGigabytes(metric.totalDiskSpace)} GB</TableCell>
                                 <TableCell>{bytesToGigabytes(metric.freeDiskSpace)} GB</TableCell>
                                 <TableCell>{bytesToGigabytes(metric.usedDiskSpace)} GB</TableCell>

@@ -1,9 +1,11 @@
 import React, {useEffect, useState} from 'react';
-import {Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from '@mui/material';
+import {LinearProgress, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from '@mui/material';
 import {ApiAudit} from "../types/ApiAudit";
+import {Link} from "react-router-dom";
 
 const AuditComponent: React.FC = () => {
     const [audits, setAudits] = useState<ApiAudit[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
     const firstRender = React.useRef(true);
 
     useEffect(() => {
@@ -14,7 +16,9 @@ const AuditComponent: React.FC = () => {
                 .catch((error) => {
                     console.error('Error:', error);
                     setAudits([])
-                });
+                })
+                .finally(() => setIsLoading(false))
+            ;
 
             firstRender.current = false;
             return;
@@ -24,10 +28,12 @@ const AuditComponent: React.FC = () => {
     return (
         <div>
             <h2>Audit</h2>
-            <TableContainer component={Paper}>
+            {isLoading ? <LinearProgress /> : (
+                <TableContainer component={Paper}>
                 <Table>
                     <TableHead>
                         <TableRow>
+                            <TableCell>Object</TableCell>
                             <TableCell>Created At</TableCell>
                             <TableCell>Message</TableCell>
                         </TableRow>
@@ -35,13 +41,27 @@ const AuditComponent: React.FC = () => {
                     <TableBody>
                         {audits.map((audit, index) => (
                             <TableRow key={index}>
+                                <TableCell>
+                                    {audit.configuration && (<><b>Configuration:</b>
+                                    <Link to={`/configuration/${audit.configuration?.id}`}>
+                                        {audit.configuration?.name}
+                                    </Link><br/></>)}
+                                    {audit.server && (<><b>Server:</b>
+                                    <Link to={`/server/${audit.server?.id}`}>
+                                        {audit.server?.name}
+                                    </Link><br/></>)}
+                                    {audit.monitor && (<><b>Monitor:</b>
+                                    <Link to={`/monitor/${audit.monitor?.id}`}>
+                                        {audit.monitor?.name}
+                                    </Link></>)}
+                                </TableCell>
                                 <TableCell>{audit.created_at}</TableCell>
                                 <TableCell>{audit.message}</TableCell>
                             </TableRow>
                         ))}
                     </TableBody>
                 </Table>
-            </TableContainer>
+            </TableContainer>)}
         </div>
     );
 }

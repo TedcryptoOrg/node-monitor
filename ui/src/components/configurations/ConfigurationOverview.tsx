@@ -9,7 +9,7 @@ import {
     Paper,
     AlertColor,
     Button,
-    DialogContent, DialogContentText
+    DialogContent, DialogContentText, LinearProgress
 } from '@mui/material';
 import {Link, useParams} from 'react-router-dom';
 import { ApiConfiguration } from '../../types/ApiConfiguration';
@@ -27,27 +27,52 @@ type RouteParams = {
 
 const ConfigurationOverview: React.FC = () => {
     const { id } = useParams<RouteParams>() as { id: number };
+    const [isLoadingConfiguration, setLoadingConfiguration] = useState(true);
     const [configuration, setConfiguration] = useState<ApiConfiguration | null>(null);
+    const [isLoadingServers, setLoadingServers] = useState(true);
     const [servers, setServers] = useState<ApiServer[]>([]);
+    const [isLoadingMonitors, setLoadingMonitors] = useState(true);
     const [monitors, setMonitors] = useState<ApiMonitor[]>([]);
     const firstRender = React.useRef(true);
 
     const fetchMonitors = useCallback(() => {
+        setLoadingMonitors(true)
         fetch(`${process.env.REACT_APP_API_HOST}/api/configurations/${id}/monitors`)
             .then(response => response.json())
-            .then(data => setMonitors(data));
+            .then(data => setMonitors(data))
+            .catch((error) => {
+                console.error('Error:', error);
+                setMonitors([])
+            })
+            .finally(() => setLoadingMonitors(false))
+        ;
     }, [id])
 
     const fetchServers = useCallback(() => {
+        setLoadingServers(true)
         fetch(`${process.env.REACT_APP_API_HOST}/api/configurations/${id}/servers`)
             .then(response => response.json())
-            .then(data => setServers(data));
+            .then(data => setServers(data))
+            .catch((error) => {
+                console.error('Error:', error);
+                sendNotification('Failed to fetch server data!', 'error')
+                setServers([])
+            })
+            .finally(() => setLoadingServers(false))
     }, [id]);
 
     const fetchData = useCallback(() => {
+        setLoadingConfiguration(true)
         fetch(`${process.env.REACT_APP_API_HOST}/api/configurations/${id}`)
             .then(response => response.json())
-            .then(data => setConfiguration(data));
+            .then(data => setConfiguration(data))
+            .catch((error) => {
+                console.error('Error:', error);
+                sendNotification('Failed to fetch configuration data!', 'error')
+                setConfiguration(null)
+            })
+            .finally(() => setLoadingConfiguration(false))
+        ;
     }, [id]);
 
     useEffect(() => {
@@ -112,6 +137,7 @@ const ConfigurationOverview: React.FC = () => {
             sendNotification('Monitor removed successfully!', 'success')
         }).catch((error) => {
             console.error('Error:', error)
+            sendNotification('Failed to remove monitor!', 'error')
         });
     };
 
@@ -146,13 +172,14 @@ const ConfigurationOverview: React.FC = () => {
             sendNotification('Monitor removed successfully!', 'success')
         }).catch((error) => {
             console.error('Error:', error)
+            sendNotification('Failed to remove monitor!', 'error')
         });
     };
 
     return (
         <div>
             <h2>Configuration Overview</h2>
-            {configuration && (
+            {isLoadingConfiguration ? <LinearProgress /> : (configuration && (
                 <DialogContent>
                     <DialogContentText>
                         <p>Name: {configuration.name}</p>
@@ -174,70 +201,69 @@ const ConfigurationOverview: React.FC = () => {
                         </Button>
                     </DialogContentText>
                 </DialogContent>
-                )}
+            ))}
 
-            {servers && (<>
-                <h3>Servers</h3>
-                <Button variant="outlined" onClick={handleServerModalOpen}>
-                    Add Server
-                </Button>
-                <UpsertServerModal
-                    open={openServerModal}
-                    fetchData={fetchServers}
-                    configurationId={id}
-                    editServer={editServer}
-                    sendNotification={sendNotification}
-                    handleClose={handleServerModalClose}
-                />
-                <TableContainer component={Paper}>
-                    <Table>
-                        <TableHead>
-                            <TableRow>
-                                <TableCell>ID</TableCell>
-                                <TableCell>Name</TableCell>
-                                <TableCell>Address</TableCell>
-                                <TableCell>Is Enabled</TableCell>
-                                <TableCell>Actions</TableCell>
+            <h3>Servers</h3>
+            <Button variant="outlined" onClick={handleServerModalOpen}>
+                Add Server
+            </Button>
+            <UpsertServerModal
+                open={openServerModal}
+                fetchData={fetchServers}
+                configurationId={id}
+                editServer={editServer}
+                sendNotification={sendNotification}
+                handleClose={handleServerModalClose}
+            />
+            {isLoadingServers ? <LinearProgress /> : (<TableContainer component={Paper}>
+                <Table>
+                    <TableHead>
+                        <TableRow>
+                            <TableCell>ID</TableCell>
+                            <TableCell>Name</TableCell>
+                            <TableCell>Address</TableCell>
+                            <TableCell>Is Enabled</TableCell>
+                            <TableCell>Actions</TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {servers.map((server) => (
+                            <TableRow key={server.id}>
+                                <TableCell>{server.id}</TableCell>
+                                <TableCell>{server.name}</TableCell>
+                                <TableCell>{server.address}</TableCell>
+                                <TableCell><BooleanIcon value={server.is_enabled} /></TableCell>
+                                <TableCell>
+                                    <Button variant="contained" color="primary" component={Link} to={`/servers/${server.id}`}>
+                                        View
+                                    </Button>
+                                    <Button variant="contained" color="primary" onClick={() => handleEditServer(server.id ?? 0)}>
+                                        Edit
+                                    </Button>
+                                    <Button variant="contained" color="secondary" onClick={() => handleRemoveServer(server.id ?? 0)}>
+                                        Remove
+                                    </Button>
+                                </TableCell>
                             </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {servers.map((server) => (
-                                <TableRow key={server.id}>
-                                    <TableCell>{server.id}</TableCell>
-                                    <TableCell>{server.name}</TableCell>
-                                    <TableCell>{server.address}</TableCell>
-                                    <TableCell><BooleanIcon value={server.is_enabled} /></TableCell>
-                                    <TableCell>
-                                        <Button variant="contained" color="primary" component={Link} to={`/servers/${server.id}`}>
-                                            View
-                                        </Button>
-                                        <Button variant="contained" color="primary" onClick={() => handleEditServer(server.id ?? 0)}>
-                                            Edit
-                                        </Button>
-                                        <Button variant="contained" color="secondary" onClick={() => handleRemoveServer(server.id ?? 0)}>
-                                            Remove
-                                        </Button>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </TableContainer>
-            </>)}
+                        ))}
+                    </TableBody>
+                </Table>
+            </TableContainer>)}
 
-            {monitors && (<>
-                <h3>Monitors</h3>
-                <Button variant="outlined" onClick={handleMonitorModalOpen}>
-                    Add Monitor
-                </Button>
-                <UpsertMonitorModal
-                    open={openMonitorModal}
-                    fetchData={fetchMonitors}
-                    configuration={configuration as ApiConfiguration}
-                    editMonitor={editMonitor}
-                    sendNotification={sendNotification}
-                    handleClose={handleMonitorModalClose}
-                />
+
+            <h3>Monitors</h3>
+            <Button variant="outlined" onClick={handleMonitorModalOpen}>
+                Add Monitor
+            </Button>
+            <UpsertMonitorModal
+                open={openMonitorModal}
+                fetchData={fetchMonitors}
+                configuration={configuration as ApiConfiguration}
+                editMonitor={editMonitor}
+                sendNotification={sendNotification}
+                handleClose={handleMonitorModalClose}
+            />
+            {isLoadingMonitors ? <LinearProgress/> : (
                 <TableContainer component={Paper}>
                     <Table>
                         <TableHead>
@@ -248,6 +274,8 @@ const ConfigurationOverview: React.FC = () => {
                                 <TableCell>Name</TableCell>
                                 <TableCell>Is Enabled</TableCell>
                                 <TableCell>Status</TableCell>
+                                <TableCell>Last checked</TableCell>
+                                <TableCell>Last error</TableCell>
                                 <TableCell>Actions</TableCell>
                             </TableRow>
                         </TableHead>
@@ -264,6 +292,8 @@ const ConfigurationOverview: React.FC = () => {
                                     <TableCell>{monitor.name}</TableCell>
                                     <TableCell><BooleanIcon value={monitor.is_enabled} /></TableCell>
                                     <TableCell><BooleanIcon value={monitor.status ?? true} /></TableCell>
+                                    <TableCell>{monitor.last_check?.toLocaleString()}</TableCell>
+                                    <TableCell>{monitor.last_error}</TableCell>
                                     <TableCell>
                                         <Button variant="contained" color="primary"
                                                 onClick={() => handleEditMonitor(monitor.id ?? 0)}>
@@ -278,8 +308,7 @@ const ConfigurationOverview: React.FC = () => {
                             ))}
                         </TableBody>
                     </Table>
-                </TableContainer>
-                </>)}
+                </TableContainer>)}
 
             <CustomSnackbar open={snackbarOpen} severity={snackbarSeverity} handleClose={handleCloseSnackBar} message={snackbarMessage} />
         </div>

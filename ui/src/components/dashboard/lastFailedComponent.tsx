@@ -1,9 +1,11 @@
+import { LinearProgress } from "@mui/material";
 import React, {useEffect, useState} from "react";
 import {ApiMonitor} from "../../types/ApiMonitor";
-import {Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from "@mui/material";
+import MonitorsTable from "./MonitorsTable";
 
 const LastFailedComponent: React.FC = () => {
     const [lastFailed, setLastFailed] = useState<ApiMonitor[]>([])
+    const [isLoading, setIsLoading] = useState(true);
     const firstRender = React.useRef(true);
 
     useEffect(() => {
@@ -14,7 +16,8 @@ const LastFailedComponent: React.FC = () => {
                 .catch((error) => {
                     console.error('Error:', error);
                     setLastFailed([])
-                });
+                })
+                .finally(() => setIsLoading(false));
 
             firstRender.current = false;
             return;
@@ -24,27 +27,7 @@ const LastFailedComponent: React.FC = () => {
     return (
         <>
             <h3>On going issues</h3>
-            <TableContainer component={Paper}>
-                <Table>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell>Configuration</TableCell>
-                            <TableCell>Monitor</TableCell>
-                            <TableCell>Message</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {lastFailed.map((monitor, index) => (
-                            <TableRow key={index}>
-                                <TableCell>{monitor.configuration.name}</TableCell>
-                                <TableCell>{monitor.name}</TableCell>
-                                <TableCell>{monitor.last_error}</TableCell>
-                                <TableCell>{monitor.last_check?.toLocaleString()}</TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
+            {isLoading ? <LinearProgress /> : <MonitorsTable monitors={lastFailed} />}
         </>
     )
 }

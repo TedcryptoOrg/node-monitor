@@ -1,9 +1,11 @@
 import React, {useEffect, useState} from "react";
 import {ApiMonitor} from "../../types/ApiMonitor";
-import {Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from "@mui/material";
+import MonitorsTable from "./MonitorsTable";
+import {LinearProgress} from "@mui/material";
 
 const LastWarningsComponent: React.FC = () => {
     const [lastWarnings, setLastWarnings] = useState<ApiMonitor[]>([])
+    const [isLoading, setIsLoading] = useState(true);
     const firstRender = React.useRef(true);
 
     useEffect(() => {
@@ -14,7 +16,9 @@ const LastWarningsComponent: React.FC = () => {
                 .catch((error) => {
                     console.error('Error:', error);
                     setLastWarnings([])
-                });
+                })
+                .finally(() => setIsLoading(false))
+            ;
 
             firstRender.current = false;
             return;
@@ -24,25 +28,7 @@ const LastWarningsComponent: React.FC = () => {
     return (
         <>
             <h3>Warnings</h3>
-            <TableContainer component={Paper}>
-                <Table>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell>Monitor</TableCell>
-                            <TableCell>Message</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {lastWarnings.map((monitor, index) => (
-                            <TableRow key={index}>
-                                <TableCell>{monitor.name}</TableCell>
-                                <TableCell>{monitor.last_error}</TableCell>
-                                <TableCell>{monitor.last_check?.toLocaleString()}</TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
+            {isLoading ? <LinearProgress /> : <MonitorsTable monitors={lastWarnings}/>}
         </>
     )
 }

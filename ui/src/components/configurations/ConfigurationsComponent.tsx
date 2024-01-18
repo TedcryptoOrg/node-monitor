@@ -1,5 +1,15 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
+import {
+    Button,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    Paper,
+    LinearProgress
+} from '@mui/material';
 import UpsertConfigurationModal from './UpsertConfigurationModal';
 import CustomSnackbar from "../shared/CustomSnackbar";
 import { AlertColor } from '@mui/material';
@@ -7,6 +17,7 @@ import { Link } from 'react-router-dom';
 import BooleanIcon from "../shared/BooleanIcon";
 
 const ConfigurationsComponent: React.FC = () => {
+    const [isLoading, setIsLoading] = useState(true);
     const [openModal, setOpenModal] = useState(false);
     const [configurationsData, setConfigurationsData] = useState([]);
     const [editMonitor, setEditMonitor] = useState(null);
@@ -24,6 +35,7 @@ const ConfigurationsComponent: React.FC = () => {
     }
 
     const fetchData = useCallback(() => {
+        setIsLoading(true)
         fetch(`${process.env.REACT_APP_API_HOST}/api/configurations`)
             .then(response => {
                 if (!response.ok) {
@@ -31,7 +43,12 @@ const ConfigurationsComponent: React.FC = () => {
                 }
                 return response.json();
             })
-            .then(data => setConfigurationsData(data));
+            .then(data => setConfigurationsData(data))
+            .catch((error) => {
+                console.error('Error:', error);
+                setConfigurationsData([])
+            })
+            .finally(() => setIsLoading(false));
     }, []);
 
     const handleModalOpen = () => {
@@ -94,40 +111,41 @@ const ConfigurationsComponent: React.FC = () => {
                 sendNotification={sendNotification}
                 handleClose={handleModalClose}
             />
-            <TableContainer component={Paper}>
-                <Table>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell>ID</TableCell>
-                            <TableCell>Name</TableCell>
-                            <TableCell>Chain</TableCell>
-                            <TableCell>Is Enabled</TableCell>
-                            <TableCell>Actions</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {configurationsData.map((row: any) => (
-                            <TableRow key={row.id}>
-                                <TableCell>{row.id}</TableCell>
-                                <TableCell>{row.name}</TableCell>
-                                <TableCell>{row.chain}</TableCell>
-                                <TableCell><BooleanIcon value={row.is_enabled} /></TableCell>
-                                <TableCell>
-                                    <Button variant="contained" color="primary" component={Link} to={`/configurations/${row.id}`}>
-                                        View
-                                    </Button>
-                                    <Button variant="contained" color="primary" onClick={() => handleEdit(row.id)}>
-                                        Edit
-                                    </Button>
-                                    <Button variant="contained" color="secondary" onClick={() => handleRemove(row.id)}>
-                                        Remove
-                                    </Button>
-                                </TableCell>
+            {isLoading ? <LinearProgress /> : (
+                <TableContainer component={Paper}>
+                    <Table>
+                        <TableHead>
+                            <TableRow>
+                                <TableCell>ID</TableCell>
+                                <TableCell>Name</TableCell>
+                                <TableCell>Chain</TableCell>
+                                <TableCell>Is Enabled</TableCell>
+                                <TableCell>Actions</TableCell>
                             </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
+                        </TableHead>
+                        <TableBody>
+                            {configurationsData.map((row: any) => (
+                                <TableRow key={row.id}>
+                                    <TableCell>{row.id}</TableCell>
+                                    <TableCell>{row.name}</TableCell>
+                                    <TableCell>{row.chain}</TableCell>
+                                    <TableCell><BooleanIcon value={row.is_enabled} /></TableCell>
+                                    <TableCell>
+                                        <Button variant="contained" color="primary" component={Link} to={`/configurations/${row.id}`}>
+                                            View
+                                        </Button>
+                                        <Button variant="contained" color="primary" onClick={() => handleEdit(row.id)}>
+                                            Edit
+                                        </Button>
+                                        <Button variant="contained" color="secondary" onClick={() => handleRemove(row.id)}>
+                                            Remove
+                                        </Button>
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </TableContainer>)}
             <CustomSnackbar open={snackbarOpen} severity={snackbarSeverity} handleClose={handleCloseSnackBar} message={snackbarMessage} />
         </div>
     );

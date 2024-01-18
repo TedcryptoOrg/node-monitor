@@ -12,6 +12,7 @@ import {
 } from '@mui/material';
 import {ApiConfiguration} from "../../types/ApiConfiguration";
 import Switch from '@mui/material/Switch';
+import Chains from "../Chains";
 
 interface ConfigurationModalProps {
     open: boolean,
@@ -52,11 +53,21 @@ const UpsertConfigurationModal: React.FC<ConfigurationModalProps> = (
     const handleSubmit = (event: React.FormEvent) => {
         event.preventDefault();
 
-        const monitor = {
+        if (!name) {
+            sendNotification('Please enter a name!', 'error');
+            return;
+        }
+        if (!chain || chain === '') {
+            sendNotification('Please enter a chain!', 'error');
+            return;
+        }
+
+        const configurationInput = {
             name: name,
             chain: chain,
             is_enabled: isEnabled,
         };
+        console.log('Form submitted', configurationInput)
 
         const url = configuration
             ? `${process.env.REACT_APP_API_HOST}/api/configurations/${configuration.id}`
@@ -68,14 +79,15 @@ const UpsertConfigurationModal: React.FC<ConfigurationModalProps> = (
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(monitor),
+            body: JSON.stringify(configurationInput),
         })
             .then(response => {
                 if (!response.ok) {
                     sendNotification('Failed to add monitor!', 'error');
                     return;
                 }
-                response.json()
+
+                return response.json()
             })
             .then(data => {
                 fetchData();
@@ -97,6 +109,7 @@ const UpsertConfigurationModal: React.FC<ConfigurationModalProps> = (
                         <DialogContentText>
                             Please enter the name and chain for the monitor.
                         </DialogContentText>
+                        <DialogContentText>
                         <TextField
                             autoFocus
                             margin="dense"
@@ -106,19 +119,14 @@ const UpsertConfigurationModal: React.FC<ConfigurationModalProps> = (
                             fullWidth
                             variant="standard"
                             value={name}
+                            required
                             autoComplete={'off'}
                             onChange={e => setName(e.target.value)}
                         />
-                        <TextField
-                            margin="dense"
-                            id="chain"
-                            label="Chain"
-                            type="text"
-                            fullWidth
-                            variant="standard"
-                            value={chain}
-                            onChange={e => setChain(e.target.value)}
-                        />
+                        </DialogContentText>
+                        <DialogContentText>
+                            <Chains chain={chain} setChain={setChain} />
+                        </DialogContentText>
                         <FormControlLabel
                             label="Is Enabled"
                             control={
