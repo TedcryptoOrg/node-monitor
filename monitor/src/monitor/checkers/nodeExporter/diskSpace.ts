@@ -55,7 +55,7 @@ export class DiskSpace implements MonitorCheck {
             if (metrics.usedDiskSpacePercentage >= this.diskSpaceThreshold) {
                 await this.failed(`Used disk space is ${metrics.usedDiskSpacePercentage}% above threshold ${this.diskSpaceThreshold}`)
             } else {
-                await this.success(`Used disk space is ${metrics.usedDiskSpace}% below threshold ${this.diskSpaceThreshold}`)
+                await this.success(`Used disk space is ${metrics.usedDiskSpacePercentage}% below threshold ${this.diskSpaceThreshold}`)
             }
 
             this.isFirstRun = false;
