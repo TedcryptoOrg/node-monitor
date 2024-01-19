@@ -4,6 +4,8 @@ import {ApiConfiguration} from "../types/ApiConfiguration";
 import {ApiServer} from "../types/ApiServer";
 import ConfigurationLink from "./shared/ConfigurationLink";
 import ServerLink from "./shared/ServerLink";
+import {DataGrid, GridCellParams, GridColDef} from "@mui/x-data-grid";
+import {Box} from "@mui/system";
 
 interface Metric {
     configuration: ApiConfiguration,
@@ -21,25 +23,62 @@ const NetworkStatus: React.FC = () => {
     const [metrics, setMetrics] = useState<Metric[]>([]);
     const firstRender = React.useRef(true);
 
-    const [order, setOrder] = useState<'asc' | 'desc'>('asc');
-    const [orderBy, setOrderBy] = useState('');
-
-    const handleSort = (property: keyof Metric) => {
-        const isAsc = orderBy === property && order === 'asc';
-        setOrder(isAsc ? 'desc' : 'asc');
-        setOrderBy(property);
-    };
-
-    const sortedMetrics = [...metrics].sort((a, b) => {
-        const keyA = Number(a[orderBy as keyof Metric]);
-        const keyB = Number(b[orderBy as keyof Metric]);
-
-        if (order === 'asc') {
-            return keyA > keyB ? 1 : -1;
-        } else {
-            return keyA < keyB ? 1 : -1;
-        }
-    });
+    const columns: GridColDef[] = [
+        {
+            field: 'configuration' as keyof Metric,
+            headerName: 'Configuration',
+            flex: 1,
+            renderCell: (params: GridCellParams) => params.value ? <ConfigurationLink configuration={(params.value as ApiConfiguration)} /> : null
+        },
+        {
+            field: 'server' as keyof Metric,
+            headerName: 'Server',
+            flex: 1,
+            renderCell: (params: GridCellParams) => params.value ? <ServerLink server={(params.value as ApiServer)} /> : null
+        },
+        {
+            field: 'totalDiskSpace' as keyof Metric,
+            headerName: 'Total Disk Space',
+            flex: 1,
+            renderCell: (params: GridCellParams) => params.value ? `${bytesToGigabytes(params.value as number)} GB` : null
+        },
+        {
+            field: 'freeDiskSpace' as keyof Metric,
+            headerName: 'Free Disk Space',
+            flex: 1,
+            renderCell: (params: GridCellParams) => params.value ? `${bytesToGigabytes(params.value as number)} GB` : null
+        },
+        {
+            field: 'usedDiskSpace' as keyof Metric,
+            headerName: 'Used Disk Space',
+            flex: 1,
+            renderCell: (params: GridCellParams) => params.value ? `${bytesToGigabytes(params.value as number)} GB` : null
+        },
+        {
+            field: 'usedDiskSpacePercentage' as keyof Metric,
+            headerName: 'Used Disk Space Percentage',
+            flex: 1,
+            renderCell: (params: GridCellParams) => params.value ? `${params.value as number}%` : null
+        },
+        {
+            field: 'totalMemory' as keyof Metric,
+            headerName: 'Total Memory',
+            flex: 1,
+            renderCell: (params: GridCellParams) => params.value ? `${bytesToGigabytes(params.value as number)} GB` : null
+        },
+        {
+            field: 'memoryUsage' as keyof Metric,
+            headerName: 'Memory Usage',
+            flex: 1,
+            renderCell: (params: GridCellParams) => params.value ? `${bytesToGigabytes(params.value as number)} GB` : null
+        },
+        {
+            field: 'memoryUsagePercentage' as keyof Metric,
+            headerName: 'Memory Usage Percentage',
+            flex: 1,
+            renderCell: (params: GridCellParams) => params.value ? `${params.value as number}%` : null
+        },
+    ];
 
     useEffect(() => {
         if (firstRender.current) {
@@ -75,101 +114,16 @@ const NetworkStatus: React.FC = () => {
     }
 
     return (
-        <div>
-            <h2>Network status</h2>
-            <TableContainer component={Paper}>
-                <Table>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell>Configuration</TableCell>
-                            <TableCell>Server</TableCell>
-                            <TableCell>
-                                <TableSortLabel
-                                    active={orderBy === 'totalDiskSpace'}
-                                    direction={orderBy === 'totalDiskSpace' ? order : 'asc'}
-                                    onClick={() => handleSort('totalDiskSpace')}
-                                >
-                                    Total Disk Space
-                                </TableSortLabel>
-                            </TableCell>
-                            <TableCell>
-                                <TableSortLabel
-                                    active={orderBy === 'usedDiskSpace'}
-                                    direction={orderBy === 'usedDiskSpace' ? order : 'asc'}
-                                    onClick={() => handleSort('usedDiskSpace')}
-                                >
-                                    Used Disk Space
-                                </TableSortLabel>
-                            </TableCell>
-                            <TableCell>
-                                <TableSortLabel
-                                    active={orderBy === 'freeDiskSpace'}
-                                    direction={orderBy === 'freeDiskSpace' ? order : 'asc'}
-                                    onClick={() => handleSort('freeDiskSpace')}
-                                >
-                                    Free Disk Space
-                                </TableSortLabel>
-                            </TableCell>
-                            <TableCell>
-                                <TableSortLabel
-                                    active={orderBy === 'usedDiskSpacePercentage'}
-                                    direction={orderBy === 'usedDiskSpacePercentage' ? order : 'asc'}
-                                    onClick={() => handleSort('usedDiskSpacePercentage')}
-                                 >
-                                    Used Disk Space Percentage
-                                </TableSortLabel>
-                            </TableCell>
-                            <TableCell>
-                                <TableSortLabel
-                                    active={orderBy === 'totalMemory'}
-                                    direction={orderBy === 'totalMemory' ? order : 'asc'}
-                                    onClick={() => handleSort('totalMemory')}
-                                >
-                                    Total Memory
-                                </TableSortLabel>
-                            </TableCell>
-                            <TableCell>
-                                <TableSortLabel
-                                    active={orderBy === 'memoryUsage'}
-                                    direction={orderBy === 'memoryUsage' ? order : 'asc'}
-                                    onClick={() => handleSort('memoryUsage')}
-                                >
-                                    Memory Usage
-                                </TableSortLabel>
-                            </TableCell>
-                            <TableCell>
-                                <TableSortLabel
-                                    active={orderBy === 'memoryUsagePercentage'}
-                                    direction={orderBy === 'memoryUsagePercentage' ? order : 'asc'}
-                                    onClick={() => handleSort('memoryUsagePercentage')}
-                                >
-                                    Memory Usage Percentage
-                                </TableSortLabel>
-                            </TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {sortedMetrics.map((metric, index) => (
-                            <TableRow key={index}>
-                                <TableCell>
-                                    <ConfigurationLink configuration={metric.configuration} />
-                                </TableCell>
-                                <TableCell>
-                                    <ServerLink server={metric.server} />
-                                </TableCell>
-                                <TableCell>{bytesToGigabytes(metric.totalDiskSpace)} GB</TableCell>
-                                <TableCell>{bytesToGigabytes(metric.freeDiskSpace)} GB</TableCell>
-                                <TableCell>{bytesToGigabytes(metric.usedDiskSpace)} GB</TableCell>
-                                <TableCell>{metric.usedDiskSpacePercentage}%</TableCell>
-                                <TableCell>{bytesToGigabytes(metric.totalMemory)} GB</TableCell>
-                                <TableCell>{bytesToGigabytes(metric.memoryUsage)} GB</TableCell>
-                                <TableCell>{metric.memoryUsagePercentage}%</TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
-        </div>
+
+        <Box sx={{ height: '100%', width: '100%' }}>
+            <DataGrid
+                rows={metrics}
+                columns={columns}
+                autoHeight={true}
+                getRowId={(row) => row.server.id}
+                style={{ width: '100%' }}
+            />
+        </Box>
     );
 }
 

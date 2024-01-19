@@ -42,11 +42,11 @@ const MonitorsStatus: React.FC<MonitorsStatusProp> = ({ monitors }) => {
     }, [monitors]);
 
     return value.toString() === MonitorStatus.ERROR.toString()
-        ? <Badge badgeContent={countError} color="primary">
+        ? <Badge badgeContent={countError} color="error">
             <Off fontSize={"small"} htmlColor="red" />
           </Badge>
         : (value.toString() === MonitorStatus.WARNING.toString()
-            ? <Badge badgeContent={countWarning} color="primary">
+            ? <Badge badgeContent={countWarning} color="warning">
                 <HourglassBottomIcon fontSize={"small"} htmlColor="orange" />
               </Badge>
             : <On fontSize={"small"} htmlColor="green" />);
