@@ -13,7 +13,7 @@ export abstract class AbstractMonitor implements Monitor {
   protected abstract readonly name: string
   protected monitor_params: MonitorCheck[] = []
   private readonly alerter: Alerter
-  private readonly isErrored: Record<string, boolean> = {}
+  private readonly isErrored: Record<string, number|undefined> = {}
 
   protected constructor(protected readonly alertChannels: AlertChannel[]) {
     this.alerter = new Alerter(
@@ -38,25 +38,23 @@ export abstract class AbstractMonitor implements Monitor {
 
   async runPromiseWithRetry (pair: PromiseParamPair, attempt?: number): Promise<void> {
     const { promise, param } = pair;
+    const monitorName = param.constructor.name;
     attempt = attempt ?? 1;
     try {
-      console.log(`🚀 ${this.name} Node checker ${param.constructor.name} started.`);
+      console.log(`🚀 ${this.name} Node checker ${monitorName} started.`);
       await promise(); // call the function to get the promise and then await it
-
-      if (this.isErrored[param.constructor.name]) {
-        console.log(`✅ ${this.name} Node checker ${param.constructor.name} recovered.`);
-        this.isErrored[param.constructor.name] = false;
-        await this.alerter.resolve(`✅ ${this.name} Node checker ${param.constructor.name} recovered.`);
-      }
     } catch (error: any) {
-      console.log(`🚨 ${this.name} Node checker ${param.constructor.name} failed to start. Error:\n${error}`);
+      console.log(`🚨 ${this.name} Node checker ${monitorName} failed to start. Error:\n${error}`);
       console.error(error);
-      this.isErrored[param.constructor.name] = true;
+      if (this.isErrored[monitorName] === undefined) {
+        this.setTimer(monitorName)
+      }
+      this.isErrored[monitorName] = new Date().getTime();
 
       if (attempt >= 3 || !(error instanceof RecoverableException)) {
         attempt = 0;
         try {
-          await this.alerter.alert(`🚨[${this.name}][${param.constructor.name}] Node checker failed to start. Error:\n${error}`);
+          await this.alerter.alert(`🚨[${this.name}][${monitorName}] Node checker failed to start. Error:\n${error}`);
         } catch (error) {
           console.error('Alert failed to alert', error);
         }
@@ -70,5 +68,23 @@ export abstract class AbstractMonitor implements Monitor {
         await this.runPromiseWithRetry(pair, attempt+1);
       }
     }
+  }
+
+  /**
+   * Sets a timer to check if the node has recovered after some seconds
+   */
+  setTimer (name: string): void {
+    const timer = setInterval(async () => {
+      const lastErrored = this.isErrored[name];
+      if (
+          lastErrored !== undefined
+          && (new Date().getTime() - lastErrored > 60000)
+      ) {
+        console.log(`✅ ${this.name} Node checker ${name} recovered.`);
+        this.isErrored[name] = undefined;
+        await this.alerter.resolve(`✅ ${this.name} Node checker ${name} recovered.`);
+        clearInterval(timer);
+      }
+    }, 10000);
   }
 }
