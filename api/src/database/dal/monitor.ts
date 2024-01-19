@@ -7,6 +7,7 @@ export async function findWarnings(limit: number) {
     return await Monitor.findAll({
         where: {
             status: true,
+            is_enabled: true,
             last_error: {
                 [Op.ne]: null
             }
@@ -21,6 +22,7 @@ export async function findFailed(limit: number) {
     return await Monitor.findAll({
         where: {
             status: false,
+            is_enabled: true
         },
         limit: limit,
         order: [['last_check', 'DESC']]

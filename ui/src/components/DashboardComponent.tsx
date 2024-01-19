@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import LastFailedComponent from "./dashboard/lastFailedComponent";
 import LastWarningsComponent from "./dashboard/lastWarningComponent";
 

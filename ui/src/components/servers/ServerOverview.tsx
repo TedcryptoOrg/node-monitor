@@ -22,6 +22,7 @@ import {ApiMonitor} from "../../types/ApiMonitor";
 import UpsertServerModal from "./UpsertServerModal";
 import ConfigurationLink from "../shared/ConfigurationLink";
 import ServerLink from "../shared/ServerLink";
+import MonitorsStatus from "../shared/MonitorsStatus";
 
 type RouteParams = {
     [key: string]: string;
@@ -157,7 +158,7 @@ const ServerOverview: React.FC = () => {
                 <DialogContent>
                     <DialogContentText>
                         <p>
-                            Configuration: <ConfigurationLink configuration={server.configuration} />
+                            Configuration: {server.configuration && <ConfigurationLink configuration={server.configuration} />}
                         </p>
                         <p>Name: {server.name}</p>
                         <p>Address: {server.address}</p>
@@ -210,7 +211,9 @@ const ServerOverview: React.FC = () => {
                                 <TableCell>{service.id}</TableCell>
                                 <TableCell>{service.name}</TableCell>
                                 <TableCell>{service.address}</TableCell>
-                                <TableCell><BooleanIcon value={service.is_enabled}/></TableCell>
+                                <TableCell>
+                                    <BooleanIcon value={service.is_enabled}/>
+                                </TableCell>
                                 <TableCell>{service.type}</TableCell>
                                 <TableCell>
                                     <Button variant="contained" color="primary"
@@ -263,7 +266,9 @@ const ServerOverview: React.FC = () => {
                                 <TableCell>{monitor.type}</TableCell>
                                 <TableCell>{monitor.name}</TableCell>
                                 <TableCell><BooleanIcon value={monitor.is_enabled}/></TableCell>
-                                <TableCell><BooleanIcon value={monitor.status ?? true}/></TableCell>
+                                <TableCell>
+                                    <MonitorsStatus monitors={[monitor]}/>
+                                </TableCell>
                                 <TableCell>
                                     <Button variant="contained" color="primary"
                                             onClick={() => handleEditMonitor(monitor.id ?? 0)}>

@@ -11,7 +11,7 @@ import {
     Button,
     DialogContent, DialogContentText, LinearProgress
 } from '@mui/material';
-import {Link, useParams} from 'react-router-dom';
+import {useParams} from 'react-router-dom';
 import { ApiConfiguration } from '../../types/ApiConfiguration';
 import { ApiServer } from '../../types/ApiServer';
 import CustomSnackbar from "../shared/CustomSnackbar";
@@ -21,6 +21,7 @@ import UpsertMonitorModal from "../monitors/UpsertMonitorModal";
 import BooleanIcon from "../shared/BooleanIcon";
 import UpsertConfigurationModal from "./UpsertConfigurationModal";
 import ServerLink from "../shared/ServerLink";
+import MonitorsStatus from "../shared/MonitorsStatus";
 
 type RouteParams = {
     [key: number]: string;
@@ -224,6 +225,7 @@ const ConfigurationOverview: React.FC = () => {
                             <TableCell>Name</TableCell>
                             <TableCell>Address</TableCell>
                             <TableCell>Is Enabled</TableCell>
+                            <TableCell>Status</TableCell>
                             <TableCell>Actions</TableCell>
                         </TableRow>
                     </TableHead>
@@ -235,7 +237,12 @@ const ConfigurationOverview: React.FC = () => {
                                     <ServerLink server={server} />
                                 </TableCell>
                                 <TableCell>{server.address}</TableCell>
-                                <TableCell><BooleanIcon value={server.is_enabled} /></TableCell>
+                                <TableCell>
+                                    <BooleanIcon value={server.is_enabled} />
+                                </TableCell>
+                                <TableCell>
+                                    <MonitorsStatus monitors={server.monitors ?? []} />
+                                </TableCell>
                                 <TableCell>
                                     <Button variant="contained" color="primary" onClick={() => handleEditServer(server.id ?? 0)}>
                                         Edit
@@ -284,12 +291,14 @@ const ConfigurationOverview: React.FC = () => {
                                 <TableRow key={monitor.id}>
                                     <TableCell>{monitor.id}</TableCell>
                                     <TableCell>
-                                        <ServerLink server={monitor.server as ApiServer} />
+                                        {monitor.server && <ServerLink server={monitor.server} />}
                                     </TableCell>
                                     <TableCell>{monitor.type}</TableCell>
                                     <TableCell>{monitor.name}</TableCell>
                                     <TableCell><BooleanIcon value={monitor.is_enabled} /></TableCell>
-                                    <TableCell><BooleanIcon value={monitor.status ?? true} /></TableCell>
+                                    <TableCell>
+                                        <MonitorsStatus monitors={[monitor]} />
+                                    </TableCell>
                                     <TableCell>{monitor.last_check?.toLocaleString()}</TableCell>
                                     <TableCell>{monitor.last_error}</TableCell>
                                     <TableCell>

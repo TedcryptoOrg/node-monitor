@@ -15,6 +15,7 @@ import CustomSnackbar from "../shared/CustomSnackbar";
 import { AlertColor } from '@mui/material';
 import BooleanIcon from "../shared/BooleanIcon";
 import ConfigurationLink from "../shared/ConfigurationLink";
+import MonitorsStatus from "../shared/MonitorsStatus";
 
 const ConfigurationsComponent: React.FC = () => {
     const [isLoading, setIsLoading] = useState(true);
@@ -120,6 +121,7 @@ const ConfigurationsComponent: React.FC = () => {
                                 <TableCell>Name</TableCell>
                                 <TableCell>Chain</TableCell>
                                 <TableCell>Is Enabled</TableCell>
+                                <TableCell>Status</TableCell>
                                 <TableCell>Actions</TableCell>
                             </TableRow>
                         </TableHead>
@@ -133,6 +135,9 @@ const ConfigurationsComponent: React.FC = () => {
                                     <TableCell>{row.chain}</TableCell>
                                     <TableCell>
                                         <BooleanIcon value={row.is_enabled} />
+                                    </TableCell>
+                                    <TableCell>
+                                        <MonitorsStatus monitors={row.monitors} />
                                     </TableCell>
                                     <TableCell>
                                         <Button variant="contained" color="primary" onClick={() => handleEdit(row.id)}>
