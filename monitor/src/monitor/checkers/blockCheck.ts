@@ -95,7 +95,7 @@ export class BlockCheck implements MonitorCheck {
                         previousTimestamp = currentTimestamp
                         missedBlocks = 0
                     } else {
-                        const message = `No more misses happened since last one. Last missed: ${missedBlocks}. Reset in ${secondsLeftToReset} seconds.`
+                        const message = `No more misses happened since last one. Last missed: ${missedBlocks}. Reset in ${secondsLeftToReset.toFixed(0)} seconds.`
                         await this.warning(message);
                     }
                 } else {

@@ -83,7 +83,7 @@ export class MissCounter implements MonitorCheck {
           previousMissCounter = currentMissCounter
           previousTimestamp = currentTimestamp
         } else {
-          const message = `No more misses happened since last one. Last missed: ${missDifference}. Reset in ${secondsLeftToReset} seconds.`
+          const message = `No more misses happened since last one. Last missed: ${missDifference}. Reset in ${secondsLeftToReset.toFixed(0)} seconds.`
           await this.warning(message)
         }
       } else {
