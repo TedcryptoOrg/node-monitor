@@ -10,7 +10,7 @@ import {
     Button,
     AlertColor, DialogContent, DialogContentText
 } from '@mui/material';
-import {Link, useParams} from 'react-router-dom';
+import {useParams} from 'react-router-dom';
 import { ApiServer } from '../../types/ApiServer';
 import { ApiService } from '../../types/ApiService';
 import UpsertServiceModal from '../services/UpsertServiceModal';
@@ -20,6 +20,8 @@ import BooleanIcon from "../shared/BooleanIcon";
 import UpsertMonitorModal from "../monitors/UpsertMonitorModal";
 import {ApiMonitor} from "../../types/ApiMonitor";
 import UpsertServerModal from "./UpsertServerModal";
+import ConfigurationLink from "../shared/ConfigurationLink";
+import ServerLink from "../shared/ServerLink";
 
 type RouteParams = {
     [key: string]: string;
@@ -154,8 +156,9 @@ const ServerOverview: React.FC = () => {
             {server && (
                 <DialogContent>
                     <DialogContentText>
-                        <p>Configuration: <Link
-                            to={`/configurations/${server.configuration?.id}`}>{server.configuration?.name}</Link></p>
+                        <p>
+                            Configuration: <ConfigurationLink configuration={server.configuration} />
+                        </p>
                         <p>Name: {server.name}</p>
                         <p>Address: {server.address}</p>
                         <p>Is Enabled: <BooleanIcon value={server.is_enabled}/></p>
@@ -254,7 +257,9 @@ const ServerOverview: React.FC = () => {
                         {monitors.map((monitor) => (
                             <TableRow key={monitor.id}>
                                 <TableCell>{monitor.id}</TableCell>
-                                <TableCell>{monitor.server?.id}</TableCell>
+                                <TableCell>
+                                    {monitor.server && <ServerLink server={monitor.server} />}
+                                </TableCell>
                                 <TableCell>{monitor.type}</TableCell>
                                 <TableCell>{monitor.name}</TableCell>
                                 <TableCell><BooleanIcon value={monitor.is_enabled}/></TableCell>

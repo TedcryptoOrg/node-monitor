@@ -2,6 +2,8 @@ import {Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow}
 import React from "react";
 import {ApiMonitor} from "../../types/ApiMonitor";
 import {Link} from "react-router-dom";
+import ConfigurationLink from "../shared/ConfigurationLink";
+import ServerLink from "../shared/ServerLink";
 
 interface MonitorsTableProps {
     monitors: ApiMonitor[];
@@ -25,15 +27,11 @@ const MonitorsTable: React.FC<MonitorsTableProps> = ({monitors}) => {
                         {monitors.map((monitor, index) => (
                             <TableRow key={index}>
                                 <TableCell>
-                                    <Link to={`/configuration/${monitor.configuration.id}`}>
-                                        {monitor.configuration.name}
-                                    </Link>
+                                    <ConfigurationLink configuration={monitor.configuration} />
                                 </TableCell>
                                 <TableCell>{monitor.name}</TableCell>
                                 <TableCell>
-                                    <Link to={`/server/${monitor.server?.id}`}>
-                                        {monitor.server?.name}
-                                    </Link>
+                                    {monitor.server && <ServerLink server={monitor.server} />}
                                 </TableCell>
                                 <TableCell>{monitor.last_error}</TableCell>
                                 <TableCell>{monitor.last_check?.toLocaleString()}</TableCell>

@@ -20,6 +20,7 @@ import {ApiMonitor} from "../../types/ApiMonitor";
 import UpsertMonitorModal from "../monitors/UpsertMonitorModal";
 import BooleanIcon from "../shared/BooleanIcon";
 import UpsertConfigurationModal from "./UpsertConfigurationModal";
+import ServerLink from "../shared/ServerLink";
 
 type RouteParams = {
     [key: number]: string;
@@ -230,13 +231,12 @@ const ConfigurationOverview: React.FC = () => {
                         {servers.map((server) => (
                             <TableRow key={server.id}>
                                 <TableCell>{server.id}</TableCell>
-                                <TableCell>{server.name}</TableCell>
+                                <TableCell>
+                                    <ServerLink server={server} />
+                                </TableCell>
                                 <TableCell>{server.address}</TableCell>
                                 <TableCell><BooleanIcon value={server.is_enabled} /></TableCell>
                                 <TableCell>
-                                    <Button variant="contained" color="primary" component={Link} to={`/servers/${server.id}`}>
-                                        View
-                                    </Button>
                                     <Button variant="contained" color="primary" onClick={() => handleEditServer(server.id ?? 0)}>
                                         Edit
                                     </Button>
@@ -284,9 +284,7 @@ const ConfigurationOverview: React.FC = () => {
                                 <TableRow key={monitor.id}>
                                     <TableCell>{monitor.id}</TableCell>
                                     <TableCell>
-                                        <Link to={`/servers/${monitor.server?.id}`}>
-                                            {monitor.server?.name}
-                                        </Link>
+                                        <ServerLink server={monitor.server as ApiServer} />
                                     </TableCell>
                                     <TableCell>{monitor.type}</TableCell>
                                     <TableCell>{monitor.name}</TableCell>

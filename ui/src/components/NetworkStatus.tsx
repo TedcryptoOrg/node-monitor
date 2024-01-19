@@ -3,6 +3,8 @@ import {Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow}
 import {ApiConfiguration} from "../types/ApiConfiguration";
 import {ApiServer} from "../types/ApiServer";
 import {Link} from "react-router-dom";
+import ConfigurationLink from "./shared/ConfigurationLink";
+import ServerLink from "./shared/ServerLink";
 
 interface Metric {
     configuration: ApiConfiguration,
@@ -75,14 +77,10 @@ const NetworkStatus: React.FC = () => {
                         {metrics.map((metric, index) => (
                             <TableRow key={index}>
                                 <TableCell>
-                                    <Link to={`/configuration/${metric.configuration.id}`}>
-                                        {metric.configuration.name}
-                                    </Link>
+                                    <ConfigurationLink configuration={metric.configuration} />
                                 </TableCell>
                                 <TableCell>
-                                    <Link to={`/server/${metric.server.id}`}>
-                                        {metric.server.name}
-                                    </Link>
+                                    <ServerLink server={metric.server} />
                                 </TableCell>
                                 <TableCell>{bytesToGigabytes(metric.totalDiskSpace)} GB</TableCell>
                                 <TableCell>{bytesToGigabytes(metric.freeDiskSpace)} GB</TableCell>

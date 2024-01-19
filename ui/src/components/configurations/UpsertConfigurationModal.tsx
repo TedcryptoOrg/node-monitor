@@ -110,19 +110,19 @@ const UpsertConfigurationModal: React.FC<ConfigurationModalProps> = (
                             Please enter the name and chain for the monitor.
                         </DialogContentText>
                         <DialogContentText>
-                        <TextField
-                            autoFocus
-                            margin="dense"
-                            id="name"
-                            label="Name"
-                            type="text"
-                            fullWidth
-                            variant="standard"
-                            value={name}
-                            required
-                            autoComplete={'off'}
-                            onChange={e => setName(e.target.value)}
-                        />
+                            <TextField
+                                autoFocus
+                                margin="dense"
+                                id="name"
+                                label="Name"
+                                type="text"
+                                fullWidth
+                                variant="standard"
+                                value={name}
+                                required
+                                autoComplete={'off'}
+                                onChange={e => setName(e.target.value)}
+                            />
                         </DialogContentText>
                         <DialogContentText>
                             <Chains chain={chain} setChain={setChain} />

@@ -13,8 +13,8 @@ import {
 import UpsertConfigurationModal from './UpsertConfigurationModal';
 import CustomSnackbar from "../shared/CustomSnackbar";
 import { AlertColor } from '@mui/material';
-import { Link } from 'react-router-dom';
 import BooleanIcon from "../shared/BooleanIcon";
+import ConfigurationLink from "../shared/ConfigurationLink";
 
 const ConfigurationsComponent: React.FC = () => {
     const [isLoading, setIsLoading] = useState(true);
@@ -127,13 +127,14 @@ const ConfigurationsComponent: React.FC = () => {
                             {configurationsData.map((row: any) => (
                                 <TableRow key={row.id}>
                                     <TableCell>{row.id}</TableCell>
-                                    <TableCell>{row.name}</TableCell>
-                                    <TableCell>{row.chain}</TableCell>
-                                    <TableCell><BooleanIcon value={row.is_enabled} /></TableCell>
                                     <TableCell>
-                                        <Button variant="contained" color="primary" component={Link} to={`/configurations/${row.id}`}>
-                                            View
-                                        </Button>
+                                        <ConfigurationLink configuration={row} />
+                                    </TableCell>
+                                    <TableCell>{row.chain}</TableCell>
+                                    <TableCell>
+                                        <BooleanIcon value={row.is_enabled} />
+                                    </TableCell>
+                                    <TableCell>
                                         <Button variant="contained" color="primary" onClick={() => handleEdit(row.id)}>
                                             Edit
                                         </Button>

@@ -2,6 +2,8 @@ import React, {useEffect, useState} from 'react';
 import {LinearProgress, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from '@mui/material';
 import {ApiAudit} from "../types/ApiAudit";
 import {Link} from "react-router-dom";
+import ConfigurationLink from "./shared/ConfigurationLink";
+import ServerLink from "./shared/ServerLink";
 
 const AuditComponent: React.FC = () => {
     const [audits, setAudits] = useState<ApiAudit[]>([]);
@@ -43,13 +45,11 @@ const AuditComponent: React.FC = () => {
                             <TableRow key={index}>
                                 <TableCell>
                                     {audit.configuration && (<><b>Configuration:</b>
-                                    <Link to={`/configuration/${audit.configuration?.id}`}>
-                                        {audit.configuration?.name}
-                                    </Link><br/></>)}
+                                        <ConfigurationLink configuration={audit.configuration} />
+                                    <br/></>)}
                                     {audit.server && (<><b>Server:</b>
-                                    <Link to={`/server/${audit.server?.id}`}>
-                                        {audit.server?.name}
-                                    </Link><br/></>)}
+                                        <ServerLink server={audit.server} />
+                                    <br/></>)}
                                     {audit.monitor && (<><b>Monitor:</b>
                                     <Link to={`/monitor/${audit.monitor?.id}`}>
                                         {audit.monitor?.name}
