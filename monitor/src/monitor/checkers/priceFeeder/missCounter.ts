@@ -35,10 +35,6 @@ export class MissCounter implements MonitorCheck {
     this.configuration = JSON.parse(this.monitor.configuration_object) as PriceFeederMissCountConfiguration
     console.debug(`🔨️[${this.name}] Creating miss counter check...`, this.configuration)
 
-    if (!Object.prototype.hasOwnProperty.call(this.staticEndpoints, name)) {
-      throw new NoRecoverableException(`Blockchain ${name} not supported.`)
-    }
-
     this.name = name
     this.cryptoTools = new CryptoTools()
     this.alertChannels = alertChannels
@@ -53,6 +49,10 @@ export class MissCounter implements MonitorCheck {
   }
 
   async check (): Promise<void> {
+    if (!Object.prototype.hasOwnProperty.call(this.staticEndpoints, this.monitor.configuration.chain)) {
+      throw new NoRecoverableException(`Blockchain ${this.monitor.configuration.chain} not supported.`)
+    }
+
     let previousMissCounter = await this.fetchMissCounter()
     let previousTimestamp = new Date().getTime()
     let lastMissCounter = previousMissCounter
