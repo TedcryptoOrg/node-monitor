@@ -87,8 +87,6 @@ export class DiskSpace implements MonitorCheck {
                     last_error: message
                 });
         }
-
-        this.isOkay = true;
     }
 
     async success(message: string): Promise<void>
@@ -124,9 +122,9 @@ export class DiskSpace implements MonitorCheck {
             return await metricsResponse.json();
         } catch (exception: any) {
             console.error(exception);
-            await this.warning(`Error fetching metrics. Error: ${exception.message}`)
 
             if (attempts >= 5) {
+                await this.warning(`Error fetching metrics. Error: ${exception.message}`)
                 throw new NoRecoverableException(`[${this.name}] Error fetching metrics. Error: ${exception.message}`);
             }
 
