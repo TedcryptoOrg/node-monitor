@@ -132,6 +132,8 @@ export class BlockCheck implements MonitorCheck {
 
     async success(message: string): Promise<void>
     {
+        console.log(`🟢️[${this.name}][BlockCheck] ${message}`)
+
         if (!this.isOkay) {
             await pingMonitor(this.monitor.id as number, {status: true, last_error: null})
             if (!this.isFirstRun) {

@@ -21,7 +21,7 @@ export class MissCounter implements MonitorCheck {
   private readonly alerter: Alerter
   private readonly configuration: PriceFeederMissCountConfiguration
   private isOkay: boolean = false
-  private isFirstRun: boolean = false
+  private isFirstRun: boolean = true
   private lastTimePing: number = 0;
   private readonly pingInterval: number = 60;
   private restAddress: string|undefined = undefined;
@@ -109,18 +109,15 @@ export class MissCounter implements MonitorCheck {
 
   async warning(message: string): Promise<void> {
     console.debug(`🟡️[${this.name}][Price Feeder Miss] ${message}`)
-    if (!this.isOkay && this.isPingTime()) {
+    if (this.isPingTime()) {
       await pingMonitor(this.monitor.id as number, {status: true, last_error: message})
     }
-
-    this.isOkay = true;
   }
 
   async success(message: string): Promise<void> {
     console.log(`🟢️[${this.name}][Price Feeder Miss] ${message}!`)
 
     if (!this.isOkay) {
-      // If not okay then ping monitor saying all is fine now and alert TG
       await pingMonitor(this.monitor.id as number, {status: true, last_error: null})
       if (!this.isFirstRun) {
         await this.alerter.resolve(`🟢️[${this.name}][Price Feeder Miss] ${message}`);
