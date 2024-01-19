@@ -12,7 +12,7 @@ const chainDirectory = new ChainDirectory(false);
 export class BlockCheck implements MonitorCheck {
     private readonly alerter: Alerter
     private readonly configuration: BlockAlertConfiguration
-    private client: RpcClient
+    private client: RpcClient|undefined
     private isOkay: boolean = false
     private isFirstRun: boolean = true
     private lastTimePing: number = 0
@@ -26,15 +26,6 @@ export class BlockCheck implements MonitorCheck {
     ) {
         this.configuration = JSON.parse(this.monitor.configuration_object) as BlockAlertConfiguration
         console.debug(`🔨️[${this.name}][${this.chainName}] Creating block check...`, this.configuration);
-        if (!this.monitor.server) {
-            throw new Error(`[${this.name}][BlockCheck] Server is not defined. Cannot run check`)
-        }
-        if (!this.monitor.server.services || this.monitor.server.services.length === 0) {
-            console.log(this.monitor)
-            throw new Error(`[${this.name}][BlockCheck] Server services are not defined. Cannot run check`)
-        }
-
-        this.client = buildClient(this.monitor.server.services, ServiceTypeEnum.RPC) as RpcClient;
 
         this.alerter = new Alerter(
             this.name,
@@ -48,6 +39,16 @@ export class BlockCheck implements MonitorCheck {
         let missedBlocks = 0
         let previousTimestamp = new Date().getTime()
         let lastBlockHeight = 0
+
+        if (!this.monitor.server) {
+            throw new Error(`[${this.name}][BlockCheck] Server is not defined. Cannot run check`)
+        }
+        if (!this.monitor.server.services || this.monitor.server.services.length === 0) {
+            console.log(this.monitor)
+            throw new Error(`[${this.name}][BlockCheck] Server services are not defined. Cannot run check`)
+        }
+
+        this.client = buildClient(this.monitor.server.services, ServiceTypeEnum.RPC) as RpcClient;
 
         while (true) {
             console.log(`🏃️[${this.name}][BlockCheck] Running check...`)
