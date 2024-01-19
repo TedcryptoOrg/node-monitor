@@ -16,12 +16,11 @@ import { ApiConfiguration } from '../../types/ApiConfiguration';
 import { ApiServer } from '../../types/ApiServer';
 import CustomSnackbar from "../shared/CustomSnackbar";
 import UpsertServerModal from '../servers/UpsertServerModal';
-import {ApiMonitor} from "../../types/ApiMonitor";
-import UpsertMonitorModal from "../monitors/UpsertMonitorModal";
 import BooleanIcon from "../shared/BooleanIcon";
 import UpsertConfigurationModal from "./UpsertConfigurationModal";
 import ServerLink from "../shared/ServerLink";
 import MonitorsStatus from "../shared/MonitorsStatus";
+import MonitorsList from "../monitors/MonitorsList";
 
 type RouteParams = {
     [key: number]: string;
@@ -33,22 +32,7 @@ const ConfigurationOverview: React.FC = () => {
     const [configuration, setConfiguration] = useState<ApiConfiguration | null>(null);
     const [isLoadingServers, setLoadingServers] = useState(true);
     const [servers, setServers] = useState<ApiServer[]>([]);
-    const [isLoadingMonitors, setLoadingMonitors] = useState(true);
-    const [monitors, setMonitors] = useState<ApiMonitor[]>([]);
     const firstRender = React.useRef(true);
-
-    const fetchMonitors = useCallback(() => {
-        setLoadingMonitors(true)
-        fetch(`${process.env.REACT_APP_API_HOST}/api/configurations/${id}/monitors`)
-            .then(response => response.json())
-            .then(data => setMonitors(data))
-            .catch((error) => {
-                console.error('Error:', error);
-                setMonitors([])
-            })
-            .finally(() => setLoadingMonitors(false))
-        ;
-    }, [id])
 
     const fetchServers = useCallback(() => {
         setLoadingServers(true)
@@ -81,10 +65,9 @@ const ConfigurationOverview: React.FC = () => {
         if (firstRender.current) {
             fetchData();
             fetchServers();
-            fetchMonitors();
             firstRender.current = false
         }
-    }, [fetchData, fetchServers, fetchMonitors]);
+    }, [fetchData, fetchServers]);
 
     // snackbar
     const [snackbarOpen, setSnackbarOpen] = useState(false);
@@ -136,41 +119,6 @@ const ConfigurationOverview: React.FC = () => {
             method: 'DELETE',
         }).then(() => {
             fetchServers()
-            sendNotification('Monitor removed successfully!', 'success')
-        }).catch((error) => {
-            console.error('Error:', error)
-            sendNotification('Failed to remove monitor!', 'error')
-        });
-    };
-
-    // Monitors
-    const [openMonitorModal, setOpenMonitorModal] = useState(false);
-    const [editMonitor, setEditMonitor] = useState<ApiMonitor|null>(null);
-
-    const handleMonitorModalOpen = () => {
-        setOpenMonitorModal(true);
-    }
-
-    const handleMonitorModalClose = () => {
-        setEditMonitor(null);
-        setOpenMonitorModal(false);
-    };
-
-    const handleEditMonitor = (id: number) => {
-        const monitor = monitors.find((monitor: ApiMonitor) => monitor.id === id);
-        if (monitor) {
-            setEditMonitor(monitor)
-            handleMonitorModalOpen()
-        } else {
-            sendNotification(`No monitor found with id ${id}`, 'error')
-        }
-    };
-
-    const handleRemoveMonitor = (id: number) => {
-        fetch(`${process.env.REACT_APP_API_HOST}/api/monitors/${id}`, {
-            method: 'DELETE',
-        }).then(() => {
-            fetchMonitors()
             sendNotification('Monitor removed successfully!', 'success')
         }).catch((error) => {
             console.error('Error:', error)
@@ -259,63 +207,7 @@ const ConfigurationOverview: React.FC = () => {
 
 
             <h3>Monitors</h3>
-            <Button variant="outlined" onClick={handleMonitorModalOpen}>
-                Add Monitor
-            </Button>
-            <UpsertMonitorModal
-                open={openMonitorModal}
-                fetchData={fetchMonitors}
-                configuration={configuration as ApiConfiguration}
-                editMonitor={editMonitor}
-                sendNotification={sendNotification}
-                handleClose={handleMonitorModalClose}
-            />
-            {isLoadingMonitors ? <LinearProgress/> : (
-                <TableContainer component={Paper}>
-                    <Table>
-                        <TableHead>
-                            <TableRow>
-                                <TableCell>ID</TableCell>
-                                <TableCell>Server</TableCell>
-                                <TableCell>Type</TableCell>
-                                <TableCell>Name</TableCell>
-                                <TableCell>Is Enabled</TableCell>
-                                <TableCell>Status</TableCell>
-                                <TableCell>Last checked</TableCell>
-                                <TableCell>Last error</TableCell>
-                                <TableCell>Actions</TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {monitors.map((monitor) => (
-                                <TableRow key={monitor.id}>
-                                    <TableCell>{monitor.id}</TableCell>
-                                    <TableCell>
-                                        {monitor.server && <ServerLink server={monitor.server} />}
-                                    </TableCell>
-                                    <TableCell>{monitor.type}</TableCell>
-                                    <TableCell>{monitor.name}</TableCell>
-                                    <TableCell><BooleanIcon value={monitor.is_enabled} /></TableCell>
-                                    <TableCell>
-                                        <MonitorsStatus monitors={[monitor]} />
-                                    </TableCell>
-                                    <TableCell>{monitor.last_check?.toLocaleString()}</TableCell>
-                                    <TableCell>{monitor.last_error}</TableCell>
-                                    <TableCell>
-                                        <Button variant="contained" color="primary"
-                                                onClick={() => handleEditMonitor(monitor.id ?? 0)}>
-                                            Edit
-                                        </Button>
-                                        <Button variant="contained" color="secondary"
-                                                onClick={() => handleRemoveMonitor(monitor.id ?? 0)}>
-                                            Remove
-                                        </Button>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </TableContainer>)}
+            {configuration ? <MonitorsList configuration={configuration} sendNotification={sendNotification} /> : <LinearProgress />}
 
             <CustomSnackbar open={snackbarOpen} severity={snackbarSeverity} handleClose={handleCloseSnackBar} message={snackbarMessage} />
         </div>

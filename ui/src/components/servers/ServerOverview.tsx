@@ -8,21 +8,17 @@ import {
     TableRow,
     Paper,
     Button,
-    AlertColor, DialogContent, DialogContentText
+    AlertColor, DialogContent, DialogContentText, LinearProgress
 } from '@mui/material';
 import {useParams} from 'react-router-dom';
 import { ApiServer } from '../../types/ApiServer';
 import { ApiService } from '../../types/ApiService';
 import UpsertServiceModal from '../services/UpsertServiceModal';
 import CustomSnackbar from '../shared/CustomSnackbar';
-import {ApiConfiguration} from "../../types/ApiConfiguration";
 import BooleanIcon from "../shared/BooleanIcon";
-import UpsertMonitorModal from "../monitors/UpsertMonitorModal";
-import {ApiMonitor} from "../../types/ApiMonitor";
 import UpsertServerModal from "./UpsertServerModal";
 import ConfigurationLink from "../shared/ConfigurationLink";
-import ServerLink from "../shared/ServerLink";
-import MonitorsStatus from "../shared/MonitorsStatus";
+import MonitorsList from "../monitors/MonitorsList";
 
 type RouteParams = {
     [key: string]: string;
@@ -49,20 +45,13 @@ const ServerOverview: React.FC = () => {
             .catch((error) => sendNotification(`Error: ${error}`, 'error'));
     }, [id]);
 
-    const fetchMonitors = useCallback(() => {
-        fetch(`${process.env.REACT_APP_API_HOST}/api/servers/${id}/monitors`)
-            .then(response => response.json())
-            .then(data => setMonitors(data));
-    }, [id])
-
     useEffect(() => {
         if (firstRender.current) {
             fetchData();
             fetchServices();
-            fetchMonitors();
             firstRender.current = false
         }
-    }, [id, fetchData, fetchServices, fetchMonitors]);
+    }, [id, fetchData, fetchServices]);
 
     // snackbar
     const [snackbarOpen, setSnackbarOpen] = useState(false);
@@ -113,43 +102,8 @@ const ServerOverview: React.FC = () => {
         });
     };
 
-    // Monitors
-    const [monitors, setMonitors] = useState<ApiMonitor[]>([]);
-    const [openMonitorModal, setOpenMonitorModal] = useState(false);
-    const [editMonitor, setEditMonitor] = useState<ApiMonitor|null>(null);
-
-    const handleMonitorModalOpen = () => {
-        setOpenMonitorModal(true);
-    }
-
-    const handleMonitorModalClose = () => {
-        setEditMonitor(null);
-        setOpenMonitorModal(false);
-    };
-
-    const handleEditMonitor = (id: number) => {
-        const monitor = monitors.find((monitor: ApiMonitor) => monitor.id === id);
-        if (monitor) {
-            setEditMonitor(monitor)
-            handleMonitorModalOpen()
-        } else {
-            sendNotification(`No monitor found with id ${id}`, 'error')
-        }
-    };
-
     // Server
     const [openServerModal, setOpenServerModal] = useState(false);
-
-    const handleRemoveMonitor = (id: number) => {
-        fetch(`${process.env.REACT_APP_API_HOST}/api/monitors/${id}`, {
-            method: 'DELETE',
-        }).then(() => {
-            fetchMonitors()
-            sendNotification('Monitor removed successfully!', 'success')
-        }).catch((error) => {
-            console.error('Error:', error)
-        });
-    };
 
     return (
         <div>
@@ -188,7 +142,7 @@ const ServerOverview: React.FC = () => {
             </Button>
             <UpsertServiceModal
                 open={openServiceModal}
-                fetchData={() => {fetchServices(); fetchMonitors();}}
+                fetchData={() => {fetchServices();}}
                 server={server}
                 editService={editService}
                 handleClose={handleServiceModalClose}
@@ -232,58 +186,7 @@ const ServerOverview: React.FC = () => {
             </TableContainer>
 
             <h3>Monitors</h3>
-            <Button variant="outlined" onClick={handleMonitorModalOpen}>
-                Add Monitor
-            </Button>
-            <UpsertMonitorModal
-                open={openMonitorModal}
-                fetchData={fetchMonitors}
-                configuration={server.configuration as ApiConfiguration}
-                editMonitor={editMonitor}
-                sendNotification={sendNotification}
-                handleClose={handleMonitorModalClose}
-            />
-            <TableContainer component={Paper}>
-                <Table>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell>ID</TableCell>
-                            <TableCell>Server ID</TableCell>
-                            <TableCell>Type</TableCell>
-                            <TableCell>Name</TableCell>
-                            <TableCell>Is Enabled</TableCell>
-                            <TableCell>Status</TableCell>
-                            <TableCell>Actions</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {monitors.map((monitor) => (
-                            <TableRow key={monitor.id}>
-                                <TableCell>{monitor.id}</TableCell>
-                                <TableCell>
-                                    {monitor.server && <ServerLink server={monitor.server} />}
-                                </TableCell>
-                                <TableCell>{monitor.type}</TableCell>
-                                <TableCell>{monitor.name}</TableCell>
-                                <TableCell><BooleanIcon value={monitor.is_enabled}/></TableCell>
-                                <TableCell>
-                                    <MonitorsStatus monitors={[monitor]}/>
-                                </TableCell>
-                                <TableCell>
-                                    <Button variant="contained" color="primary"
-                                            onClick={() => handleEditMonitor(monitor.id ?? 0)}>
-                                        Edit
-                                    </Button>
-                                    <Button variant="contained" color="secondary"
-                                            onClick={() => handleRemoveMonitor(monitor.id ?? 0)}>
-                                        Remove
-                                    </Button>
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
+            {server.configuration ? <MonitorsList configuration={server.configuration} sendNotification={sendNotification} /> : <LinearProgress />}
 
             <CustomSnackbar open={snackbarOpen}
                             severity={snackbarSeverity}
