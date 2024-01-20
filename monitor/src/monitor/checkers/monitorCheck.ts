@@ -51,7 +51,9 @@ export abstract class MonitorCheck {
       await pingMonitor(this.monitor.id as number, {status: true, last_error: message})
     }
 
-    this.status = CheckStatus.WARNING
+    if (this.status !== CheckStatus.ERROR) {
+      this.status = CheckStatus.WARNING
+    }
   }
 
   async success(message: string): Promise<void>
@@ -62,10 +64,7 @@ export abstract class MonitorCheck {
       await pingMonitor(this.monitor.id as number, {status: true, last_error: null})
     }
 
-    if (
-        this.status.toString() !== CheckStatus.UNKNOWN.toString()
-        && this.status.toString() !== CheckStatus.OK.toString()
-    ) {
+    if (this.status === CheckStatus.ERROR) {
       await this.alerter.resolve(`🟢️${this.getMessagePrefix()} ${message}!`);
     }
 
