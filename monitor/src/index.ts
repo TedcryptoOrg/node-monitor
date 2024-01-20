@@ -50,9 +50,8 @@ async function startNodeMonitor (configuration: ApiConfiguration, monitors: ApiM
     const chain = (await new ChainDirectory().getChainData(configuration.chain)).chain;
 
     await new NodeMonitor(
-        configuration.name,
-        chain,
         configuration,
+        chain,
         monitors,
         services,
         alertChannels

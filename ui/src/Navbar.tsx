@@ -5,6 +5,7 @@ import ListItemText from '@mui/material/ListItemText';
 import SettingsIcon from '@mui/icons-material/Settings';
 import GraphIcon from '@mui/icons-material/GraphicEq';
 import MonitorHeartIcon from '@mui/icons-material/MonitorHeart';
+import DocumentScanner from '@mui/icons-material/DocumentScanner';
 
 const NavbarItem = ({ name, icon: Icon, path }: { name: string, icon: any, path: string }) => (
     <Link to={path}>
@@ -38,7 +39,7 @@ export const navbarItems = [
   },
   {
     name: 'Audit',
-    icon: MonitorHeartIcon,
+    icon: DocumentScanner,
     path: '/audit',
     component: NavbarItem
   },

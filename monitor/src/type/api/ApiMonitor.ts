@@ -27,6 +27,7 @@ export type PriceFeederMissCountConfiguration = {
 export type UrlCheckConfiguration = {
     name: string,
     address: string,
+    alert_sleep_duration_minutes?: number,
 }
 
 export type SignMissCheckConfiguration = {

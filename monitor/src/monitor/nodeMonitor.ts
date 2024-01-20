@@ -13,14 +13,13 @@ import {MonitorTypeEnum} from "../type/api/MonitorTypeEnum";
 
 export class NodeMonitor extends AbstractMonitor {
   constructor (
-    protected readonly name: string,
+    protected readonly configuration: ApiConfiguration,
     private readonly chain: Chain,
-    private readonly configuration: ApiConfiguration,
     private readonly monitors: ApiMonitor[],
     private readonly services: ApiService[],
     protected readonly alertChannels: AlertChannel[]
   ) {
-    super(alertChannels)
+    super(alertChannels, configuration.name)
 
     for (const monitor of this.monitors) {
       if (!monitor.is_enabled) {
@@ -33,37 +32,28 @@ export class NodeMonitor extends AbstractMonitor {
       if (monitorConfiguration === undefined) {
         throw new Error(`❌️ [${this.name}][${monitor.name}] Monitor configuration is not defined.`)
       }
+
       switch (monitor.type) {
         case MonitorTypeEnum.NODE_EXPORTER_DISK_SPACE:
-          this.monitor_params.push(new DiskSpace(this.name, monitor, this.alertChannels))
+          this.monitor_params.push(new DiskSpace(monitor, this.alertChannels))
           break
         case MonitorTypeEnum.PRICE_FEEDER_MISS_COUNT:
-          this.monitor_params.push(new MissCounter(
-              this.name,
-              monitor,
-              this.alertChannels,
-              this.services
-          ))
+          this.monitor_params.push(
+              new MissCounter(monitor, this.alertChannels, this.services)
+          )
           break
         case MonitorTypeEnum.BLOCK_CHECK:
-          this.monitor_params.push(new BlockCheck(
-            this.name,
-            this.configuration.chain,
-            monitor,
-            this.alertChannels
-          ))
+          this.monitor_params.push(
+              new BlockCheck(monitor, this.alertChannels)
+          )
           break
         case MonitorTypeEnum.URL_CHECK:
-          this.monitor_params.push(new UrlCheck(this.name, monitor, this.alertChannels))
+          this.monitor_params.push(new UrlCheck(monitor, this.alertChannels))
           break
         case MonitorTypeEnum.SIGN_MISS_CHECK:
-          this.monitor_params.push(new SignMissCheck(
-            this.name,
-            this.chain,
-            monitor,
-            this.services,
-            this.alertChannels
-          ))
+          this.monitor_params.push(
+              new SignMissCheck(monitor, this.alertChannels, this.services, this.chain)
+          )
           break
       }
     }

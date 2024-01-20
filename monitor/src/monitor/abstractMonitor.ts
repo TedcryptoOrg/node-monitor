@@ -1,21 +1,23 @@
-import { type Monitor } from './monitor'
 import { type MonitorCheck } from './checkers/monitorCheck'
 import { RecoverableException } from './exception/recoverableException'
 import {AlertChannel} from "../AlertChannel/alertChannel";
 import {Alerter} from "../Alerter/alerter";
+import {Checker} from "../Domain/Checker/Checker";
 
 interface PromiseParamPair {
   promise: () => Promise<unknown>
   param: MonitorCheck
 }
 
-export abstract class AbstractMonitor implements Monitor {
-  protected abstract readonly name: string
+export abstract class AbstractMonitor implements Checker {
   protected monitor_params: MonitorCheck[] = []
   private readonly alerter: Alerter
   private readonly isErrored: Record<string, number|undefined> = {}
 
-  protected constructor(protected readonly alertChannels: AlertChannel[]) {
+  protected constructor(
+      protected readonly alertChannels: AlertChannel[],
+      protected readonly name: string
+  ) {
     this.alerter = new Alerter(
         'General',
         'General',
