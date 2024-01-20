@@ -2,8 +2,8 @@ import React, {useEffect, useState} from 'react';
 import {Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TableSortLabel} from '@mui/material';
 import {ApiConfiguration} from "../types/ApiConfiguration";
 import {ApiServer} from "../types/ApiServer";
-import ConfigurationLink from "./shared/ConfigurationLink";
-import ServerLink from "./shared/ServerLink";
+import ConfigurationLink from "./configurations/ConfigurationLink";
+import ServerLink from "./servers/ServerLink";
 import {DataGrid, GridCellParams, GridColDef} from "@mui/x-data-grid";
 import {Box} from "@mui/system";
 

@@ -17,7 +17,7 @@ import UpsertServiceModal from '../services/UpsertServiceModal';
 import CustomSnackbar from '../shared/CustomSnackbar';
 import BooleanIcon from "../shared/BooleanIcon";
 import UpsertServerModal from "./UpsertServerModal";
-import ConfigurationLink from "../shared/ConfigurationLink";
+import ConfigurationLink from "../configurations/ConfigurationLink";
 import MonitorsList from "../monitors/MonitorsList";
 
 type RouteParams = {

@@ -10,9 +10,9 @@ import {
     TableHead,
     TableRow
 } from "@mui/material";
-import ServerLink from "../shared/ServerLink";
+import ServerLink from "../servers/ServerLink";
 import BooleanIcon from "../shared/BooleanIcon";
-import MonitorsStatus from "../shared/MonitorsStatus";
+import MonitorsStatus from "./MonitorsStatus";
 import React, {useCallback, useEffect, useState} from "react";
 import UpsertMonitorModal from "./UpsertMonitorModal";
 import {ApiConfiguration} from "../../types/ApiConfiguration";

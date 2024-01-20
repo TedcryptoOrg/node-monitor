@@ -1,8 +1,8 @@
 import {Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from "@mui/material";
 import React from "react";
 import {ApiMonitor} from "../../types/ApiMonitor";
-import ConfigurationLink from "../shared/ConfigurationLink";
-import ServerLink from "../shared/ServerLink";
+import ConfigurationLink from "../configurations/ConfigurationLink";
+import ServerLink from "../servers/ServerLink";
 
 interface MonitorsTableProps {
     monitors: ApiMonitor[];

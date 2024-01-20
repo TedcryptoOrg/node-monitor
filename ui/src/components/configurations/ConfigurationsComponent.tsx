@@ -14,8 +14,8 @@ import UpsertConfigurationModal from './UpsertConfigurationModal';
 import CustomSnackbar from "../shared/CustomSnackbar";
 import { AlertColor } from '@mui/material';
 import BooleanIcon from "../shared/BooleanIcon";
-import ConfigurationLink from "../shared/ConfigurationLink";
-import MonitorsStatus from "../shared/MonitorsStatus";
+import ConfigurationLink from "./ConfigurationLink";
+import MonitorsStatus from "../monitors/MonitorsStatus";
 
 const ConfigurationsComponent: React.FC = () => {
     const [isLoading, setIsLoading] = useState(true);

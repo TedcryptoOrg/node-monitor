@@ -18,8 +18,8 @@ import CustomSnackbar from "../shared/CustomSnackbar";
 import UpsertServerModal from '../servers/UpsertServerModal';
 import BooleanIcon from "../shared/BooleanIcon";
 import UpsertConfigurationModal from "./UpsertConfigurationModal";
-import ServerLink from "../shared/ServerLink";
-import MonitorsStatus from "../shared/MonitorsStatus";
+import ServerLink from "../servers/ServerLink";
+import MonitorsStatus from "../monitors/MonitorsStatus";
 import MonitorsList from "../monitors/MonitorsList";
 
 type RouteParams = {

@@ -2,8 +2,8 @@ import React, {useEffect, useState} from 'react';
 import {LinearProgress, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow} from '@mui/material';
 import {ApiAudit} from "../types/ApiAudit";
 import {Link} from "react-router-dom";
-import ConfigurationLink from "./shared/ConfigurationLink";
-import ServerLink from "./shared/ServerLink";
+import ConfigurationLink from "./configurations/ConfigurationLink";
+import ServerLink from "./servers/ServerLink";
 
 const AuditComponent: React.FC = () => {
     const [audits, setAudits] = useState<ApiAudit[]>([]);
