@@ -4,15 +4,16 @@ import {
     Dialog,
     DialogActions,
     DialogContent,
-    DialogContentText,
     DialogTitle, FormControl,
-    FormControlLabel, FormLabel, InputLabel, MenuItem, Select, SelectChangeEvent, Stack,
+    FormControlLabel, InputLabel, MenuItem, Select, SelectChangeEvent, Stack,
     TextField
 } from '@mui/material';
 import Switch from '@mui/material/Switch';
 import {ApiNotificationChannel, ApiNotificationChannelInput} from "../../types/ApiNotificationChannel";
 import {NotificationChannelTypeEnum} from "./NotificationChannelType";
 import {useSnackbar} from "notistack";
+import Telegram from "./types/Telegram";
+import {TelegramBotConfiguration} from "./types/TelegramBotConfiguration";
 
 interface UpsertNotificationChannelModalProps {
     open: boolean,
@@ -49,21 +50,66 @@ const UpsertNotificationChannelModal: React.FC<UpsertNotificationChannelModalPro
         handleClose();
     }
 
-    const handleSubmit = (event: React.FormEvent) => {
-        event.preventDefault();
-
+    const validate = () => {
         if (!name) {
             enqueueSnackbar('Please enter a name!', {variant: 'error'});
-            return;
+            return false;
         }
         if (type === null) {
             enqueueSnackbar('Please select a type!', {variant: 'error'});
+            return false;
+        }
+        if (configurationObject === null) {
+            enqueueSnackbar('Please enter a configuration object!', {variant: 'error'});
+            return false;
+        }
+
+        return true;
+    }
+
+    const handleTest = (event: React.FormEvent) => {
+        event.preventDefault();
+        if (!validate()) {
             return;
         }
 
         const notificationChannelInput: ApiNotificationChannelInput = {
             name: name,
-            type: type,
+            type: type as NotificationChannelTypeEnum,
+            configuration_object: JSON.stringify(configurationObject ?? {}),
+            is_enabled: isEnabled,
+        };
+
+        fetch(`${process.env.REACT_APP_API_HOST}/api/notification-channels/test`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(notificationChannelInput),
+        })
+            .then(response => {
+                if (!response.ok) {
+                    enqueueSnackbar('Failed to test notification channel!', {variant:'error'});
+                    return;
+                }
+
+                enqueueSnackbar('Notification channel tested successfully!', {variant:'success'});
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                enqueueSnackbar('Failed to test notification channel!', {variant:'error'});
+            });
+    }
+
+    const handleSubmit = (event: React.FormEvent) => {
+        event.preventDefault();
+        if (!validate()) {
+            return;
+        }
+
+        const notificationChannelInput: ApiNotificationChannelInput = {
+            name: name,
+            type: type as NotificationChannelTypeEnum,
             configuration_object: JSON.stringify(configurationObject ?? {}),
             is_enabled: isEnabled,
         };
@@ -86,14 +132,12 @@ const UpsertNotificationChannelModal: React.FC<UpsertNotificationChannelModalPro
                     return;
                 }
 
-                return response.json()
-            })
-            .then(data => {
+                enqueueSnackbar('Notification channel added successfully!', {variant:'success'});
                 fetchData();
-                console.log('Success:', data);
             })
             .catch((error) => {
                 console.error('Error:', error);
+                enqueueSnackbar('Failed to add notification channel!', {variant:'error'});
             });
 
         customHandleClose();
@@ -147,11 +191,13 @@ const UpsertNotificationChannelModal: React.FC<UpsertNotificationChannelModalPro
                                     />
                                 }
                             />
+                            {type === NotificationChannelTypeEnum.TELEGRAM && <Telegram configurationObject={configurationObject as TelegramBotConfiguration} setConfigurationObject={setConfigurationObject} />}
                         </Stack>
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick={customHandleClose}>Cancel</Button>
-                        <Button type="submit">{notificationChannel ? 'Edit' : 'Add'}</Button>
+                        <Button variant={"outlined"} onClick={customHandleClose} color={"error"}>Cancel</Button>
+                        <Button variant={"outlined"} onClick={handleTest} color={"warning"}>Test</Button>
+                        <Button variant={"contained"} type="submit">{notificationChannel ? 'Edit' : 'Add'}</Button>
                     </DialogActions>
                 </form>
             </Dialog>
