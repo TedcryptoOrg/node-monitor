@@ -12,7 +12,7 @@ interface AuditAttributes {
     created_at: Date,
 }
 
-export interface AuditInput extends Optional<AuditAttributes, 'id'> {}
+export interface AuditInput extends Optional<AuditAttributes, 'id'|'configuration_id'|'monitor_id'|'server_id'> {}
 export interface AuditOutput extends Required<AuditAttributes> {}
 
 export class Audit extends Model<AuditAttributes, AuditInput> implements AuditAttributes {

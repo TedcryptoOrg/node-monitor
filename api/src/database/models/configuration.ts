@@ -10,6 +10,7 @@ import {
 import db from "../config";
 import Monitor from "./monitor";
 import Server from "./server";
+import {ConfigurationNotifications} from "./configurationNotifications";
 
 interface ConfigurationAttributes {
     id: number
@@ -24,6 +25,7 @@ export interface ConfigurationInput extends Optional<ConfigurationAttributes, 'i
 export interface ConfigurationOutput extends Required<ConfigurationAttributes> {
     getMonitors: HasManyGetAssociationsMixin<Monitor>
     getServers: HasManyGetAssociationsMixin<Server>
+    getNotificationChannels: HasManyGetAssociationsMixin<ConfigurationNotifications>
 }
 
 class Configuration extends Model<ConfigurationAttributes, ConfigurationInput> implements ConfigurationAttributes {
@@ -36,10 +38,12 @@ class Configuration extends Model<ConfigurationAttributes, ConfigurationInput> i
 
   declare public getMonitors: HasManyGetAssociationsMixin<Monitor>
   declare public getServers: HasManyGetAssociationsMixin<Server>
+  declare public getNotificationChannels: HasManyGetAssociationsMixin<ConfigurationNotifications>
 
   public static associations: {
       monitors: Association<Configuration, Monitor>
       servers: Association<Configuration, Server>
+      notificationChannels: Association<Configuration, ConfigurationNotifications>
   }
 }
 
@@ -86,6 +90,14 @@ Server.belongsTo(Configuration, {
     foreignKey: 'configuration_id',
     targetKey: 'id',
 })
-
+Configuration.hasMany(ConfigurationNotifications, {
+    sourceKey: 'id',
+    foreignKey: 'configuration_id',
+    onDelete: 'CASCADE',
+})
+ConfigurationNotifications.belongsTo(Configuration, {
+    foreignKey: 'configuration_id',
+    targetKey: 'id',
+})
 
 export default Configuration

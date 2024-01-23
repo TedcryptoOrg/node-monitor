@@ -9,7 +9,7 @@ import {
     Paper,
     AlertColor,
     Button,
-    DialogContent, DialogContentText, LinearProgress
+    LinearProgress, Typography, Grid, Card, CardContent, CardActions
 } from '@mui/material';
 import {useParams} from 'react-router-dom';
 import { ApiConfiguration } from '../../types/ApiConfiguration';
@@ -21,6 +21,7 @@ import UpsertConfigurationModal from "./UpsertConfigurationModal";
 import ServerLink from "../servers/ServerLink";
 import MonitorsStatus from "../monitors/MonitorsStatus";
 import MonitorsList from "../monitors/MonitorsList";
+import NotificationChannelsList from "../notificationChannels/NotificationChannelsList";
 
 type RouteParams = {
     [key: number]: string;
@@ -128,30 +129,41 @@ const ConfigurationOverview: React.FC = () => {
 
     return (
         <div>
-            <h2>Configuration Overview</h2>
-            {isLoadingConfiguration ? <LinearProgress /> : (configuration && (
-                <DialogContent>
-                    <DialogContentText>
-                        <p>Name: {configuration.name}</p>
-                        <p>Chain: {configuration.chain}</p>
-                        <p>Is Enabled: <BooleanIcon value={configuration.is_enabled}/></p>
-                        <p>Created At: {new Date(configuration.createdAt).toLocaleString()}</p>
-                        <p>Updated At: {new Date(configuration.updatedAt).toLocaleString()}</p>
-                    </DialogContentText>
-                    <DialogContentText>
-                        <UpsertConfigurationModal
-                            open={openConfigurationModal}
-                            fetchData={fetchData}
-                            configuration={configuration}
-                            sendNotification={sendNotification}
-                            handleClose={() => {setOpenConfigurationModal(false)}}
+            <Grid container spacing={1}>
+                <Grid xs={12}>
+                    <Typography variant="h5">Configuration Overview</Typography>
+                </Grid>
+                <Grid xs={12} md={4}>
+                    {isLoadingConfiguration ? <LinearProgress /> : (configuration && (
+                        <>
+                            <UpsertConfigurationModal
+                                open={openConfigurationModal}
+                                fetchData={fetchData}
+                                configuration={configuration}
+                                sendNotification={sendNotification}
+                                handleClose={() => {setOpenConfigurationModal(false)}}
                             />
-                        <Button variant="contained" color="primary" onClick={() => {setOpenConfigurationModal(true)}}>
-                            Edit
-                        </Button>
-                    </DialogContentText>
-                </DialogContent>
-            ))}
+                            <Card>
+                                <CardContent>
+                                    <p>Name: {configuration.name}</p>
+                                    <p>Chain: {configuration.chain}</p>
+                                    <p>Is Enabled: <BooleanIcon value={configuration.is_enabled}/></p>
+                                    <p>Created At: {new Date(configuration.createdAt).toLocaleString()}</p>
+                                    <p>Updated At: {new Date(configuration.updatedAt).toLocaleString()}</p>
+                                </CardContent>
+                                <CardActions>
+                                    <Button variant="contained" size={"small"} color="warning" onClick={() => {setOpenConfigurationModal(true)}}>
+                                        Edit
+                                    </Button>
+                                </CardActions>
+                            </Card>
+                        </>
+                    ))}
+                </Grid>
+                <Grid xs={0} md={1}></Grid>
+                <Grid xs={12} md={6}>
+                </Grid>
+            </Grid>
 
             <h3>Servers</h3>
             <Button variant="outlined" onClick={handleServerModalOpen}>

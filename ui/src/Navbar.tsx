@@ -6,6 +6,7 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import GraphIcon from '@mui/icons-material/GraphicEq';
 import MonitorHeartIcon from '@mui/icons-material/MonitorHeart';
 import DocumentScanner from '@mui/icons-material/DocumentScanner';
+import NotificationChannelIcon from '@mui/icons-material/Message';
 
 const NavbarItem = ({ name, icon: Icon, path }: { name: string, icon: any, path: string }) => (
     <Link to={path}>
@@ -29,6 +30,12 @@ export const navbarItems = [
     name: 'Configurations',
     icon: SettingsIcon,
     path: '/configurations',
+    component: NavbarItem
+  },
+  {
+    name: 'Notification channels',
+    icon: NotificationChannelIcon,
+    path: '/notification-channels',
     component: NavbarItem
   },
   {

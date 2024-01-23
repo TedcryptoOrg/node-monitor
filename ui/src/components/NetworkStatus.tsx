@@ -1,5 +1,4 @@
 import React, {useEffect, useState} from 'react';
-import {Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TableSortLabel} from '@mui/material';
 import {ApiConfiguration} from "../types/ApiConfiguration";
 import {ApiServer} from "../types/ApiServer";
 import ConfigurationLink from "./configurations/ConfigurationLink";

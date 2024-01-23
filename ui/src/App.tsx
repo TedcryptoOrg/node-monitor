@@ -10,6 +10,7 @@ import DashboardComponent from './components/DashboardComponent';
 import ConfigurationOverview from './components/configurations/ConfigurationOverview';
 import ServerOverview from "./components/servers/ServerOverview";
 import AuditComponent from "./components/AuditComponent";
+import NotificationChannelsComponent from "./components/notificationChannels/NotificationChannelsComponent";
 
 function App() {
     return (
@@ -41,6 +42,7 @@ function App() {
                         <Route path="/servers" element={<ServersComponent />} />
                         <Route path="/servers/:id" element={<ServerOverview />} />
                         <Route path="/audit" element={<AuditComponent />} />
+                        <Route path="/notification-channels" element={<NotificationChannelsComponent />} />
                     </Routes>
                 </Box>
             </Box>

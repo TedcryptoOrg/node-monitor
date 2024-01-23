@@ -6,6 +6,7 @@ import auditRouter from "./routes/audit";
 import serverRouter from "./routes/server";
 import serviceRouter from "./routes/service";
 import monitorRouter from "./routes/monitors";
+import notificationChannelsRouter from "./routes/notificationChannels";
 
 dotenv.config();
 
@@ -28,6 +29,7 @@ app.use('/api/audit', auditRouter);
 app.use('/api/servers', serverRouter);
 app.use('/api/services', serviceRouter);
 app.use('/api/monitors', monitorRouter);
+app.use('/api/notification-channels', notificationChannelsRouter);
 
 app.use((req: Request, res: Response, next: NextFunction) => {
     res.status(404).json({message: "Not found"});
