@@ -11,11 +11,10 @@ import {
     LinearProgress
 } from '@mui/material';
 import UpsertConfigurationModal from './UpsertConfigurationModal';
-import CustomSnackbar from "../shared/CustomSnackbar";
-import { AlertColor } from '@mui/material';
 import BooleanIcon from "../shared/BooleanIcon";
 import ConfigurationLink from "./ConfigurationLink";
 import MonitorsStatus from "../monitors/MonitorsStatus";
+import {enqueueSnackbar} from "notistack";
 
 const ConfigurationsComponent: React.FC = () => {
     const [isLoading, setIsLoading] = useState(true);
@@ -24,23 +23,12 @@ const ConfigurationsComponent: React.FC = () => {
     const [editMonitor, setEditMonitor] = useState(null);
     const firstRender = React.useRef(true);
 
-    // snackbar
-    const [snackbarOpen, setSnackbarOpen] = useState(false);
-    const [snackbarMessage, setSnackbarMessage] = useState('');
-    const [snackbarSeverity, setSnackbarSeverity] = useState<AlertColor>('error');
-
-    const sendNotification = (message: string, severity: AlertColor) => {
-        setSnackbarMessage(message);
-        setSnackbarSeverity(severity);
-        setSnackbarOpen(true);
-    }
-
     const fetchData = useCallback(() => {
         setIsLoading(true)
         fetch(`${process.env.REACT_APP_API_HOST}/api/configurations`)
             .then(response => {
                 if (!response.ok) {
-                    sendNotification('Failed to fetch configuration data!', 'error')
+                    enqueueSnackbar('Failed to fetch configuration data!', {variant: 'error'})
                 }
                 return response.json();
             })
@@ -59,14 +47,6 @@ const ConfigurationsComponent: React.FC = () => {
     const handleModalClose = () => {
         setOpenModal(false)
         setEditMonitor(null)
-    };
-
-    const handleCloseSnackBar = (event: React.SyntheticEvent | Event, reason?: string) => {
-        if (reason === 'clickaway') {
-            return;
-        }
-
-        setSnackbarOpen(false);
     };
 
     useEffect(() => {
@@ -92,7 +72,7 @@ const ConfigurationsComponent: React.FC = () => {
             method: 'DELETE',
         }).then(() => {
             fetchData()
-            sendNotification('Monitor removed successfully!', 'success')
+            enqueueSnackbar('Configuration removed successfully!', {variant: 'success'})
         }).catch((error) => {
             console.error('Error:', error)
         });
@@ -109,7 +89,6 @@ const ConfigurationsComponent: React.FC = () => {
                 open={openModal}
                 fetchData={fetchData}
                 configuration={editMonitor}
-                sendNotification={sendNotification}
                 handleClose={handleModalClose}
             />
             {isLoading ? <LinearProgress /> : (
@@ -152,7 +131,6 @@ const ConfigurationsComponent: React.FC = () => {
                         </TableBody>
                     </Table>
                 </TableContainer>)}
-            <CustomSnackbar open={snackbarOpen} severity={snackbarSeverity} handleClose={handleCloseSnackBar} message={snackbarMessage} />
         </div>
     );
 }

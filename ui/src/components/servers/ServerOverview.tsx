@@ -8,17 +8,17 @@ import {
     TableRow,
     Paper,
     Button,
-    AlertColor, DialogContent, DialogContentText, LinearProgress
+    DialogContent, DialogContentText, LinearProgress
 } from '@mui/material';
 import {useParams} from 'react-router-dom';
 import { ApiServer } from '../../types/ApiServer';
 import { ApiService } from '../../types/ApiService';
 import UpsertServiceModal from '../services/UpsertServiceModal';
-import CustomSnackbar from '../shared/CustomSnackbar';
 import BooleanIcon from "../shared/BooleanIcon";
 import UpsertServerModal from "./UpsertServerModal";
 import ConfigurationLink from "../configurations/ConfigurationLink";
 import MonitorsList from "../monitors/MonitorsList";
+import {enqueueSnackbar} from "notistack";
 
 type RouteParams = {
     [key: string]: string;
@@ -42,7 +42,7 @@ const ServerOverview: React.FC = () => {
         fetch(`${process.env.REACT_APP_API_HOST}/api/servers/${id}`)
             .then(response => response.json())
             .then(data => setServer(data))
-            .catch((error) => sendNotification(`Error: ${error}`, 'error'));
+            .catch((error) => enqueueSnackbar(`Failed to fetch server data: ${error}`, {variant: 'error'}))
     }, [id]);
 
     useEffect(() => {
@@ -52,25 +52,6 @@ const ServerOverview: React.FC = () => {
             firstRender.current = false
         }
     }, [id, fetchData, fetchServices]);
-
-    // snackbar
-    const [snackbarOpen, setSnackbarOpen] = useState(false);
-    const [snackbarMessage, setSnackbarMessage] = useState('');
-    const [snackbarSeverity, setSnackbarSeverity] = useState<AlertColor>('error');
-
-    const sendNotification = (message: string, severity: AlertColor) => {
-        setSnackbarMessage(message);
-        setSnackbarSeverity(severity);
-        setSnackbarOpen(true);
-    }
-
-    const handleCloseSnackBar = (event: React.SyntheticEvent | Event, reason?: string) => {
-        if (reason === 'clickaway') {
-            return;
-        }
-
-        setSnackbarOpen(false);
-    };
 
     // Service modal
     const handleServiceModalOpen = () => {
@@ -88,7 +69,7 @@ const ServerOverview: React.FC = () => {
             setEditService(service)
             handleServiceModalOpen()
         } else {
-            sendNotification('Service not found', 'error')
+            enqueueSnackbar(`No service found with id ${id}`, {variant: 'error'});
         }
     };
 
@@ -96,9 +77,10 @@ const ServerOverview: React.FC = () => {
         fetch(`${process.env.REACT_APP_API_HOST}/api/services/${id}`, {
             method: 'DELETE',
         }).then(() => {
+            enqueueSnackbar('Service removed.', {variant: 'success'})
             fetchServices()
         }).catch((error) => {
-            sendNotification(`Error: ${error}`, 'error')
+            enqueueSnackbar(`Failed to remove service: ${error}`, {variant: 'error'});
         });
     };
 
@@ -125,7 +107,6 @@ const ServerOverview: React.FC = () => {
                             open={openServerModal}
                             fetchData={fetchData}
                             configurationId={server.configuration?.id}
-                            sendNotification={sendNotification}
                             handleClose={() => {setOpenServerModal(false)}}
                             editServer={server}
                         />
@@ -186,12 +167,7 @@ const ServerOverview: React.FC = () => {
             </TableContainer>
 
             <h3>Monitors</h3>
-            {server.configuration ? <MonitorsList configuration={server.configuration} sendNotification={sendNotification} /> : <LinearProgress />}
-
-            <CustomSnackbar open={snackbarOpen}
-                            severity={snackbarSeverity}
-                            handleClose={handleCloseSnackBar}
-                            message={snackbarMessage}/>
+            {server.configuration ? <MonitorsList configuration={server.configuration} /> : <LinearProgress />}
         </div>
     );
 }

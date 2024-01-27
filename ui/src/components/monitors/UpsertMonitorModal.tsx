@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from 'react';
 import {
-    AlertColor,
     Button, CircularProgress,
     Dialog,
     DialogActions,
@@ -29,13 +28,13 @@ import BlockCheckConfiguration from "./types/BlockCheckConfiguration";
 import SignMissCheckConfig from "./types/SignMissCheckConfig";
 import PriceFeederMissCountConfig from './types/PriceFeederMissCountConfig';
 import {ApiServer} from "../../types/ApiServer";
+import {enqueueSnackbar} from "notistack";
 
 interface UpsertMonitorModalProps {
     open: boolean;
     fetchData: () => void;
     editMonitor: ApiMonitor | null;
     handleClose: () => void;
-    sendNotification: (message: string, severity: AlertColor) => void;
     configuration: ApiConfiguration;
 }
 
@@ -45,7 +44,6 @@ const UpsertMonitorModal: React.FC<UpsertMonitorModalProps> = (
         fetchData,
         editMonitor,
         handleClose,
-        sendNotification,
         configuration
     }) => {
     const [name, setName] = useState(editMonitor ? editMonitor.name : '');
@@ -99,12 +97,12 @@ const UpsertMonitorModal: React.FC<UpsertMonitorModalProps> = (
     const handleSubmit = (event: React.FormEvent) => {
         event.preventDefault();
         if (type === undefined) {
-            sendNotification('Please select a type.', 'error');
+            enqueueSnackbar('Please select a type!', {variant: 'error'});
             return;
         }
         const server = servers.find((server) => server.id === serverId);
         if (showServer && server === undefined) {
-            sendNotification('Please select a server.', 'error');
+            enqueueSnackbar('Please select a server!', {variant: 'error'});
             return;
         }
 
@@ -131,10 +129,10 @@ const UpsertMonitorModal: React.FC<UpsertMonitorModalProps> = (
         })
             .then(response => {
                 if (response.ok) {
-                    sendNotification(`${editMonitor ? 'Edited' : 'Added'} monitor.`, 'success');
+                    enqueueSnackbar(`${editMonitor ? 'Edited' : 'Added'} monitor.`, {variant: 'success'});
                     fetchData();
                 } else {
-                    sendNotification(`Failed to ${editMonitor ? 'edit' : 'add'} monitor.`, 'error');
+                    enqueueSnackbar(`Failed to ${editMonitor ? 'edit' : 'add'} monitor.`, {variant: 'error'});
                 }
 
                 return

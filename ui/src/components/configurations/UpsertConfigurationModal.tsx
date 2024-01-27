@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from 'react';
 import {
-    AlertColor,
     Button,
     Dialog,
     DialogActions,
@@ -13,12 +12,12 @@ import {
 import {ApiConfiguration} from "../../types/ApiConfiguration";
 import Switch from '@mui/material/Switch';
 import Chains from "../Chains";
+import {useSnackbar} from "notistack";
 
 interface ConfigurationModalProps {
     open: boolean,
     fetchData: () => void;
     configuration: ApiConfiguration|null;
-    sendNotification: (message: string, severity: AlertColor) => void;
     handleClose: any;
 }
 const UpsertConfigurationModal: React.FC<ConfigurationModalProps> = (
@@ -26,12 +25,12 @@ const UpsertConfigurationModal: React.FC<ConfigurationModalProps> = (
         open,
         fetchData,
         configuration,
-        sendNotification,
         handleClose
     }) => {
     const [name, setName] = useState(configuration ? configuration.name : '');
     const [chain, setChain] = useState(configuration ? configuration.chain : '');
     const [isEnabled, setIsEnabled] = useState(configuration ? configuration.is_enabled : true);
+    const { enqueueSnackbar } = useSnackbar();
 
     useEffect(() => {
         setName(configuration ? configuration.name : '');
@@ -54,11 +53,11 @@ const UpsertConfigurationModal: React.FC<ConfigurationModalProps> = (
         event.preventDefault();
 
         if (!name) {
-            sendNotification('Please enter a name!', 'error');
+            enqueueSnackbar('Please enter a name!', {variant: 'error'});
             return;
         }
         if (!chain || chain === '') {
-            sendNotification('Please enter a chain!', 'error');
+            enqueueSnackbar('Please enter a chain!', {variant: 'error'});
             return;
         }
 
@@ -83,7 +82,7 @@ const UpsertConfigurationModal: React.FC<ConfigurationModalProps> = (
         })
             .then(response => {
                 if (!response.ok) {
-                    sendNotification('Failed to add monitor!', 'error');
+                    enqueueSnackbar('Failed to add monitor!', {variant: 'error'});
                     return;
                 }
 
@@ -91,9 +90,11 @@ const UpsertConfigurationModal: React.FC<ConfigurationModalProps> = (
             })
             .then(data => {
                 fetchData();
+                enqueueSnackbar('Monitor added!', {variant: 'success'});
                 console.log('Success:', data);
             })
             .catch((error) => {
+                enqueueSnackbar('Failed to add monitor!', {variant: 'error'});
                 console.error('Error:', error);
             });
 

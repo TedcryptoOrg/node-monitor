@@ -12,10 +12,9 @@ import React, {useCallback, useEffect, useRef, useState} from "react";
 import {ApiNotificationChannel} from "../../types/ApiNotificationChannel";
 import UpsertNotificationChannelModal from "./UpsertNotificationChannelModal";
 import BooleanIcon from "../shared/BooleanIcon";
-import {useSnackbar} from "notistack";
+import {enqueueSnackbar} from "notistack";
 
 const NotificationChannelsList: React.FC = () => {
-    const { enqueueSnackbar } = useSnackbar();
     const [notificationChannels, setNotificationChannels] = useState<ApiNotificationChannel[]>([]);
     const [editNotificationChannel, setEditNotificationChannel] = useState<ApiNotificationChannel|null>(null);
     const [openModal, setModalOpen] = useState(false);

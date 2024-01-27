@@ -1,6 +1,5 @@
 import {ApiMonitor} from "../../types/ApiMonitor";
 import {
-    AlertColor,
     Button, LinearProgress,
     Paper,
     Table,
@@ -17,14 +16,14 @@ import React, {useCallback, useEffect, useState} from "react";
 import UpsertMonitorModal from "./UpsertMonitorModal";
 import {ApiConfiguration} from "../../types/ApiConfiguration";
 import {ApiServer} from "../../types/ApiServer";
+import {enqueueSnackbar} from "notistack";
 
 interface MonitorsListProps {
     configuration: ApiConfiguration,
     server?: ApiServer,
-    sendNotification: (message: string, type: AlertColor) => void;
 }
 
-const MonitorsList: React.FC<MonitorsListProps> = ({configuration, server, sendNotification}) => {
+const MonitorsList: React.FC<MonitorsListProps> = ({configuration, server}) => {
     const [openMonitorModal, setModalOpen] = useState(false);
     const [editMonitor, setEditMonitor] = useState<ApiMonitor|null>(null);
     const [monitors, setMonitors] = useState<ApiMonitor[]>([]);
@@ -67,7 +66,7 @@ const MonitorsList: React.FC<MonitorsListProps> = ({configuration, server, sendN
             setEditMonitor(monitor)
             handleModalOpen()
         } else {
-            sendNotification(`No monitor found with id ${id}`, 'error')
+            enqueueSnackbar(`No monitor found with id ${id}`, {variant: 'error'});
         }
     };
 
@@ -76,10 +75,10 @@ const MonitorsList: React.FC<MonitorsListProps> = ({configuration, server, sendN
             method: 'DELETE',
         }).then(() => {
             fetchData()
-            sendNotification('Monitor removed successfully!', 'success')
+            enqueueSnackbar('Monitor removed successfully!', {variant: 'success'});
         }).catch((error) => {
             console.error('Error:', error)
-            sendNotification('Failed to remove monitor!', 'error')
+            enqueueSnackbar('Failed to remove monitor!', {variant: 'error'});
         });
     };
 
@@ -93,7 +92,6 @@ const MonitorsList: React.FC<MonitorsListProps> = ({configuration, server, sendN
                 fetchData={fetchData}
                 configuration={configuration as ApiConfiguration}
                 editMonitor={editMonitor}
-                sendNotification={sendNotification}
                 handleClose={handleMonitorModalClose}
             />
             {isLoading ? <LinearProgress /> : <TableContainer component={Paper}>

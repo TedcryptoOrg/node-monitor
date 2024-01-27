@@ -7,21 +7,19 @@ import {
     TableHead,
     TableRow,
     Paper,
-    AlertColor,
     Button,
     LinearProgress, Typography, Grid, Card, CardContent, CardActions
 } from '@mui/material';
 import {useParams} from 'react-router-dom';
 import { ApiConfiguration } from '../../types/ApiConfiguration';
 import { ApiServer } from '../../types/ApiServer';
-import CustomSnackbar from "../shared/CustomSnackbar";
 import UpsertServerModal from '../servers/UpsertServerModal';
 import BooleanIcon from "../shared/BooleanIcon";
 import UpsertConfigurationModal from "./UpsertConfigurationModal";
 import ServerLink from "../servers/ServerLink";
 import MonitorsStatus from "../monitors/MonitorsStatus";
 import MonitorsList from "../monitors/MonitorsList";
-import NotificationChannelsList from "../notificationChannels/NotificationChannelsList";
+import {enqueueSnackbar} from "notistack";
 
 type RouteParams = {
     [key: number]: string;
@@ -42,7 +40,7 @@ const ConfigurationOverview: React.FC = () => {
             .then(data => setServers(data))
             .catch((error) => {
                 console.error('Error:', error);
-                sendNotification('Failed to fetch server data!', 'error')
+                enqueueSnackbar('Failed to fetch server data!', {variant: 'error'});
                 setServers([])
             })
             .finally(() => setLoadingServers(false))
@@ -55,7 +53,7 @@ const ConfigurationOverview: React.FC = () => {
             .then(data => setConfiguration(data))
             .catch((error) => {
                 console.error('Error:', error);
-                sendNotification('Failed to fetch configuration data!', 'error')
+                enqueueSnackbar('Failed to fetch configuration data!', {variant: 'error'});
                 setConfiguration(null)
             })
             .finally(() => setLoadingConfiguration(false))
@@ -69,25 +67,6 @@ const ConfigurationOverview: React.FC = () => {
             firstRender.current = false
         }
     }, [fetchData, fetchServers]);
-
-    // snackbar
-    const [snackbarOpen, setSnackbarOpen] = useState(false);
-    const [snackbarMessage, setSnackbarMessage] = useState('');
-    const [snackbarSeverity, setSnackbarSeverity] = useState<AlertColor>('error');
-
-    const sendNotification = (message: string, severity: AlertColor) => {
-        setSnackbarMessage(message);
-        setSnackbarSeverity(severity);
-        setSnackbarOpen(true);
-    }
-
-    const handleCloseSnackBar = (event: React.SyntheticEvent | Event, reason?: string) => {
-        if (reason === 'clickaway') {
-            return;
-        }
-
-        setSnackbarOpen(false);
-    };
 
     // Configuration
     const [openConfigurationModal, setOpenConfigurationModal] = useState(false);
@@ -111,7 +90,7 @@ const ConfigurationOverview: React.FC = () => {
             setEditServer(server)
             handleServerModalOpen()
         } else {
-            sendNotification(`No server found with id ${id}`, 'error')
+            enqueueSnackbar(`No server found with id ${id}!`, {variant: 'error'});
         }
     };
 
@@ -120,10 +99,10 @@ const ConfigurationOverview: React.FC = () => {
             method: 'DELETE',
         }).then(() => {
             fetchServers()
-            sendNotification('Monitor removed successfully!', 'success')
+            enqueueSnackbar('Server removed successfully!', {variant: 'success'});
         }).catch((error) => {
             console.error('Error:', error)
-            sendNotification('Failed to remove monitor!', 'error')
+            enqueueSnackbar('Failed to remove server!', {variant: 'error'});
         });
     };
 
@@ -140,7 +119,6 @@ const ConfigurationOverview: React.FC = () => {
                                 open={openConfigurationModal}
                                 fetchData={fetchData}
                                 configuration={configuration}
-                                sendNotification={sendNotification}
                                 handleClose={() => {setOpenConfigurationModal(false)}}
                             />
                             <Card>
@@ -174,7 +152,6 @@ const ConfigurationOverview: React.FC = () => {
                 fetchData={fetchServers}
                 configurationId={id}
                 editServer={editServer}
-                sendNotification={sendNotification}
                 handleClose={handleServerModalClose}
             />
             {isLoadingServers ? <LinearProgress /> : (<TableContainer component={Paper}>
@@ -219,9 +196,7 @@ const ConfigurationOverview: React.FC = () => {
 
 
             <h3>Monitors</h3>
-            {configuration ? <MonitorsList configuration={configuration} sendNotification={sendNotification} /> : <LinearProgress />}
-
-            <CustomSnackbar open={snackbarOpen} severity={snackbarSeverity} handleClose={handleCloseSnackBar} message={snackbarMessage} />
+            {configuration ? <MonitorsList configuration={configuration} /> : <LinearProgress />}
         </div>
     );
 }

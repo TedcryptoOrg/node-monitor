@@ -11,7 +11,7 @@ import {
 import Switch from '@mui/material/Switch';
 import {ApiNotificationChannel, ApiNotificationChannelInput} from "../../types/ApiNotificationChannel";
 import {NotificationChannelTypeEnum} from "./NotificationChannelType";
-import {useSnackbar} from "notistack";
+import {enqueueSnackbar} from "notistack";
 import Telegram from "./types/Telegram";
 import {TelegramBotConfiguration} from "./types/TelegramBotConfiguration";
 
@@ -28,7 +28,6 @@ const UpsertNotificationChannelModal: React.FC<UpsertNotificationChannelModalPro
         notificationChannel,
         handleClose
     }) => {
-    const { enqueueSnackbar } = useSnackbar();
     const [name, setName] = useState(notificationChannel ? notificationChannel.name : '');
     const [type, setType] = useState<NotificationChannelTypeEnum|null>(notificationChannel ? notificationChannel.type : null);
     const [configurationObject, setConfigurationObject] = useState(notificationChannel ? notificationChannel.configuration_object : {});

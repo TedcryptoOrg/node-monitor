@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from 'react';
 import {
-    AlertColor,
     Button,
     Dialog,
     DialogActions,
@@ -12,13 +11,13 @@ import {
 } from '@mui/material';
 import {ApiServer, ApiServerInput} from "../../types/ApiServer";
 import Switch from '@mui/material/Switch';
+import {enqueueSnackbar} from "notistack";
 
 interface UpsertServerModalProps {
     open: boolean,
     fetchData: () => void;
     configurationId: number;
     editServer?: ApiServer|null;
-    sendNotification: (message: string, severity: AlertColor) => void;
     handleClose: any;
 }
 
@@ -28,7 +27,6 @@ const UpsertServerModal: React.FC<UpsertServerModalProps> = (
         fetchData,
         editServer,
         handleClose,
-        sendNotification,
         configurationId
     }) => {
     const [name, setName] = useState(editServer ? editServer.name : '');
@@ -76,9 +74,9 @@ const UpsertServerModal: React.FC<UpsertServerModalProps> = (
         })
             .then(response => {
                 if (!response.ok) {
-                    sendNotification(`Failed to ${editServer ? 'edit' : 'add'} server.`, 'error');
+                    enqueueSnackbar(`Failed to ${editServer ? 'edit' : 'add'} server.`, {variant: 'error'});
                 } else {
-                    sendNotification(`${editServer ? 'Edited' : 'Added'} server.`, 'success');
+                    enqueueSnackbar(`${editServer ? 'Edited' : 'Added'} server successfully!`, {variant: 'success'});
                 }
                 fetchData();
 
