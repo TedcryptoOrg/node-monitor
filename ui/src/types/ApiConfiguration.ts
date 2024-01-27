@@ -1,5 +1,6 @@
 import {ApiServer} from "./ApiServer";
 import {ApiMonitor} from "./ApiMonitor";
+import {ApiNotificationChannel} from "./ApiNotificationChannel";
 
 export type ApiConfiguration = {
     id: number
@@ -10,4 +11,8 @@ export type ApiConfiguration = {
     updatedAt: string
     servers: ApiServer[]|undefined
     monitors: ApiMonitor[]|undefined
+    notification_channels: {
+        id: number,
+        channel: ApiNotificationChannel
+    }
 }
