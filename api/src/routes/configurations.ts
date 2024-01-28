@@ -7,6 +7,7 @@ import { findServers } from "../controllers/configurations/findServers";
 import { findById } from "../controllers/configurations/findById";
 import { findNotificationChannels} from "../controllers/configurations/findNotificationChannels";
 import { associateNotificationChannel } from "../controllers/configurations/associateNotificationChannel";
+import {deleteNotificationChannel} from "../controllers/configurations/deleteNotificationChannel";
 
 // Configuration Router
 const configurationRouter = require('express').Router()
@@ -21,5 +22,6 @@ configurationRouter.get('/:id/monitors', findMonitors)
 configurationRouter.get('/:id/servers', findServers)
 configurationRouter.get('/:id/notification-channels', findNotificationChannels)
 configurationRouter.post('/:id/notification-channels', associateNotificationChannel)
+configurationRouter.delete('/:id/notification-channels', deleteNotificationChannel)
 
 export default configurationRouter

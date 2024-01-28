@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import {Button, Grid, Typography} from '@mui/material';
+import {Button, Grid} from '@mui/material';
 import { Autocomplete } from '@mui/material';
 import { TextField } from '@mui/material';
 import { ApiNotificationChannel } from '../../types/ApiNotificationChannel';
 import { ApiConfiguration } from '../../types/ApiConfiguration';
 import {enqueueSnackbar} from "notistack";
 import {ApiConfigurationNotificationChannelInput} from "../../types/ApiConfigurationNotificationChannel";
+import {eventEmitter} from "../../services/Events/EventEmitter";
+import {EventsEnum} from "../../services/Events/EventsEnum";
 
 interface AssociateNotificationChannelProps {
     configuration: ApiConfiguration;
@@ -41,26 +43,26 @@ const AssociateNotificationChannel: React.FC<AssociateNotificationChannelProps> 
             },
             body: JSON.stringify(configurationNotificationChannel),
         })
-            .then(response => {
+            .then(async (response) => {
                 if (!response.ok) {
-                    throw new Error(response.statusText)
+                    const data = await response.json()
+                    throw new Error(data.message ?? response.statusText)
                 }
 
                 return response
             })
             .then(response => response.json())
             .then(data => {
-                // Update the list of notification channels
-                setNotificationChannels([...notificationChannels, data]);
                 setSelectedChannel(null);
-                enqueueSnackbar(`Successfully associated notification channel ${data.name}`, {variant: 'success'})
+                eventEmitter.emit(EventsEnum.NOTIFICATION_CHANNEL_ASSOCIATED);
+                enqueueSnackbar(`Successfully associated notification channel`, {variant: 'success'})
             })
             .catch((error) => enqueueSnackbar(`Failed to associate notification channel: ${error}`, {variant: 'error'}))
         ;
     };
 
     return (
-        <Grid container spacing={3}>
+        <Grid container spacing={0} paddingTop={2}>
             <Grid xs={12}>
                 <Autocomplete
                     options={notificationChannels}

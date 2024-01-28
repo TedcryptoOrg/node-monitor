@@ -1,5 +1,4 @@
 import * as configurationDal from "../../database/dal/configuration";
-import {renderNotificationChannels} from "../../views/notificationChannels";
 import {renderConfiguration} from "../../views/configuration";
 
 export const findNotificationChannels = async (req: any, resp: any) => {

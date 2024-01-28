@@ -1,5 +1,4 @@
 import { Request } from 'express';
-import {NotificationChannelInput} from "../../../database/models/notificationChannel";
 import {ConfigurationNotificationsInput} from "../../../database/models/configurationNotifications";
 
 export function parse(req: Request): ConfigurationNotificationsInput {

@@ -20,8 +20,8 @@ import ServerLink from "../servers/ServerLink";
 import MonitorsStatus from "../monitors/MonitorsStatus";
 import MonitorsList from "../monitors/MonitorsList";
 import {enqueueSnackbar} from "notistack";
-import AssociateNotificationChannel from "../notificationChannels/AssociateNotificationChannel";
-import NotificationChannelsList from "../notificationChannels/NotificationChannelsList";
+import AssociateNotificationChannel from "./AssociateNotificationChannel";
+import ConfigurationNotificationChannelsList from "./ConfigurationNotificationChannelsList";
 
 type RouteParams = {
     [key: number]: string;
@@ -143,7 +143,7 @@ const ConfigurationOverview: React.FC = () => {
                 <Grid xs={0} md={1}></Grid>
                 <Grid xs={12} md={6}>
                     {configuration ? <>
-                        <NotificationChannelsList configuration={configuration} />
+                        <ConfigurationNotificationChannelsList configuration={configuration} />
                         <AssociateNotificationChannel configuration={configuration} />
                     </>: <LinearProgress />}
                 </Grid>
