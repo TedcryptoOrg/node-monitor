@@ -48,15 +48,16 @@ export abstract class AbstractMonitor implements Checker {
     } catch (error: any) {
       console.log(`🚨 ${this.name} Node checker ${monitorName} failed to start. Error:\n${error}`);
       console.error(error);
-      if (this.isErrored[monitorName] === undefined) {
-        this.setTimer(monitorName)
-      }
       this.isErrored[monitorName] = new Date().getTime();
 
       if (attempt >= 3 || !(error instanceof RecoverableException)) {
         attempt = 0;
         try {
-          await this.alerter.alert(`🚨[${this.name}][${monitorName}] Node checker failed to start. Error:\n${error}`);
+          await this.alerter?.alert(`🚨[${this.name}][${monitorName}] Node checker failed to start. Error:\n${error}`);
+          if (attempt === 3) {
+            // start the timer to check if resolved, only on 3rd attempt
+            this.setTimer(monitorName)
+          }
         } catch (error) {
           console.error('Alert failed to alert', error);
         }
@@ -84,7 +85,7 @@ export abstract class AbstractMonitor implements Checker {
       ) {
         console.log(`✅ ${this.name} Node checker ${name} recovered.`);
         this.isErrored[name] = undefined;
-        await this.alerter.resolve(`✅ ${this.name} Node checker ${name} recovered.`);
+        await this.alerter?.resolve(`✅ ${this.name} Node checker ${name} recovered.`);
         clearInterval(timer);
       }
     }, 10000);
