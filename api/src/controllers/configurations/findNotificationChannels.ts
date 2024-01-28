@@ -11,5 +11,5 @@ export const findNotificationChannels = async (req: any, resp: any) => {
 
     const configurationView = await renderConfiguration(configuration, false, false)
 
-    resp.send(await renderNotificationChannels(configurationView.notification_channels))
+    resp.send(configurationView.notification_channels)
 }

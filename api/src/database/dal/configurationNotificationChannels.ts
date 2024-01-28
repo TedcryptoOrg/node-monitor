@@ -3,7 +3,7 @@ import * as AuditDal from "./audit";
 import * as ConfigurationDal from "./configuration";
 import * as NotificationChannelDal from "./notificationChannel";
 
-export async function findByConfigurationId(id: number) {
+export const findByConfigurationId = async (id: number) => {
     return await ConfigurationNotifications.findAll({
         where: {
             configuration_id: id

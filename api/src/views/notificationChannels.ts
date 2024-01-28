@@ -14,7 +14,7 @@ export async function renderNotificationChannel(notificationChannel: Notificatio
         id: notificationChannel.id,
         name: notificationChannel.name,
         type: notificationChannel.type,
-        configuration_object: JSON.parse(notificationChannel.configuration_object),
+        configuration_object: JSON.parse(notificationChannel.configuration_object ?? '{}'),
         is_enabled: notificationChannel.is_enabled,
         created_at: notificationChannel.created_at,
         updated_at: notificationChannel.updated_at,

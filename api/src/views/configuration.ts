@@ -2,7 +2,8 @@ import Configuration, {ConfigurationOutput} from "../database/models/configurati
 import {renderMonitors} from "./monitors";
 import {renderServers} from "./servers";
 import {renderNotificationChannel} from "./notificationChannels";
-import {findByConfigurationId} from "../database/dal/configurationNotificationChannels";
+import * as configurationNotificationChannelsDal from "../database/dal/configurationNotificationChannels";
+import * as notificationChannelDal from "../database/dal/notificationChannel";
 
 export async function renderConfigurations(
     configurations: Configuration[]|ConfigurationOutput[],
@@ -19,11 +20,10 @@ export async function renderConfigurations(
 
 export async function renderConfiguration(configuration: Configuration|ConfigurationOutput, includeMonitors: boolean = false, includeServers: boolean = false): Promise<any> {
     const channels = [];
-    const configurationNotificationChannels = await findByConfigurationId(configuration.id);
-    for (const configurationNotificationChannel of configurationNotificationChannels) {
+    for (const configurationNotificationChannel of await configurationNotificationChannelsDal.findByConfigurationId(configuration.id)) {
         channels.push({
             id: configurationNotificationChannel.id,
-            channel: await renderNotificationChannel(await configurationNotificationChannel.getNotificationChannel())
+            channel: await renderNotificationChannel(await notificationChannelDal.get(configurationNotificationChannel.notification_channel_id))
         })
     }
 
