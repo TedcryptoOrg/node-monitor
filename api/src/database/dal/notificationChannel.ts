@@ -31,6 +31,14 @@ export const deleteNotificationChannel = async(id: number): Promise<void> => {
     })
 }
 
+export const get = async(id: number): Promise<NotificationChannelOutput> => {
+    const notificationChannel = await NotificationChannel.findByPk(id)
+    if (notificationChannel === null) {
+        throw new RecordNotFound(`Notification channel "${id}" not found`)
+    }
+
+    return notificationChannel
+}
 
 export const create = async(notificationChannel: NotificationChannelInput): Promise<NotificationChannelOutput> => {
     notificationChannel.created_at = new Date()

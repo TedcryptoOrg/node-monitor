@@ -58,3 +58,4 @@ ConfigurationNotifications.init({
     tableName: 'configuration_notification_channels',
     timestamps: false,
 });
+

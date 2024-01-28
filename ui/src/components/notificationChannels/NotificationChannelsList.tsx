@@ -13,8 +13,17 @@ import {ApiNotificationChannel} from "../../types/ApiNotificationChannel";
 import UpsertNotificationChannelModal from "./UpsertNotificationChannelModal";
 import BooleanIcon from "../shared/BooleanIcon";
 import {enqueueSnackbar} from "notistack";
+import {ApiConfiguration} from "../../types/ApiConfiguration";
 
-const NotificationChannelsList: React.FC = () => {
+export interface NotificationChannelsListProps {
+    configuration?: ApiConfiguration
+}
+
+const NotificationChannelsList: React.FC<NotificationChannelsListProps> = (
+    {
+        configuration,
+    }
+) => {
     const [notificationChannels, setNotificationChannels] = useState<ApiNotificationChannel[]>([]);
     const [editNotificationChannel, setEditNotificationChannel] = useState<ApiNotificationChannel|null>(null);
     const [openModal, setModalOpen] = useState(false);
@@ -23,7 +32,14 @@ const NotificationChannelsList: React.FC = () => {
 
     const fetchData = useCallback(() => {
         setIsLoading(true)
-        fetch(`${process.env.REACT_APP_API_HOST}/api/notification-channels`)
+        let url
+        if (configuration) {
+            url = `${process.env.REACT_APP_API_HOST}/api/configurations/${configuration.id}/notification-channels`
+        } else {
+            url = `${process.env.REACT_APP_API_HOST}/api/notification-channels`
+        }
+
+        fetch(url)
             .then(response => response.json())
             .then(data => setNotificationChannels(data))
             .catch((error) => {
