@@ -1,12 +1,12 @@
-version: '3.7'
+version: '3.8'
 services:
   database:
     image: mariadb:11.1.2
     environment:
       MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: ted_node_monitor
-      MYSQL_USER: monitor
-      MYSQL_PASSWORD: monitor
+      MYSQL_USER: dbuser
+      MYSQL_PASSWORD: dbpass
     ports:
       - "${API_DATABASE_PORT:-3306}:3306"
     volumes:
@@ -17,17 +17,16 @@ services:
       retries: 120
 
   node-app:
+    init: true
     build:
       context: .
       dockerfile: docker/node/Dockerfile
-      target: dev
+      target: test
     env_file:
       - .env
     ports:
-      - "${API_SERVER_PORT:-3003}:3003"
+      - "${SERVER_PORT:-3003}:3003"
     restart: always
-    volumes:
-      - ./:/app
     depends_on:
       - "database"
 
