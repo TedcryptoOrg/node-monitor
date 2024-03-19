@@ -4,7 +4,7 @@ import {SERVICE_TYPES} from "../../database/models/service";
 export const update = async (req: any, resp: any) => {
     if (req.params.id === undefined) {
         resp.status(400).send('Missing id')
-        return
+        throw new Error('Missing id')
     }
 
     const requiredFields = ["name", "address", "server_id", "type", "is_enabled"];
@@ -13,16 +13,16 @@ export const update = async (req: any, resp: any) => {
             resp.status(400).send({
                 message: `${field} can not be empty!`
             });
-            return;
+            throw new Error(`${field} can not be empty!`);
         }
     })
 
-    const validTypes = Object.keys(SERVICE_TYPES);
+    const validTypes = Object.values(SERVICE_TYPES);
     if (!validTypes.includes(req.body.type)) {
         resp.status(400).send({
             message: `Invalid type ${req.body.type}`
         });
-        return;
+        throw new Error(`Invalid type ${req.body.type}`);
     }
 
     serviceDal.update(Number(req.params.id), {
@@ -38,7 +38,7 @@ export const update = async (req: any, resp: any) => {
             resp.status(404).send({
                 message: err.message
             })
-            return
+            throw new Error(err.message)
         }
 
         resp.status(500).send({

@@ -14,7 +14,7 @@ export const deleteMonitor = async (req: any, resp: any) => {
                 resp.status(404).send({
                     message: err.message
                 })
-                return
+                throw new Error(err.message)
             }
 
             resp.status(500).send({

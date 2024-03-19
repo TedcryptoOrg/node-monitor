@@ -1,102 +1,61 @@
-import { type AlertChannel } from '../AlertChannel/alertChannel'
-import { BlockCheck } from './checkers/blockCheck'
-import { AbstractMonitor } from './abstractMonitor'
-import { UrlCheck } from './checkers/urlCheck'
-import { DiskSpace } from './checkers/nodeExporter/diskSpace'
-import { RpcClient } from '../client/rpcClient'
-import { RestClient } from '../client/restClient'
-import { type ClientInterface } from '../client/clientInterface'
-import { SignMissCheck } from './checkers/signMissCheck'
-import { type Chain } from '@tedcryptoorg/cosmos-directory'
-import { type ConfigurationOutput } from '../database/models/configuration'
-import { monitorTypes } from '../database/models/monitor'
-import { MissCounter } from './checkers/priceFeeder/missCounter'
+import {type AlertChannel} from '../AlertChannel/alertChannel'
+import {BlockCheck} from './checkers/blockCheck'
+import {AbstractMonitor} from './abstractMonitor'
+import {UrlCheck} from './checkers/urlCheck'
+import {DiskSpace} from './checkers/nodeExporter/diskSpace'
+import {SignMissCheck} from './checkers/signMissCheck'
+import {type Chain} from '@tedcryptoorg/cosmos-directory'
+import {MissCounter} from './checkers/priceFeeder/missCounter'
+import {ApiMonitor} from '../type/api/ApiMonitor'
+import {ApiConfiguration} from "../type/api/ApiConfiguration";
+import {ApiService} from "../type/api/ApiService";
+import {MonitorTypeEnum} from "../type/api/MonitorTypeEnum";
 
 export class NodeMonitor extends AbstractMonitor {
-  private rpcClient: ClientInterface | undefined
-  private restClient: ClientInterface | undefined
-
   constructor (
-    protected readonly name: string,
+    protected readonly configuration: ApiConfiguration,
     private readonly chain: Chain,
-    private readonly configuration: ConfigurationOutput,
-    private readonly alertChannels: AlertChannel[]
+    private readonly monitors: ApiMonitor[],
+    private readonly services: ApiService[],
+    protected readonly alertChannels: AlertChannel[]
   ) {
-    super()
-    console.debug(this.configuration)
+    super(alertChannels, configuration.name)
 
-    configuration.getMonitors().then((monitors) => {
-      monitors.forEach((monitor) => {
-        console.log(`[${this.name}] Loaded monitor: ${monitor.name}`)
-        const monitorConfiguration = JSON.parse(monitor.configuration_object)
-        if (monitorConfiguration === undefined) {
-          throw new Error(`[${this.name}][${monitor.name}] Monitor configuration is not defined.`)
-        }
-        switch (monitor.type) {
-          case monitorTypes.nodeExporterDiskSpace.name:
-            this.monitor_params.push(new DiskSpace(this.name, monitorConfiguration, this.alertChannels))
-            break
-          case monitorTypes.priceFeederMissCount.name:
-            this.monitor_params.push(new MissCounter(this.name, monitorConfiguration, this.alertChannels))
-            break
-          case monitorTypes.blockCheck.name:
-            this.monitor_params.push(new BlockCheck(
-              this.name,
-              this.configuration.chain,
-              this.getRpcClient(monitorConfiguration),
-              monitorConfiguration,
-              this.alertChannels
-            ))
-            break
-          case monitorTypes.urlCheck.name:
-            this.monitor_params.push(new UrlCheck(this.name, monitorConfiguration, this.alertChannels))
-            break
-          case monitorTypes.signMissCheck.name:
-            this.monitor_params.push(new SignMissCheck(
-              this.name,
-              this.chain,
-              monitorConfiguration,
-              this.getNodeClient(monitorConfiguration),
-              this.alertChannels
-            ))
-        }
-      })
-    })
-  }
+    for (const monitor of this.monitors) {
+      if (!monitor.is_enabled) {
+        console.log(`❌️ [${this.name}] Monitor ${monitor.name} is disabled. Skipping...`)
+        continue
+      }
 
-  private getRpcClient (monitorConfiguration: any): RpcClient {
-    const client = this.getNodeClient(monitorConfiguration, 'rpc')
-    if (client instanceof RpcClient) {
-      return client
-    }
+      console.log(`😊️[${this.name}] Loaded monitor: ${monitor.name}`)
+      const monitorConfiguration = JSON.parse(monitor.configuration_object)
+      if (monitorConfiguration === undefined) {
+        throw new Error(`❌️ [${this.name}][${monitor.name}] Monitor configuration is not defined.`)
+      }
 
-    throw new Error('No rpc client found.')
-  }
-
-  private getNodeClient (monitorConfiguration: any, type?: string): ClientInterface {
-    if (this.rpcClient === undefined) {
-      if (monitorConfiguration.rpc !== undefined) {
-        this.rpcClient = new RpcClient(monitorConfiguration.rpc)
+      switch (monitor.type) {
+        case MonitorTypeEnum.NODE_EXPORTER_DISK_SPACE:
+          this.monitor_params.push(new DiskSpace(monitor, this.alertChannels))
+          break
+        case MonitorTypeEnum.PRICE_FEEDER_MISS_COUNT:
+          this.monitor_params.push(
+              new MissCounter(monitor, this.alertChannels, this.services)
+          )
+          break
+        case MonitorTypeEnum.BLOCK_CHECK:
+          this.monitor_params.push(
+              new BlockCheck(monitor, this.alertChannels)
+          )
+          break
+        case MonitorTypeEnum.URL_CHECK:
+          this.monitor_params.push(new UrlCheck(monitor, this.alertChannels))
+          break
+        case MonitorTypeEnum.SIGN_MISS_CHECK:
+          this.monitor_params.push(
+              new SignMissCheck(monitor, this.alertChannels, this.services, this.chain)
+          )
+          break
       }
     }
-    if (this.restClient === undefined) {
-      if (monitorConfiguration.rest !== undefined) {
-        this.restClient = new RestClient(monitorConfiguration.rest)
-      }
-    }
-
-    if (type === 'rpc' && this.rpcClient === undefined) {
-      throw new Error('No rpc client found.')
-    }
-    if (type === 'rest' && this.restClient === undefined) {
-      throw new Error('No rest client found.')
-    }
-
-    const client = this.rpcClient ?? this.restClient
-    if (client === undefined) {
-      throw new Error('No client found.')
-    }
-
-    return client
   }
 }

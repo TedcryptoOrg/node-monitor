@@ -34,8 +34,6 @@ help:
 	} \
 	{ lastLine = $$0 }' $(MAKEFILE_LIST)
 
-SEQUELIZE_IMAGE ?= "calipsaci/sequelize-cli"
-SEQUELIZE_RUN ?= docker run --rm -it --network=monitor_default -v .:/app -w /app $(SEQUELIZE_IMAGE)
 DOCKER_COMPOSE_EXEC ?= docker compose exec
 DOCKER_NODE_COMPOSE_RUN ?= docker compose run node-app
 
@@ -46,6 +44,14 @@ up:
 ## [Docker] Stop containers
 stop:
 	docker compose stop
+
+## [Docker] Down containers
+down:
+	docker compose down
+
+## [Docker] Build containers
+build:
+	docker compose build
 
 ## [NPM] Install packages
 install:
@@ -58,15 +64,3 @@ npm-command:
 ## [Tests] Run tests
 tests:
 	$(DOCKER_NODE_COMPOSE_RUN) npm test --detectOpenHandles
-
-## [Database] Create a empty migration with name (NAME=name-migration make db-create-migration)
-db-create-migration:
-	$(SEQUELIZE_RUN) npx sequelize-cli migration:generate --name $(NAME) --url $(DB_DSN)
-
-## [Database] Run migrations
-db-migrate:
-	$(SEQUELIZE_RUN) npx sequelize-cli db:migrate --url $(DB_DSN)
-
-## [Database] Undo last migration
-db-migrate-undo:
-	$(SEQUELIZE_RUN) npx sequelize-cli db:migrate:undo --url $(DB_DSN)

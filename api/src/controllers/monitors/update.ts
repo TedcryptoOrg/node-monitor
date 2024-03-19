@@ -3,7 +3,7 @@ import * as monitorDal from "../../database/dal/monitor";
 export const update = async (req: any, resp: any) => {
     if (req.params.id === undefined) {
         resp.status(400).send('Missing id')
-        return
+        throw new Error('Missing id')
     }
 
     const requiredFields = ["name", "type", "configuration_id", "configuration_object", "is_enabled"];
@@ -12,7 +12,7 @@ export const update = async (req: any, resp: any) => {
             resp.status(400).send({
                 message: `${field} can not be empty!`
             });
-            return;
+            throw new Error(`${field} can not be empty!`);
         }
     })
 
@@ -21,15 +21,16 @@ export const update = async (req: any, resp: any) => {
         type: req.body.type,
         configuration_id: req.body.configuration_id,
         configuration_object: req.body.configuration_object,
+        server_id: req.body.server_id ?? null,
         is_enabled: req.body.is_enabled
-    }).then((configuration) => {
-        resp.status(200).send(configuration)
+    }).then(() => {
+        resp.status(200).send()
     }).catch((err: Error) => {
         if (err.name === 'RecordNotFound') {
             resp.status(404).send({
                 message: err.message
             })
-            return
+            throw new Error(err.message)
         }
 
         resp.status(500).send({

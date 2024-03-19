@@ -1,47 +1,63 @@
-import {MonitorCheck} from "../monitorCheck";
 import {AlertChannel} from "../../../AlertChannel/alertChannel";
-import axios from "axios";
-import {PrometheusMetrics} from "../../../prometheus/prometheusMetrics";
-import {Alerter} from "../../../Alerter/alerter";
-import {NodeExporterDiskSpaceUsageConfiguration} from "../../../type/config/nodeExporterDiskSpaceUsageConfiguration";
+import {ApiMonitor, NodeExporterDiskSpaceUsageConfiguration} from "../../../type/api/ApiMonitor";
+import {ApiMetric} from "../../../type/api/ApiMetric";
+import {NoRecoverableException} from "../../exception/noRecoverableException";
+import {ApiServer} from "../../../type/api/ApiServer";
+import {sleep} from "../../../util/sleep";
+import {MonitorCheck} from "../monitorCheck";
 
-export class DiskSpace implements MonitorCheck {
-    private readonly alerter: Alerter
-    private readonly diskSpaceThreshold: number;
-    private readonly checkIntervalSeconds: number;
+export class DiskSpace extends MonitorCheck {
 
     constructor (
-        private readonly name: string,
-        private readonly configuration: NodeExporterDiskSpaceUsageConfiguration,
-        private readonly alertChannels: AlertChannel[]
+        monitor: ApiMonitor,
+        alertChannels: AlertChannel[]
     ) {
-        this.alerter = new Alerter(
-            this.name,
-            'BlockCheck',
-            this.alertChannels,
-            this.configuration.alert_sleep_duration_minutes
-        )
-
-        this.checkIntervalSeconds = this.configuration.check_interval_seconds
-        this.diskSpaceThreshold = this.configuration.threshold
+        super(monitor, alertChannels)
     }
 
     async check (): Promise<void> {
+        const configuration = this.configuration as NodeExporterDiskSpaceUsageConfiguration;
         while(true) {
-            console.log(`[${this.name}][DiskSpace] Running check...`)
+            console.log(`🏃️${this.getMessagePrefix()} Running check...`)
 
-            const prometheusMetrics = PrometheusMetrics.withMetricsContent(
-                (await axios.get(this.configuration.address)).data
-            )
+            if (!this.monitor.server?.id) {
+                await this.fail('Server id unknown. Cannot run check')
 
-            console.log(`[${this.name}][DiskSpace] Used disk space: ${prometheusMetrics.getUsedDiskSpacePercentage()}%`);
-
-            if (prometheusMetrics.getUsedDiskSpacePercentage() >= this.diskSpaceThreshold) {
-                await this.alerter.alert(`🚨 [${this.name}] Disk space usage is ${prometheusMetrics.getUsedDiskSpacePercentage()}%`);
+                throw new NoRecoverableException(`${this.getMessagePrefix()} Server id unknown. Cannot run check`)
             }
 
-            await new Promise(resolve => setTimeout(resolve, 1000 * this.checkIntervalSeconds));
+            const metrics = await this.fetchMetrics(this.monitor.server);
+
+            console.log(`${this.getMessagePrefix()} Used disk space: ${metrics.usedDiskSpacePercentage}%`);
+
+            if (metrics.usedDiskSpacePercentage >= configuration.threshold) {
+                await this.fail(`Used disk space is ${metrics.usedDiskSpacePercentage}% above threshold ${configuration.threshold}`)
+            } else {
+                await this.success(`Used disk space is ${metrics.usedDiskSpacePercentage}% below threshold ${configuration.threshold}`)
+            }
+
+            await new Promise(resolve => setTimeout(resolve, 1000 * configuration.check_interval_seconds));
         }
     }
 
+    private async fetchMetrics(server: ApiServer, attempts: number = 0): Promise<ApiMetric>
+    {
+        try {
+            const metricsResponse = await fetch(`${process.env.API_HOST}/api/servers/${server.id}/metrics`);
+
+            return await metricsResponse.json();
+        } catch (exception: any) {
+            console.error(exception);
+
+            if (attempts >= 5) {
+                await this.warning(`Error fetching metrics. Error: ${exception.message}`)
+                throw new NoRecoverableException(`${this.getMessagePrefix()} Error fetching metrics. Error: ${exception.message}`);
+            }
+
+            attempts = attempts + 1;
+            await sleep(2000 * attempts);
+
+            return await this.fetchMetrics(server, attempts);
+        }
+    }
 }

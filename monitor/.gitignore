@@ -4,3 +4,5 @@ dist/
 .idea
 lib
 *.tgz
+
+.env

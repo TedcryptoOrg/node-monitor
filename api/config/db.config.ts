@@ -8,6 +8,7 @@ type DatabaseConfig = {
     USER: string,
     PASSWORD: string,
     DB: string,
+    PORT: number,
     dialect: Dialect,
     pool: {
         max: number,
@@ -21,6 +22,7 @@ const dbConfig: DatabaseConfig = {
     HOST: String(process.env.DB_HOST),
     USER: String(process.env.DB_USER),
     PASSWORD: String(process.env.DB_PASS),
+    PORT: Number(process.env.DB_PORT),
     DB: String(process.env.DB_NAME),
     dialect: String(process.env.DB_DIALECT) as Dialect,
     pool: {

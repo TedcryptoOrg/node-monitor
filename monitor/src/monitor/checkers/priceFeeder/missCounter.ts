@@ -1,13 +1,14 @@
 import axios from 'axios'
-import { CryptoTools } from '../../../crypto/crypto_tools'
-import { type MonitorCheck } from '../monitorCheck'
-import { type AlertChannel } from '../../../AlertChannel/alertChannel'
-import { NoRecoverableException } from '../../exception/noRecoverableException'
-import { RecoverableException } from '../../exception/recoverableException'
-import { Alerter } from '../../../Alerter/alerter'
-import {PriceFeederMissCountConfiguration} from "../../../type/config/priceFeederMissCountConfiguration";
+import {CryptoTools} from '../../../crypto/crypto_tools'
+import {type AlertChannel} from '../../../AlertChannel/alertChannel'
+import {NoRecoverableException} from '../../exception/noRecoverableException'
+import {RecoverableException} from '../../exception/recoverableException'
+import {ApiMonitor, PriceFeederMissCountConfiguration} from "../../../type/api/ApiMonitor";
+import {ApiService} from "../../../type/api/ApiService";
+import {ServiceTypeEnum} from "../../../type/api/ServiceTypeEnum";
+import {MonitorCheck} from "../monitorCheck";
 
-export class MissCounter implements MonitorCheck {
+export class MissCounter extends MonitorCheck {
   private readonly staticEndpoints: { kujira: string, ojo: string } = {
     kujira: '/oracle/validators/%valoper%/miss',
     ojo: '/ojo/oracle/v1/validators/%valoper%/miss'
@@ -15,79 +16,75 @@ export class MissCounter implements MonitorCheck {
 
   private readonly cryptoTools: CryptoTools
   private readonly endpoint: string
-  private readonly alerter: Alerter
+  private restAddress: string|undefined = undefined;
 
   constructor (
-    private readonly name: string,
-    private readonly configuration: PriceFeederMissCountConfiguration,
-    private readonly alertChannels: AlertChannel[]
+    monitor: ApiMonitor,
+    alertChannels: AlertChannel[],
+    private readonly services: ApiService[]
   ) {
-    if (!Object.prototype.hasOwnProperty.call(this.staticEndpoints, name)) {
-      throw new NoRecoverableException(`Blockchain ${name} not supported.`)
-    }
+    super(monitor, alertChannels)
 
-    this.name = name
+    const configuration = this.configuration as PriceFeederMissCountConfiguration
+
     this.cryptoTools = new CryptoTools()
-    this.alertChannels = alertChannels
-
-    this.endpoint = this.getEndpointUrl(this.configuration.valoper_address)
-    this.alerter = new Alerter(
-      this.name,
-      'MissCounter',
-      this.alertChannels,
-      this.configuration.alert_sleep_duration_minutes
-    )
+    this.endpoint = this.getEndpointUrl(configuration.valoper_address)
   }
 
   async check (): Promise<void> {
+    if (!Object.prototype.hasOwnProperty.call(this.staticEndpoints, this.monitor.configuration.chain)) {
+      throw new NoRecoverableException(`Blockchain ${this.monitor.configuration.chain} not supported.`)
+    }
+
+    const configuration = this.configuration as PriceFeederMissCountConfiguration
     let previousMissCounter = await this.fetchMissCounter()
     let previousTimestamp = new Date().getTime()
     let lastMissCounter = previousMissCounter
     while (true) {
-      console.log(`[${this.name}] Running miss counter check...`)
+      console.log(`🏃️${this.getMessagePrefix()} Running miss counter check...`)
       const currentMissCounter = await this.fetchMissCounter()
 
       // Refresh the missing period if we are missing blocks within the period
       const missDifference = currentMissCounter - previousMissCounter
       if (currentMissCounter > lastMissCounter) {
-        console.log(`[${this.name}][Miss Counter] Counter has increased, current missed in this missing period: ${missDifference}. Refreshing previous incident timestamp.`)
+        console.log(`🟡️${this.getMessagePrefix()} Miss has increased, current missed in this missing period: ${missDifference}. Refreshing previous incident timestamp.`)
         previousTimestamp = new Date().getTime()
 
         // Check if the miss counter exceeds the tolerance
-        if (missDifference >= this.configuration.miss_tolerance) {
-          console.log(`[${this.name}]Missing too many price updates...`, missDifference)
-
-          await this.alerter.alert(`[${this.name}] 🚨 Price tracker monitor alert!\n You are missing too many blocks. Miss counter exceeded: ${missDifference}`)
+        if (missDifference >= configuration.miss_tolerance) {
+          const message = `Missing too many price updates. Miss counter exceeded: ${missDifference}`
+          await this.fail(message);
         }
       } else if (missDifference > 0) {
         const currentTimestamp = new Date().getTime()
 
         const timeDifferentInSeconds = (currentTimestamp - previousTimestamp) / 1000
-        const secondsLeftToReset = this.configuration.miss_tolerance_period_seconds - timeDifferentInSeconds
-        console.debug(`[${this.name}][Miss Counter] No more misses happened since last one. Last missed: ${missDifference}. Reset in ${secondsLeftToReset} seconds.`)
+        const secondsLeftToReset = configuration.miss_tolerance_period_seconds - timeDifferentInSeconds
         if (secondsLeftToReset <= 0) {
-          console.log(`[${this.name}][Miss Counter] No more misses happened since last one. Last missed: ${missDifference}. Reset monitoring flags`)
+          const message = `No more misses happened since last one. Last missed: ${missDifference}. Reset monitoring flags`
+          await this.success(message)
+
           // Reset the miss counter if the tolerance period has passed
           previousMissCounter = currentMissCounter
           previousTimestamp = currentTimestamp
+        } else {
+          const message = `No more misses happened since last one. Last missed: ${missDifference}. Reset in ${secondsLeftToReset.toFixed(0)} seconds.`
+          await this.warning(message)
         }
+      } else {
+        await this.success('No misses!');
       }
 
       lastMissCounter = currentMissCounter
 
-      if (process.env.APP_ENV === 'test') {
-        break
-      }
-
-      // Sleep for the specified duration
-      // @ts-expect-error is already checked, but it keeps complaining
-      await new Promise((resolve) => setTimeout(resolve, this.configuration.priceFeeder.sleep_duration_seconds * 1000))
+      console.log(`🕗️${this.getMessagePrefix()} Waiting ${configuration.sleep_duration_seconds} seconds before checking again...`)
+      await new Promise((resolve) => setTimeout(resolve, configuration.sleep_duration_seconds * 1000))
     }
   }
 
   async fetchMissCounter (): Promise<number> {
     try {
-      const response = await axios.get(this.configuration.rest_address + this.endpoint)
+      const response = await axios.get(this.getRestAddress() + this.endpoint)
 
       return Number(response.data.miss_counter)
     } catch (error: any) {
@@ -96,7 +93,25 @@ export class MissCounter implements MonitorCheck {
     }
   }
 
-  private getEndpointUrl (valoperAddress: string): string {
+  getRestAddress(): string
+  {
+    if (!this.restAddress) {
+      for (const service of this.services) {
+        if (service.type === ServiceTypeEnum.REST) {
+          console.log(`🔨️${this.getMessagePrefix()} Found REST service: ${service.address}`)
+          this.restAddress = service.address;
+          break;
+        }
+      }
+    }
+    if (this.restAddress === undefined) {
+      throw new NoRecoverableException('No REST service found for this monitor');
+    }
+
+    return this.restAddress;
+  }
+
+  getEndpointUrl (valoperAddress: string): string {
     const chain = this.cryptoTools.getChainFromBech32Address(valoperAddress)
 
     for (const [key, value] of Object.entries(this.staticEndpoints)) {

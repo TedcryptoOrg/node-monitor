@@ -5,8 +5,8 @@ import db from "../config";
 import Server from "./server";
 
 export const SERVICE_TYPES: {RPC: string, REST: string, PROMETHEUS: string, NODE_EXPORTER: string} = {
-    RPC: 'RPC',
-    REST: 'REST',
+    RPC: 'rpc',
+    REST: 'rest',
     PROMETHEUS: 'prometheus',
     NODE_EXPORTER: 'node_exporter',
 }
@@ -26,14 +26,14 @@ export interface ServiceOutput extends Required<ServiceAttributes> {
 }
 
 class Service extends Model<ServiceAttributes, ServiceInput> implements ServiceAttributes {
-    public id!: number
-    public name!: string
-    public address!: string
-    public is_enabled!: boolean
-    public type!: string
-    public server_id!: number
+    declare id: number
+    declare name: string
+    declare address: string
+    declare is_enabled: boolean
+    declare type: string
+    declare server_id: number
 
-    public getServer!: HasOneGetAssociationMixin<Server>
+    declare public getServer: HasOneGetAssociationMixin<Server>
 }
 
 Service.init({

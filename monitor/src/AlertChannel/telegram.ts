@@ -2,7 +2,6 @@ import TelegramBot from 'node-telegram-bot-api'
 import { type AlertChannel } from './alertChannel'
 
 export interface TelegramOptions {
-  botId: string
   token: string
   chatId: string
 }
@@ -12,7 +11,7 @@ export class Telegram implements AlertChannel {
   private readonly options: TelegramOptions
 
   constructor (options: TelegramOptions) {
-    this.bot = new TelegramBot(`${options.botId}:${options.token}`)
+    this.bot = new TelegramBot(options.token)
     this.options = options
   }
 

@@ -12,6 +12,7 @@ import {
 import db from "../config";
 import Configuration from "./configuration";
 import Service from "./service";
+import Monitor from "./monitor";
 
 interface ServerAttributes {
     id: number,
@@ -27,22 +28,25 @@ export interface ServerInput extends Optional<ServerAttributes, 'id'> {}
 export interface ServerOutput extends Required<ServerAttributes> {
     getConfiguration: HasOneGetAssociationMixin<Configuration>
     getServices: HasManyGetAssociationsMixin<Service>
+    getMonitors: HasManyGetAssociationsMixin<Monitor>
 }
 
 class Server extends Model<ServerAttributes, ServerInput> implements ServerAttributes{
-    public id!: number
-    public name!: string
-    public address!: string
-    public is_enabled!: boolean
-    public configuration_id!: ForeignKey<Configuration['id']>
-    public readonly createdAt!: Date;
-    public readonly updatedAt!: Date;
+    declare id: number
+    declare name: string
+    declare address: string
+    declare is_enabled: boolean
+    declare configuration_id: ForeignKey<Configuration['id']>
+    declare readonly createdAt: Date;
+    declare readonly updatedAt: Date;
 
-    public getConfiguration!: HasOneGetAssociationMixin<Configuration>
-    public getServices!: HasManyGetAssociationsMixin<Service>
+    declare public getConfiguration: HasOneGetAssociationMixin<Configuration>
+    declare public getServices: HasManyGetAssociationsMixin<Service>
+    declare public getMonitors: HasManyGetAssociationsMixin<Monitor>
 
     public static associations: {
-        services: Association<Server, Service>
+        services: Association<Server, Service>,
+        monitors: Association<Server, Monitor>,
     }
 }
 
@@ -81,6 +85,16 @@ Server.hasMany(Service, {
     onDelete: 'CASCADE',
 })
 Service.belongsTo(Server, {
+    foreignKey: 'server_id',
+    as: 'server',
+    onDelete: 'CASCADE'
+})
+Server.hasMany(Monitor, {
+    sourceKey: 'id',
+    foreignKey: 'server_id',
+    onDelete: 'CASCADE',
+})
+Monitor.belongsTo(Server, {
     foreignKey: 'server_id',
     as: 'server',
     onDelete: 'CASCADE'

@@ -1,50 +1,33 @@
-import { type MonitorCheck } from './monitorCheck'
-import { Alerter } from '../../Alerter/alerter'
-import {UrlCheckConfiguration} from "../../type/config/urlCheckConfiguration";
+import {ApiMonitor, UrlCheckConfiguration} from "../../type/api/ApiMonitor";
+import axios from "axios";
+import {AlertChannel} from "../../AlertChannel/alertChannel";
+import {MonitorCheck} from "./monitorCheck";
 
-/**
- * Checks that port is alive and well
- */
-export class UrlCheck implements MonitorCheck {
-  private readonly alerter: Alerter
-
+export class UrlCheck extends MonitorCheck {
   constructor (
-    private readonly name: string,
-    private readonly configuration: UrlCheckConfiguration,
-    private readonly alertChannels: any
+    monitor: ApiMonitor,
+    alertChannels: AlertChannel[]
   ) {
-    this.alerter = new Alerter(
-      this.name,
-      'UrlCheck',
-      this.alertChannels,
-      5
-    )
+    super(monitor, alertChannels)
+    console.debug(`🔨${this.getMessagePrefix()} Creating url check...`, this.configuration);
   }
 
   async check (): Promise<void> {
     const checkMin = 1
     const minutesSinceDown = 0
+    const configuration = this.configuration as UrlCheckConfiguration;
 
     while (true) {
-      console.log(`[${this.name}][${this.configuration.name}] Running url check...`)
-      const isAccessible = await this.isUrlAccessible(this.configuration.address)
+      console.log(`🏃️${this.getMessagePrefix()} Running check ${this.monitor.name} url...`)
+      const isAccessible = axios.get(configuration.address).then(() => true).catch(() => false);
       if (!isAccessible) {
-        console.log(`[${this.name}][${this.configuration.name}] Is not accessible. Sending alerts...`)
-        await this.alerter.alert(`🚨 [${this.name}][${this.configuration.name}] Is not accessible. Minutes since down: ${minutesSinceDown}`)
+        await this.fail(`${this.monitor.name} is not accessible. Minutes since down: ${minutesSinceDown}`);
       } else {
-        console.log(`[${this.name}][${this.configuration.name}] Is accessible.`)
+        await this.success(`${this.monitor.name} is accessible`);
       }
-      console.log(`[${this.name}][${this.configuration.name}] Waiting ${checkMin} minutes before checking again...`)
-      await new Promise((resolve) => setTimeout(resolve, 60000 * checkMin))
-    }
-  }
 
-  async isUrlAccessible (url: string): Promise<boolean> {
-    try {
-      const response = await fetch(url, { method: 'HEAD' })
-      return response.ok
-    } catch (error) {
-      return false
+      console.log(`🕗️${this.getMessagePrefix()} Waiting ${checkMin} minutes before checking again...`)
+      await new Promise((resolve) => setTimeout(resolve, 60000 * checkMin))
     }
   }
 }
