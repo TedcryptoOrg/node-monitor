@@ -32,12 +32,6 @@ const UpsertConfigurationModal: React.FC<ConfigurationModalProps> = (
     const [isEnabled, setIsEnabled] = useState(configuration ? configuration.is_enabled : true);
     const { enqueueSnackbar } = useSnackbar();
 
-    useEffect(() => {
-        setName(configuration ? configuration.name : '');
-        setChain(configuration ? configuration.chain : '');
-        setIsEnabled(configuration ? configuration.is_enabled : true);
-    }, [configuration]);
-
     const handleSwitchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         setIsEnabled(event.target.checked);
     };

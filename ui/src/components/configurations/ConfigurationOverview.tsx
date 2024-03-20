@@ -52,7 +52,10 @@ const ConfigurationOverview: React.FC = () => {
         setLoadingConfiguration(true)
         fetch(`${process.env.REACT_APP_API_HOST}/api/configurations/${id}`)
             .then(response => response.json())
-            .then(data => setConfiguration(data))
+            .then(data => {
+                console.log("🚀 ~ fetchData ~ data:", data)
+                return setConfiguration(data)
+            })
             .catch((error) => {
                 console.error('Error:', error);
                 enqueueSnackbar('Failed to fetch configuration data!', {variant: 'error'});
