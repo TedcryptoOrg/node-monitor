@@ -1,8 +1,14 @@
-import * as configurationDal from "../../database/dal/configuration";
-import {renderConfigurations} from "../../views/configuration";
+import {handleCommand} from "../handleCommandUtil";
+import FindAllConfigurationsCommand from "../../../Application/Query/Configuration/FindAllConfigurations/FindAllConfigurationsCommand";
+import Configuration from "../../../Domain/Configuration/Configuration";
 
 export const findAll = async (req: any, resp: any) => {
-    const configurations = await renderConfigurations(await configurationDal.getAll(), true, true);
-
-    resp.send(configurations)
+    await handleCommand(
+        new FindAllConfigurationsCommand(),
+        resp,
+        (configurations: Configuration[]) => {
+            // TODO: for each configuration grab servers and monitors
+            resp.send(configurations.map(configuration => configuration.toArray()))
+        }
+    )
 }

@@ -14,6 +14,8 @@ import DeleteConfigurationCommandHandler
     from "../../Application/Write/Configuration/DeleteConfiguration/DeleteConfigurationCommandHandler";
 import GetConfigurationCommandHandler
     from "../../Application/Query/Configuration/GetConfiguration/GetConfigurationCommandHandler";
+import FindAllConfigurationsCommandHandler
+    from "../../Application/Query/Configuration/FindAllConfigurations/FindAllConfigurationsCommandHandler";
 
 const myContainer = new Container();
 
@@ -27,6 +29,7 @@ myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(FindLatestCommandHandl
 myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(UpsertConfigurationCommandHandler);
 myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(DeleteConfigurationCommandHandler);
 myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(GetConfigurationCommandHandler);
+myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(FindAllConfigurationsCommandHandler);
 myContainer.bind<CommandHandlerManager>(CommandHandlerManager).toSelf();
 
 // Events
