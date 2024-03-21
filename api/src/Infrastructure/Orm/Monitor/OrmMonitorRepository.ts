@@ -6,14 +6,14 @@ import MonitorRepository from "../../../Domain/Monitor/MonitorRepository";
 import RecordNotFound from "../../../Domain/RecordNotFound";
 
 @injectable()
-export default class OrmMonitor implements MonitorRepository {
+export default class OrmMonitorRepository implements MonitorRepository {
     constructor(
         @inject(TYPES.OrmClient) private ormClient: PrismaClient
     ) {
     }
 
     async get(id: number): Promise<Monitor> {
-        const monitor = this.ormClient.monitors.findUnique({
+        const monitor = await this.ormClient.monitors.findUnique({
             where: {
                 id: id
             },
@@ -35,8 +35,8 @@ export default class OrmMonitor implements MonitorRepository {
             type: monitor.type,
             is_enabled: monitor.isEnabled,
             configuration_object: JSON.stringify(monitor.configurationObject),
-            ...(monitor.configuration ? {configuration: {connect: {id: monitor.configuration.id}}} : {}),
-            ...(monitor.server ? {server: {connect: {id: monitor.server.id}}} : {}),
+            ...(monitor.configuration && monitor.configuration.id !== undefined ? {configuration: {connect: {id: monitor.configuration.id}}} : {}),
+            ...(monitor.server && monitor.server.id !== undefined ? {server: {connect: {id: monitor.server.id}}} : {}),
             last_check: monitor.lastCheck,
             status: monitor.status,
             last_error: monitor.lastError,
@@ -57,9 +57,14 @@ export default class OrmMonitor implements MonitorRepository {
             return Monitor.fromArray(monitorData);
         }
 
+        if (!monitor.configuration) {
+            throw new Error('Configuration is required');
+        }
+
         const monitorData = await this.ormClient.monitors.create({
             data: {
                 ...data,
+                configuration: {connect: {id: monitor.configuration.id}},
                 createdAt: new Date(),
             },
             include: {

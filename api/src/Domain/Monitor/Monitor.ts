@@ -1,14 +1,15 @@
 import Configuration, {ConfigurationArray} from "../Configuration/Configuration";
 import Server, {ServerArray} from "../Server/Server";
+import {MonitorType} from "./MonitorType";
 
 export type MonitorArray = {
     name: string,
-    type: MonitorType,
+    type: string,
     is_enabled: boolean,
     configuration_object: string,
     id?: number,
     configuration?: ConfigurationArray,
-    server?: ServerArray,
+    server?: ServerArray|null,
     last_check?: Date|null,
     status?: boolean,
     last_error?: string|null,
@@ -36,7 +37,7 @@ export default class Monitor {
     static fromArray(array: MonitorArray): Monitor {
         return new Monitor(
             array.name,
-            array.type,
+            array.type as MonitorType,
             array.is_enabled,
             JSON.parse(array.configuration_object),
             array.id,

@@ -4,7 +4,7 @@ export type ServerArray = {
     name: string
     address: string
     is_enabled: boolean
-    configuration: ConfigurationArray
+    configuration?: ConfigurationArray
     id?: number
     createdAt?: Date
     updatedAt?: Date
@@ -15,7 +15,7 @@ export default class Server {
         public readonly name: string,
         public readonly address: string,
         public readonly isEnabled: boolean,
-        public readonly configuration: Configuration,
+        public readonly configuration?: Configuration,
         public readonly id?: number,
         public readonly createdAt?: Date,
         public readonly updatedAt?: Date
@@ -27,7 +27,7 @@ export default class Server {
             server.name,
             server.address,
             server.is_enabled,
-            Configuration.fromArray(server.configuration),
+            server.configuration ? Configuration.fromArray(server.configuration) : undefined,
             server.id,
             server.createdAt,
             server.updatedAt
@@ -39,7 +39,7 @@ export default class Server {
             name: this.name,
             address: this.address,
             is_enabled: this.isEnabled,
-            configuration: this.configuration.toArray(),
+            configuration: this.configuration?.toArray(),
             id: this.id,
             createdAt: this.createdAt,
             updatedAt: this.updatedAt

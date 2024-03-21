@@ -34,6 +34,14 @@ import ServerRepository from "../../Domain/Server/ServerRepository";
 import OrmServerRepository from "../Orm/Server/OrmServerRepository";
 import FindAllServerCommandHandler from "../../Application/Query/Server/FindAllServers/FindAllServerCommandHandler";
 import GetServerCommandHandler from "../../Application/Query/Server/GetServer/GetServerCommandHandler";
+import GetMonitorCommandHandler from "../../Application/Query/Monitor/GetMonitor/GetMonitorCommandHandler";
+import FindAllMonitorsCommandHandler
+    from "../../Application/Query/Monitor/FindAllMonitors/FindAllMonitorsCommandHandler";
+import DeleteMonitorCommandHandler from "../../Application/Write/Monitor/DeleteMonitor/DeleteMonitorCommandHandler";
+import PingMonitorCommandHandler from "../../Application/Write/Monitor/PingMonitor/PingMonitorCommandHandler";
+import UpsertMonitorCommandHandler from "../../Application/Write/Monitor/UpsertMonitor/UpsertMonitorCommandHandler";
+import MonitorRepository from "../../Domain/Monitor/MonitorRepository";
+import OrmMonitorRepository from "../Orm/Monitor/OrmMonitorRepository";
 
 const myContainer = new Container();
 
@@ -42,6 +50,7 @@ myContainer.bind<PrismaClient>(TYPES.OrmClient).toConstantValue(new PrismaClient
 myContainer.bind<AuditRepository>(TYPES.AuditRepository).to(OrmAuditRepository);
 myContainer.bind<ConfigurationRepository>(TYPES.AuditRepository).to(OrmConfigurationRepository);
 myContainer.bind<ServerRepository>(TYPES.ServerRepository).to(OrmServerRepository);
+myContainer.bind<MonitorRepository>(TYPES.MonitorRepository).to(OrmMonitorRepository);
 myContainer.bind<NotificationChannelRepository>(TYPES.NotificationChannelRepository).to(OrmNotificationChannel);
 
 // Command handlers
@@ -58,6 +67,11 @@ myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(DeleteServerCommandHan
 myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(UpsertServerCommandHandler);
 myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(FindAllServerCommandHandler);
 myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(GetServerCommandHandler);
+myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(GetMonitorCommandHandler);
+myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(FindAllMonitorsCommandHandler);
+myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(DeleteMonitorCommandHandler);
+myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(PingMonitorCommandHandler);
+myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(UpsertMonitorCommandHandler);
 myContainer.bind<CommandHandlerManager>(CommandHandlerManager).toSelf();
 
 // Events
