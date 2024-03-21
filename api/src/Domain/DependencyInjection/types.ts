@@ -9,4 +9,6 @@ export const TYPES = {
     ServerRepository: Symbol.for('ServerRepository'),
     NotificationChannelRepository: Symbol.for('NotificationChannelRepository'),
     NotificationChannelClientFactory: Symbol.for('NotificationChannelClientFactory'),
+    MonitorRepository: Symbol.for('MonitorRepository'),
+    ServiceRepository: Symbol.for('ServiceRepository'),
 }

@@ -9,7 +9,7 @@ export type MonitorArray = {
     id?: number,
     configuration?: ConfigurationArray,
     server?: ServerArray,
-    last_check?: string|null,
+    last_check?: Date|null,
     status?: boolean,
     last_error?: string|null,
     createdAt?: Date;
@@ -25,7 +25,7 @@ export default class Monitor {
         public id?: number,
         public configuration?: Configuration,
         public server?: Server,
-        public lastCheck?: string|null,
+        public lastCheck?: Date|null,
         public status?: boolean,
         public lastError?: string|null,
         public createdAt?: Date,

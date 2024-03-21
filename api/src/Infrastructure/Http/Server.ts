@@ -5,7 +5,7 @@ import configurationRouter from "./Routes/configurations";
 import auditRouter from "./Routes/auditRouter";
 import serverRouter from "./Routes/serverRouter";
 import serviceRouter from "./Routes/service";
-import monitorRouter from "./Routes/monitors";
+import monitorRouter from "./Routes/monitorRouter";
 import notificationChannelsRouter from "./Routes/notificationChannelsRouter";
 
 dotenv.config();

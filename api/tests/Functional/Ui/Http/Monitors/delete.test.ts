@@ -4,9 +4,9 @@ import DatabaseUtil from "../../../../Helper/DatabaseUtil";
 import {myContainer} from "../../../../../src/Infrastructure/DependencyInjection/inversify.config";
 import {TYPES} from "../../../../../src/Domain/DependencyInjection/types";
 import { PrismaClient } from "@prisma/client";
-import {createServer} from "../../../../Helper/StaticFixtures";
+import {createMonitor, createServer} from "../../../../Helper/StaticFixtures";
 
-describe('Server delete controller', () => {
+describe('Monitor delete controller', () => {
     let prismaClient: PrismaClient
 
     beforeEach(async () => {
@@ -15,14 +15,14 @@ describe('Server delete controller', () => {
     })
 
     it('should delete', async () => {
-        const monitorServer = await createServer();
+        const monitor = await createMonitor();
 
-        expect((await prismaClient.servers.findMany()).length).toBe(1)
+        expect((await prismaClient.monitors.findMany()).length).toBe(1)
 
         request(server)
-            .delete('/api/servers/'+monitorServer.id)
+            .delete('/api/monitors/'+monitor.id)
             .expect(200)
 
-        expect((await prismaClient.servers.findMany()).length).toBe(0)
+        expect((await prismaClient.monitors.findMany()).length).toBe(0)
     });
 });

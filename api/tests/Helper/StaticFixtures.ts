@@ -7,6 +7,8 @@ import {NotificationChannelType} from "../../src/Domain/NotificationChannel/Noti
 import NotificationChannelRepository from "../../src/Domain/NotificationChannel/NotificationChannelRepository";
 import Server from "../../src/Domain/Server/Server";
 import ServerRepository from "../../src/Domain/Server/ServerRepository";
+import Monitor from "../../src/Domain/Monitor/Monitor";
+import MonitorRepository from "../../src/Domain/Monitor/MonitorRepository";
 
 export const createConfiguration = async (): Promise<Configuration> => {
     return myContainer.get<ConfigurationRepository>(TYPES.ConfigurationRepository).upsert(
@@ -36,6 +38,23 @@ export const createServer = async(): Promise<Server> => {
             'test',
             true,
             await createConfiguration()
+        )
+    )
+}
+
+export const createMonitor = async(): Promise<Monitor> => {
+    return await myContainer.get<MonitorRepository>(TYPES.MonitorRepository).upsert(
+        new Monitor(
+            'test',
+            'test',
+            true,
+            {},
+            undefined,
+            await createConfiguration(),
+            await createServer(),
+            new Date(),
+            true,
+            null
         )
     )
 }

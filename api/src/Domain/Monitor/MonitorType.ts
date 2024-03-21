@@ -1,4 +1,4 @@
-enum MonitorType {
+export enum MonitorType {
     URL_CHECK = 'urlCheck',
     BLOCK_CHECK = 'blockCheck',
     SIGN_MISS_CHECK = 'signMissCheck',
