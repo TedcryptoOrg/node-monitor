@@ -16,6 +16,10 @@ import GetConfigurationCommandHandler
     from "../../Application/Query/Configuration/GetConfiguration/GetConfigurationCommandHandler";
 import FindAllConfigurationsCommandHandler
     from "../../Application/Query/Configuration/FindAllConfigurations/FindAllConfigurationsCommandHandler";
+import NotificationChannelRepository from "../../Domain/NotificationChannel/NotificationChannelRepository";
+import OrmNotificationChannel from "../Orm/NotificationChannel/OrmNotificationChannel";
+import UpsertNotificationChannelCommandHandler
+    from "../../Application/Write/NotificationChannel/UpsertNotificationChannel/UpsertNotificationChannelCommandHandler";
 
 const myContainer = new Container();
 
@@ -23,6 +27,7 @@ const myContainer = new Container();
 myContainer.bind<PrismaClient>(TYPES.OrmClient).toConstantValue(new PrismaClient());
 myContainer.bind<AuditRepository>(TYPES.AuditRepository).to(OrmAuditRepository);
 myContainer.bind<ConfigurationRepository>(TYPES.AuditRepository).to(OrmConfigurationRepository);
+myContainer.bind<NotificationChannelRepository>(TYPES.NotificationChannelRepository).to(OrmNotificationChannel);
 
 // Command handlers
 myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(FindLatestCommandHandler);
@@ -30,6 +35,7 @@ myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(UpsertConfigurationCom
 myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(DeleteConfigurationCommandHandler);
 myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(GetConfigurationCommandHandler);
 myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(FindAllConfigurationsCommandHandler);
+myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(UpsertNotificationChannelCommandHandler);
 myContainer.bind<CommandHandlerManager>(CommandHandlerManager).toSelf();
 
 // Events

@@ -6,4 +6,5 @@ export const TYPES = {
     OrmClient: Symbol.for('OrmClient'),
     AuditRepository: Symbol.for('AuditRepository'),
     ConfigurationRepository: Symbol.for('ConfigurationRepository'),
+    NotificationChannelRepository: Symbol.for('NotificationChannelRepository'),
 }
