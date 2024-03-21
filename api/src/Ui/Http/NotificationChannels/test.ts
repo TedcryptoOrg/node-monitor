@@ -1,31 +1,33 @@
 import { RequestHandler, Request, Response } from 'express';
-
-import NotificationClientFactory from "../../services/notification/NotificationClientFactory";
-import {parse} from "./payload/notificationPayload";
+import {handleCommand} from "../handleCommandUtil";
+import TestNotificationChannelCommand from "../../../Application/Write/NotificationChannel/TestNotificationChannel/TestNotificationChannelCommand";
+import NotificationChannel from "../../../Domain/NotificationChannel/NotificationChannel";
+import {NotificationChannelType} from "../../../Domain/NotificationChannel/NotificationChannelType";
 
 export const test: RequestHandler = async (req: Request, resp: Response) => {
-    let payload = null;
-    try {
-        payload = parse(req)
-    } catch (error: any) {
+    const requiredFields = ["name", "type", "configuration_object", "is_enabled"];
+    const missingFields = requiredFields.filter((field) => !req.body[field]);
+
+    if (missingFields.length > 0) {
         resp.status(400).send({
-            message: error.message
+            message: `${missingFields.join(", ")} can not be empty!`
         });
-
-        throw error;
+        return;
     }
-    console.log(payload)
 
-    try {
-        const client = NotificationClientFactory.createClient(payload);
-        await client.sendMessage(`Test ${payload.name} notification channel successful!`);
-
-        resp.status(200).send();
-    } catch (error: any) {
-        resp.status(500).send({
-            message: error.message
-        });
-
-        throw error;
+    let configurationObject = req.body.configuration_object;
+    if (Array.isArray(configurationObject) || typeof configurationObject === "object") {
+        configurationObject = JSON.stringify(req.body.configuration_object)
     }
+
+    await handleCommand(
+        new TestNotificationChannelCommand(new NotificationChannel(
+            req.body.name,
+            req.body.type as NotificationChannelType,
+            configurationObject,
+            true
+        )),
+        resp,
+        () => resp.status(200).send()
+    )
 }

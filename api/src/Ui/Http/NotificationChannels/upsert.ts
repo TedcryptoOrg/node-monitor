@@ -1,16 +1,36 @@
 import { RequestHandler, Request, Response } from 'express';
 import {handleCommand} from "../handleCommandUtil";
-import GetNotificationChannelCommand from "../../../Application/Query/NotificationChannel/GetNotificationChannel/GetNotificationChannelCommand";
-import NotificationChannel from "../../../Domain/NotificationChannel/NotificationChannel";
+import UpsertNotificationChannelCommand from "../../../Application/Write/NotificationChannel/UpsertNotificationChannel/UpsertNotificationChannelCommand";
 
 export const upsert: RequestHandler = async (req: Request, resp: Response) => {
+    const requiredFields = ["name", "type", "configuration_object", "is_enabled"];
+    const missingFields = requiredFields.filter((field) => !req.body[field]);
+
+    if (missingFields.length > 0) {
+        resp.status(400).send({
+            message: `${missingFields.join(", ")} can not be empty!`
+        });
+        return;
+    }
+
+    let configurationObject = req.body.configuration_object;
+    if (Array.isArray(configurationObject) || typeof configurationObject === "object") {
+        configurationObject = JSON.stringify(req.body.configuration_object)
+    }
+
     await handleCommand(
-        new GetNotificationChannelCommand(
-            Number(req.params.id)
+        new UpsertNotificationChannelCommand(
+            req.body.name,
+            req.body.type,
+            configurationObject,
+            req.body.is_enabled,
+            req.params.id ? Number(req.params.id) : undefined
         ),
         resp,
-        (notificationChannel: NotificationChannel) => {
-            resp.status(200).send(notificationChannel.toArray())
+        () => {
+            resp.status(202).send({
+                message: "Notification Channel created successfully!"
+            })
         }
     )
 }

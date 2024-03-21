@@ -7,4 +7,5 @@ export const TYPES = {
     AuditRepository: Symbol.for('AuditRepository'),
     ConfigurationRepository: Symbol.for('ConfigurationRepository'),
     NotificationChannelRepository: Symbol.for('NotificationChannelRepository'),
+    NotificationChannelClientFactory: Symbol.for('NotificationChannelClientFactory'),
 }

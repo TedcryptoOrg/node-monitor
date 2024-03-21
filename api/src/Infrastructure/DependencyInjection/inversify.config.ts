@@ -24,6 +24,10 @@ import DeleteNotificationChannelCommandHandler
     from "../../Application/Write/NotificationChannel/DeleteNotificationChannel/DeleteNotificationChannelCommandHandler";
 import FindAllNotificationChannelsCommandHandler
     from "../../Application/Query/NotificationChannel/FindAllNotificationChannels/FindAllNotificationChannelsCommandHandler";
+import TestNotificationChannelCommandHandler
+    from "../../Application/Write/NotificationChannel/TestNotificationChannel/TestNotificationChannelCommandHandler";
+import NotificationChannelClientFactory from "../../Domain/NotificationChannel/Client/NotificationChannelClientFactory";
+import NotificationClientFactory from "../NotificationChannel/NotificationClientFactory";
 
 const myContainer = new Container();
 
@@ -42,12 +46,15 @@ myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(FindAllConfigurationsC
 myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(UpsertNotificationChannelCommandHandler);
 myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(DeleteNotificationChannelCommandHandler);
 myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(FindAllNotificationChannelsCommandHandler);
+myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(TestNotificationChannelCommandHandler);
 myContainer.bind<CommandHandlerManager>(CommandHandlerManager).toSelf();
 
 // Events
 myContainer.bind<EventDispatcher>(EventDispatcher).toSelf();
 
 // Factories
+myContainer.bind(NotificationClientFactory).toSelf();
+myContainer.bind<NotificationChannelClientFactory>(TYPES.NotificationChannelClientFactory).to(NotificationClientFactory);
 
 // Security
 

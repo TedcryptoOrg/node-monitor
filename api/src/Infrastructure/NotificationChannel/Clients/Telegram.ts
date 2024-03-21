@@ -1,7 +1,13 @@
-import {TelegramBotConfiguration} from "../../../type/notificationChannel/TelegramBotConfiguration";
 import {Telegraf} from "telegraf";
+import NotificationChannelClient from "../../../Domain/NotificationChannel/Client/NotificationChannelClient";
 
-export default class Telegram implements Client {
+export type TelegramBotConfiguration = {
+    bot_token: string,
+    chat_id: string,
+    topic_id?: string,
+}
+
+export default class Telegram implements NotificationChannelClient {
     private readonly bot: Telegraf;
 
     private constructor(
@@ -20,9 +26,7 @@ export default class Telegram implements Client {
         )
     }
 
-    public async sendMessage(message: string): Promise<boolean> {
+    public async send(message: string): Promise<void> {
         await this.bot.telegram.sendMessage(this.chatId, message);
-
-        return true;
     }
 }
