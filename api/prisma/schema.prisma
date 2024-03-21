@@ -86,7 +86,7 @@ model servers {
   createdAt        DateTime       @db.DateTime(0)
   updatedAt        DateTime       @db.DateTime(0)
   monitors         monitors[]
-  configurations   configurations @relation(fields: [configuration_id], references: [id], onDelete: Cascade, map: "fk_server_configuration_id")
+  configuration    configurations @relation(fields: [configuration_id], references: [id], onDelete: Cascade, map: "fk_server_configuration_id")
   services         services[]
 
   @@index([configuration_id], map: "fk_server_configuration_id")

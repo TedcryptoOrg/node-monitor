@@ -28,6 +28,10 @@ import TestNotificationChannelCommandHandler
     from "../../Application/Write/NotificationChannel/TestNotificationChannel/TestNotificationChannelCommandHandler";
 import NotificationChannelClientFactory from "../../Domain/NotificationChannel/Client/NotificationChannelClientFactory";
 import NotificationClientFactory from "../NotificationChannel/NotificationClientFactory";
+import DeleteServerCommandHandler from "../../Application/Write/Server/DeleteServer/DeleteServerCommandHandler";
+import UpsertServerCommandHandler from "../../Application/Write/Server/UpsertConfiguration/UpsertServerCommandHandler";
+import ServerRepository from "../../Domain/Server/ServerRepository";
+import OrmServerRepository from "../Orm/Server/OrmServerRepository";
 
 const myContainer = new Container();
 
@@ -35,6 +39,7 @@ const myContainer = new Container();
 myContainer.bind<PrismaClient>(TYPES.OrmClient).toConstantValue(new PrismaClient());
 myContainer.bind<AuditRepository>(TYPES.AuditRepository).to(OrmAuditRepository);
 myContainer.bind<ConfigurationRepository>(TYPES.AuditRepository).to(OrmConfigurationRepository);
+myContainer.bind<ServerRepository>(TYPES.ServerRepository).to(OrmServerRepository);
 myContainer.bind<NotificationChannelRepository>(TYPES.NotificationChannelRepository).to(OrmNotificationChannel);
 
 // Command handlers
@@ -47,6 +52,8 @@ myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(UpsertNotificationChan
 myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(DeleteNotificationChannelCommandHandler);
 myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(FindAllNotificationChannelsCommandHandler);
 myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(TestNotificationChannelCommandHandler);
+myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(DeleteServerCommandHandler);
+myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(UpsertServerCommandHandler);
 myContainer.bind<CommandHandlerManager>(CommandHandlerManager).toSelf();
 
 // Events

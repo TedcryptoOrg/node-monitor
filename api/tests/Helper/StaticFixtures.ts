@@ -5,6 +5,8 @@ import ConfigurationRepository from "../../src/Domain/Configuration/Configuratio
 import NotificationChannel from "../../src/Domain/NotificationChannel/NotificationChannel";
 import {NotificationChannelType} from "../../src/Domain/NotificationChannel/NotificationChannelType";
 import NotificationChannelRepository from "../../src/Domain/NotificationChannel/NotificationChannelRepository";
+import Server from "../../src/Domain/Server/Server";
+import ServerRepository from "../../src/Domain/Server/ServerRepository";
 
 export const createConfiguration = async (): Promise<Configuration> => {
     return myContainer.get<ConfigurationRepository>(TYPES.ConfigurationRepository).upsert(
@@ -23,6 +25,17 @@ export const createNotificationChannel = async (name?: string, isEnabled?: boole
             NotificationChannelType.TELEGRAM,
             {},
             isEnabled ?? true
+        )
+    )
+}
+
+export const createServer = async(): Promise<Server> => {
+    return await myContainer.get<ServerRepository>(TYPES.ServerRepository).upsert(
+        new Server(
+            'test',
+            'test',
+            true,
+            await createConfiguration()
         )
     )
 }
