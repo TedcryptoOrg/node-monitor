@@ -1,0 +1,20 @@
+name: 'Shared: Test Notification'
+
+on:
+  workflow_dispatch: ~
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v4
+
+      - name: 'Send failure message'
+        uses: ./.github/actions/send-telegram-message
+        with:
+          bot_token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          chat_id: ${{ secrets.TELEGRAM_CHAT_ID }}
+          thread_id: ${{ secrets.TELEGRAM_THREAD_ID }}
+          message: |
+            Test
