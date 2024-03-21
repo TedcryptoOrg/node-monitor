@@ -7,7 +7,7 @@ export const findAll = async (req: any, resp: any) => {
         new FindAllConfigurationsCommand(),
         resp,
         (configurations: Configuration[]) => {
-            // TODO: for each configuration grab servers and monitors
+            // TODO: for each configuration grab servers and monitors and notification_channels
             resp.send(configurations.map(configuration => configuration.toArray()))
         }
     )

@@ -7,7 +7,7 @@ export const findById = async (req: any, resp: any) => {
         new GetConfigurationCommand(Number(req.params.id)),
         resp,
         (configuration: Configuration) => {
-            // TODO: should handle getserver and getmonitor and put them all together
+            // TODO: should handle getserver and getmonitor and put them all together notification_channels
             resp.send({
                 ...configuration.toArray(),
                 servers: [],
