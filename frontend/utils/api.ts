@@ -3,7 +3,6 @@ type SuccessCallbackFunction<T> = (data: T) => void;
 type ErrorCallbackFunction = (error: Error) => void;
 
 enum RequestType {
-  CONNECT = 'CONNECT',
   DELETE = 'DELETE',
   GET = 'GET',
   HEAD = 'HEAD',
@@ -11,20 +10,28 @@ enum RequestType {
   PATCH = 'PATCH',
   POST = 'POST',
   PUT = 'PUT',
-  TRACE = 'TRACE',
 }
 
 interface FetchOptions {
   method: RequestType;
   url?: string;
   path?: string;
+  body?: any;
   beforeRequest?: BeforeRequestFunction;
   successCallback?: SuccessCallbackFunction<any>;
   errorCallback?: ErrorCallbackFunction;
 }
 
 async function apiCall<T>(options: FetchOptions): Promise<void> {
-  const { method, url, path, beforeRequest, successCallback, errorCallback } = options;
+  const {
+    method,
+    url,
+    path,
+    body,
+    beforeRequest,
+    successCallback,
+    errorCallback,
+  } = options;
   const defaultUrl = process.env.NEXT_PUBLIC_API_HOST;
 
   const endpointUrl = options.url ? options.url : defaultUrl;
@@ -37,6 +44,7 @@ async function apiCall<T>(options: FetchOptions): Promise<void> {
         headers: {
           'Content-Type': 'application/json', // add more headers here if needed
         },
+        body: JSON.stringify(body),
       });
 
       if (!response.ok) {
@@ -53,4 +61,8 @@ async function apiCall<T>(options: FetchOptions): Promise<void> {
 }
 
 export { apiCall, RequestType };
-export type { BeforeRequestFunction, SuccessCallbackFunction, ErrorCallbackFunction };
+export type {
+  BeforeRequestFunction,
+  SuccessCallbackFunction,
+  ErrorCallbackFunction,
+};

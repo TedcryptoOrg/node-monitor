@@ -5,8 +5,8 @@ import { useEffect, useState } from 'react';
 import { apiCall, RequestType } from '../utils/api';
 
 const Dashboard = () => {
-  const [issues, setIssues] = useState(null);
-  const [warnings, setWarnings] = useState(null);
+  const [issues, setIssues] = useState([]);
+  const [warnings, setWarnings] = useState([]);
   const [loadingIssues, setLoadingIssues] = useState(true);
   const [loadingWarnings, setLoadingWarnings] = useState(true);
 
@@ -14,6 +14,15 @@ const Dashboard = () => {
     getIssues();
     getWarnings();
   }, []);
+
+  // TO-DO: get this from the api
+  const tableHeaders = [
+    'Configuration',
+    'Monitor',
+    'Server',
+    'Message',
+    'Last check',
+  ];
 
   const getIssues = () =>
     apiCall({
@@ -50,12 +59,20 @@ const Dashboard = () => {
         <Grid align='stretch' justify='stretch'>
           <Grid.Col span={12}>
             <Title order={3}>On going issues</Title>
-            <Skeleton visible={loadingIssues}>{/* <TedyTable></TedyTable> */}</Skeleton>
+            <Skeleton visible={loadingIssues}>
+              <TedyTable
+                data={{ header: tableHeaders, body: issues }}
+              ></TedyTable>
+            </Skeleton>
           </Grid.Col>
 
-          <Grid.Col span={12}>
+          <Grid.Col span={12} mt={50}>
             <Title order={3}>Warnings</Title>
-            <Skeleton visible={loadingWarnings}>{/* <TedyTable></TedyTable> */}</Skeleton>
+            <Skeleton visible={loadingWarnings}>
+              <TedyTable
+                data={{ header: tableHeaders, body: warnings }}
+              ></TedyTable>
+            </Skeleton>
           </Grid.Col>
         </Grid>
       </Group>
