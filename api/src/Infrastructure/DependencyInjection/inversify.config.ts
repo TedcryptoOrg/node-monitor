@@ -20,6 +20,8 @@ import NotificationChannelRepository from "../../Domain/NotificationChannel/Noti
 import OrmNotificationChannel from "../Orm/NotificationChannel/OrmNotificationChannel";
 import UpsertNotificationChannelCommandHandler
     from "../../Application/Write/NotificationChannel/UpsertNotificationChannel/UpsertNotificationChannelCommandHandler";
+import DeleteNotificationChannelCommandHandler
+    from "../../Application/Write/NotificationChannel/DeleteNotificationChannel/DeleteNotificationChannelCommandHandler";
 
 const myContainer = new Container();
 
@@ -36,6 +38,7 @@ myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(DeleteConfigurationCom
 myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(GetConfigurationCommandHandler);
 myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(FindAllConfigurationsCommandHandler);
 myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(UpsertNotificationChannelCommandHandler);
+myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(DeleteNotificationChannelCommandHandler);
 myContainer.bind<CommandHandlerManager>(CommandHandlerManager).toSelf();
 
 // Events
