@@ -32,6 +32,8 @@ import DeleteServerCommandHandler from "../../Application/Write/Server/DeleteSer
 import UpsertServerCommandHandler from "../../Application/Write/Server/UpsertConfiguration/UpsertServerCommandHandler";
 import ServerRepository from "../../Domain/Server/ServerRepository";
 import OrmServerRepository from "../Orm/Server/OrmServerRepository";
+import FindAllServerCommandHandler from "../../Application/Query/Server/FindAllServers/FindAllServerCommandHandler";
+import GetServerCommandHandler from "../../Application/Query/Server/GetServer/GetServerCommandHandler";
 
 const myContainer = new Container();
 
@@ -54,6 +56,8 @@ myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(FindAllNotificationCha
 myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(TestNotificationChannelCommandHandler);
 myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(DeleteServerCommandHandler);
 myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(UpsertServerCommandHandler);
+myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(FindAllServerCommandHandler);
+myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(GetServerCommandHandler);
 myContainer.bind<CommandHandlerManager>(CommandHandlerManager).toSelf();
 
 // Events

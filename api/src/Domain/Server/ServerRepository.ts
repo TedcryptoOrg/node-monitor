@@ -9,4 +9,6 @@ export default interface ServerRepository {
     upsert(server: Server): Promise<Server>
 
     delete(id: number): Promise<void>;
+
+    findAll(): Promise<Server[]>;
 }

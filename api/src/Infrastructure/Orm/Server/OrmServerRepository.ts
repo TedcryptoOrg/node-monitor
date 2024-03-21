@@ -72,4 +72,14 @@ export default class OrmServerRepository implements ServerRepository {
             }
         });
     }
+
+    async findAll(): Promise<Server[]> {
+        const data = await this.ormClient.servers.findMany({
+            include: {
+                configuration: true
+            }
+        });
+
+        return data.map((server) => Server.fromArray(server));
+    }
 }

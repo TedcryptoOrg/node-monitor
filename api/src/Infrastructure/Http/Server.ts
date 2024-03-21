@@ -2,7 +2,7 @@ import express, {Request, Response, NextFunction} from 'express';
 import dotenv from "dotenv";
 import cors from "cors";
 import configurationRouter from "./Routes/configurations";
-import auditRouter from "./Routes/audit";
+import auditRouter from "./Routes/auditRouter";
 import serverRouter from "./Routes/serverRouter";
 import serviceRouter from "./Routes/service";
 import monitorRouter from "./Routes/monitors";

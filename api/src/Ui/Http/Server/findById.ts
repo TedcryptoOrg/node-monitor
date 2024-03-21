@@ -1,10 +1,11 @@
-import * as serverDal from "../../database/dal/server";
-import {renderServer} from "../../views/servers";
+import GetServerCommand from "../../../Application/Query/Server/GetServer/GetServerCommand";
+import Server from "../../../Domain/Server/Server";
+import {handleCommand} from "../handleCommandUtil";
 
 export const findById = async (req: any, resp: any): Promise<void> => {
-    try {
-        resp.send(await renderServer(await serverDal.get(req.params.id), true))
-    } catch (error) {
-        resp.status(404).send({message: `Server with id ${req.params.id} not found`})
-    }
+    await handleCommand(
+        new GetServerCommand(Number(req.params.id)),
+        resp,
+        (server: Server) => resp.status(200).send(server.toArray())
+    );
 }
