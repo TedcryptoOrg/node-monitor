@@ -16,12 +16,13 @@ export const createConfiguration = async (): Promise<Configuration> => {
     )
 }
 
-export const createNotificationChannel = async (): Promise<NotificationChannel> => {
+export const createNotificationChannel = async (name?: string, isEnabled?: boolean): Promise<NotificationChannel> => {
     return await myContainer.get<NotificationChannelRepository>(TYPES.NotificationChannelRepository).upsert(
         new NotificationChannel(
-            'test',
+            name ?? 'test',
             NotificationChannelType.TELEGRAM,
             {},
+            isEnabled ?? true
         )
     )
 }

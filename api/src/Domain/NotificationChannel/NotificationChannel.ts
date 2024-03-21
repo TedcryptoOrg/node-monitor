@@ -15,7 +15,7 @@ export default class NotificationChannel {
         public readonly name: string,
         public readonly type: NotificationChannelType,
         public readonly configurationObject: object,
-        public readonly isEnabled: boolean = true,
+        public readonly isEnabled: boolean,
         public readonly id?: number,
         public readonly created_at?: Date,
         public readonly updated_at?: Date
