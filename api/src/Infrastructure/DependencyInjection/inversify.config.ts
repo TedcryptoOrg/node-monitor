@@ -10,22 +10,15 @@ import EventDispatcher from '../../Application/Event/EventDispatcher/EventDispat
 import ConfigurationRepository from '../../Domain/Configuration/ConfigurationRepository';
 import OrmConfigurationRepository from '../Orm/Configuration/OrmConfigurationRepository';
 import UpsertConfigurationCommandHandler from '../../Application/Write/Configuration/UpsertConfiguration/UpsertConfigurationCommandHandler';
-import DeleteConfigurationCommandHandler
-    from "../../Application/Write/Configuration/DeleteConfiguration/DeleteConfigurationCommandHandler";
-import GetConfigurationCommandHandler
-    from "../../Application/Query/Configuration/GetConfiguration/GetConfigurationCommandHandler";
-import FindAllConfigurationsCommandHandler
-    from "../../Application/Query/Configuration/FindAllConfigurations/FindAllConfigurationsCommandHandler";
+import DeleteConfigurationCommandHandler from "../../Application/Write/Configuration/DeleteConfiguration/DeleteConfigurationCommandHandler";
+import GetConfigurationCommandHandler from "../../Application/Query/Configuration/GetConfiguration/GetConfigurationCommandHandler";
+import FindAllConfigurationsCommandHandler from "../../Application/Query/Configuration/FindAllConfigurations/FindAllConfigurationsCommandHandler";
 import NotificationChannelRepository from "../../Domain/NotificationChannel/NotificationChannelRepository";
 import OrmNotificationChannelRepository from "../Orm/NotificationChannel/OrmNotificationChannelRepository";
-import UpsertNotificationChannelCommandHandler
-    from "../../Application/Write/NotificationChannel/UpsertNotificationChannel/UpsertNotificationChannelCommandHandler";
-import DeleteNotificationChannelCommandHandler
-    from "../../Application/Write/NotificationChannel/DeleteNotificationChannel/DeleteNotificationChannelCommandHandler";
-import FindAllNotificationChannelsCommandHandler
-    from "../../Application/Query/NotificationChannel/FindAllNotificationChannels/FindAllNotificationChannelsCommandHandler";
-import TestNotificationChannelCommandHandler
-    from "../../Application/Write/NotificationChannel/TestNotificationChannel/TestNotificationChannelCommandHandler";
+import UpsertNotificationChannelCommandHandler from "../../Application/Write/NotificationChannel/UpsertNotificationChannel/UpsertNotificationChannelCommandHandler";
+import DeleteNotificationChannelCommandHandler from "../../Application/Write/NotificationChannel/DeleteNotificationChannel/DeleteNotificationChannelCommandHandler";
+import FindAllNotificationChannelsCommandHandler from "../../Application/Query/NotificationChannel/FindAllNotificationChannels/FindAllNotificationChannelsCommandHandler";
+import TestNotificationChannelCommandHandler from "../../Application/Write/NotificationChannel/TestNotificationChannel/TestNotificationChannelCommandHandler";
 import NotificationChannelClientFactory from "../../Domain/NotificationChannel/Client/NotificationChannelClientFactory";
 import NotificationClientFactory from "../NotificationChannel/NotificationClientFactory";
 import DeleteServerCommandHandler from "../../Application/Write/Server/DeleteServer/DeleteServerCommandHandler";
@@ -35,8 +28,7 @@ import OrmServerRepository from "../Orm/Server/OrmServerRepository";
 import FindAllServerCommandHandler from "../../Application/Query/Server/FindAllServers/FindAllServerCommandHandler";
 import GetServerCommandHandler from "../../Application/Query/Server/GetServer/GetServerCommandHandler";
 import GetMonitorCommandHandler from "../../Application/Query/Monitor/GetMonitor/GetMonitorCommandHandler";
-import FindAllMonitorsCommandHandler
-    from "../../Application/Query/Monitor/FindAllMonitors/FindAllMonitorsCommandHandler";
+import FindAllMonitorsCommandHandler from "../../Application/Query/Monitor/FindAllMonitors/FindAllMonitorsCommandHandler";
 import DeleteMonitorCommandHandler from "../../Application/Write/Monitor/DeleteMonitor/DeleteMonitorCommandHandler";
 import PingMonitorCommandHandler from "../../Application/Write/Monitor/PingMonitor/PingMonitorCommandHandler";
 import UpsertMonitorCommandHandler from "../../Application/Write/Monitor/UpsertMonitor/UpsertMonitorCommandHandler";
@@ -44,12 +36,11 @@ import MonitorRepository from "../../Domain/Monitor/MonitorRepository";
 import OrmMonitorRepository from "../Orm/Monitor/OrmMonitorRepository";
 import ConfigurationNotificationRepository from "../../Domain/Configuration/ConfigurationNotificationRepository";
 import OrmConfigurationNotificationRepository from "../Orm/Configuration/OrmConfigurationNotificationRepository";
-import AssociateNotificationChannelCommandHandler
-    from "../../Application/Write/Configuration/AssociateNotificationChannel/AssociateNotificationChannelCommandHandler";
-import RemoveAssociationWithNotificationChannelCommandHandler
-    from "../../Application/Write/Configuration/RemoveAssociationWithNotificationChannel/RemoveAssociationWithNotificationChannelCommandHandler";
-import FindConfigurationNotificationsCommandHandler
-    from "../../Application/Query/Configuration/FindConfigurationNotifications/FindConfigurationNotificationsCommandHandler";
+import AssociateNotificationChannelCommandHandler from "../../Application/Write/Configuration/AssociateNotificationChannel/AssociateNotificationChannelCommandHandler";
+import RemoveAssociationWithNotificationChannelCommandHandler from "../../Application/Write/Configuration/RemoveAssociationWithNotificationChannel/RemoveAssociationWithNotificationChannelCommandHandler";
+import FindConfigurationNotificationsCommandHandler from "../../Application/Query/Configuration/FindConfigurationNotifications/FindConfigurationNotificationsCommandHandler";
+import FindWarningsCommandHandler from "../../Application/Query/Monitor/FindWarnings/FindWarningsCommandHandler";
+import FindFailedCommandHandler from "../../Application/Query/Monitor/FindFailed/FindFailedCommandHandler";
 
 const myContainer = new Container();
 
@@ -84,6 +75,8 @@ myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(UpsertMonitorCommandHa
 myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(AssociateNotificationChannelCommandHandler);
 myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(RemoveAssociationWithNotificationChannelCommandHandler);
 myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(FindConfigurationNotificationsCommandHandler);
+myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(FindWarningsCommandHandler);
+myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(FindFailedCommandHandler);
 myContainer.bind<CommandHandlerManager>(CommandHandlerManager).toSelf();
 
 // Events

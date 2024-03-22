@@ -15,4 +15,8 @@ export default interface MonitorRepository {
     delete(id: number): Promise<void>;
 
     findAll(criteria?: MonitorFindAllProps): Promise<Monitor[]>;
+
+    findFailed(limit: number, offset: number): Promise<Monitor[]>;
+
+    findWarnings(limit: number, offset: number): Promise<Monitor[]>;
 }

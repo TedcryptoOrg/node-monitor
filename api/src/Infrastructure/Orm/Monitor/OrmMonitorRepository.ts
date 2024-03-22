@@ -95,4 +95,47 @@ export default class OrmMonitorRepository implements MonitorRepository {
 
         return monitors.map(Monitor.fromArray);
     }
+
+    async findFailed(limit: number, offset: number): Promise<Monitor[]> {
+        const monitors = await this.ormClient.monitors.findMany({
+            where: {
+                status: false,
+                is_enabled: true
+            },
+            include: {
+                configuration: true,
+                server: true
+            },
+            orderBy: {
+                last_check: 'desc'
+            },
+            take: limit,
+            skip: offset
+        });
+
+        return monitors.map(Monitor.fromArray);
+    }
+
+    async findWarnings(limit: number, offset: number): Promise<Monitor[]> {
+        const monitors = await this.ormClient.monitors.findMany({
+            where: {
+                status: true,
+                is_enabled: true,
+                last_error: {
+                    not: null
+                }
+            },
+            include: {
+                configuration: true,
+                server: true
+            },
+            orderBy: {
+                last_check: 'desc'
+            },
+            take: limit,
+            skip: offset
+        });
+
+        return monitors.map(Monitor.fromArray);
+    }
 }

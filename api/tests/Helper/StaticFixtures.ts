@@ -55,19 +55,25 @@ export const createServer = async(configuration?: Configuration): Promise<Server
     )
 }
 
-export const createMonitor = async(configuration?: Configuration): Promise<Monitor> => {
+export const createMonitor = async(
+    configuration?: Configuration,
+    name?: string,
+    isEnabled?: boolean,
+    status?: boolean,
+    lastError?: string,
+): Promise<Monitor> => {
     return await myContainer.get<MonitorRepository>(TYPES.MonitorRepository).upsert(
         new Monitor(
-            'test',
+            name ?? 'test',
             MonitorType.BLOCK_CHECK,
-            true,
+            isEnabled ?? true,
             {},
             undefined,
             configuration ?? await createConfiguration(),
             await createServer(),
             new Date(),
-            true,
-            null
+            status ?? true,
+            lastError ?? null
         )
     )
 }
