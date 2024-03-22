@@ -1,4 +1,4 @@
-FROM oven/bun:1.0.20-alpine as bun_base
+FROM oven/bun:1.0.35-alpine as bun_base
 
 RUN apk --no-cache add mariadb-client
 
