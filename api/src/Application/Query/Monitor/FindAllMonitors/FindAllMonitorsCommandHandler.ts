@@ -13,7 +13,11 @@ export default class FindAllMonitorsCommandHandler implements CommandHandler {
     }
 
     handle(command: FindAllMonitorsCommand): Promise<Monitor[]> {
-        return this.repository.findAll();
+        const criteria = {
+            ...(command.configurationId && {configuration_id: command.configurationId})
+        }
+
+        return this.repository.findAll(criteria);
     }
 
 }

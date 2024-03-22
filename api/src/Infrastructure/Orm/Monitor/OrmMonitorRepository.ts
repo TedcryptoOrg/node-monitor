@@ -2,7 +2,7 @@ import {inject, injectable} from "inversify";
 import {TYPES} from "../../../Domain/DependencyInjection/types";
 import Monitor from "../../../Domain/Monitor/Monitor";
 import {PrismaClient} from "@prisma/client";
-import MonitorRepository from "../../../Domain/Monitor/MonitorRepository";
+import MonitorRepository, {MonitorFindAllProps} from "../../../Domain/Monitor/MonitorRepository";
 import RecordNotFound from "../../../Domain/RecordNotFound";
 
 @injectable()
@@ -84,8 +84,9 @@ export default class OrmMonitorRepository implements MonitorRepository {
         });
     }
 
-    async findAll(): Promise<Monitor[]> {
+    async findAll(criteria?: MonitorFindAllProps): Promise<Monitor[]> {
         const monitors = await this.ormClient.monitors.findMany({
+            where: criteria ?? undefined,
             include: {
                 configuration: true,
                 server: true

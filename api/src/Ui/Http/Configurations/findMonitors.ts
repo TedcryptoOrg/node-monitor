@@ -1,8 +1,13 @@
-import * as monitorDal from "../../database/dal/monitor";
-import {renderMonitors} from "../../views/monitors";
+import {handleCommand} from "../handleCommandUtil";
+import FindAllMonitorsCommand from "../../../Application/Query/Monitor/FindAllMonitors/FindAllMonitorsCommand";
+import Monitor from "../../../Domain/Monitor/Monitor";
 
 export const findMonitors = async (req: any, resp: any) => {
-    const monitors = await monitorDal.findByConfigurationId(req.params.id)
-
-    resp.send(await renderMonitors(monitors, true))
+    await handleCommand(
+        new FindAllMonitorsCommand(Number(req.params.id)),
+        resp,
+        (monitors: Monitor[]) => {
+            resp.send(monitors.map(monitor => monitor.toArray()))
+        }
+    )
 }

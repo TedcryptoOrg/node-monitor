@@ -1,5 +1,9 @@
 import Monitor from "./Monitor";
 
+export type MonitorFindAllProps = {
+    configuration_id?: number;
+}
+
 export default interface MonitorRepository {
     /**
      * @throws RecordNotFound
@@ -10,5 +14,5 @@ export default interface MonitorRepository {
 
     delete(id: number): Promise<void>;
 
-    findAll(): Promise<Monitor[]>;
+    findAll(criteria?: MonitorFindAllProps): Promise<Monitor[]>;
 }
