@@ -1,5 +1,5 @@
 import {handleCommand} from "../handleCommandUtil";
-import UpsertServerCommand from "../../../Application/Write/Server/UpsertConfiguration/UpsertServerCommand";
+import UpsertServerCommand from "../../../Application/Write/Server/UpsertServer/UpsertServerCommand";
 import Server from "../../../Domain/Server/Server";
 
 export const upsert = async (req: any, resp: any) => {

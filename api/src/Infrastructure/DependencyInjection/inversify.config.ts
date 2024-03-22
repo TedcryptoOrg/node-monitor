@@ -22,7 +22,7 @@ import TestNotificationChannelCommandHandler from "../../Application/Write/Notif
 import NotificationChannelClientFactory from "../../Domain/NotificationChannel/Client/NotificationChannelClientFactory";
 import NotificationClientFactory from "../NotificationChannel/NotificationClientFactory";
 import DeleteServerCommandHandler from "../../Application/Write/Server/DeleteServer/DeleteServerCommandHandler";
-import UpsertServerCommandHandler from "../../Application/Write/Server/UpsertConfiguration/UpsertServerCommandHandler";
+import UpsertServerCommandHandler from "../../Application/Write/Server/UpsertServer/UpsertServerCommandHandler";
 import ServerRepository from "../../Domain/Server/ServerRepository";
 import OrmServerRepository from "../Orm/Server/OrmServerRepository";
 import FindAllServerCommandHandler from "../../Application/Query/Server/FindAllServers/FindAllServerCommandHandler";
