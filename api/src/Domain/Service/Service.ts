@@ -6,7 +6,7 @@ export type ServiceArray = {
     address: string,
     is_enabled: boolean,
     type: string,
-    server: ServerArray,
+    server?: ServerArray,
     id?: number,
 }
 
@@ -16,7 +16,7 @@ export default class Service {
         public address: string,
         public isEnabled: boolean,
         public type: ServiceType,
-        public server: Server,
+        public server?: Server,
         public id?: number,
     ) {
     }
@@ -27,7 +27,7 @@ export default class Service {
             array.address,
             array.is_enabled,
             array.type as ServiceType,
-            Server.fromArray(array.server),
+            array.server ? Server.fromArray(array.server) : undefined,
             array.id,
         );
     }
@@ -38,7 +38,7 @@ export default class Service {
             address: this.address,
             is_enabled: this.isEnabled,
             type: this.type,
-            server: this.server.toArray(),
+            server: this.server?.toArray(),
             id: this.id,
         };
     }

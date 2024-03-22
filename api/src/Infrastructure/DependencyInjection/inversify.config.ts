@@ -46,6 +46,9 @@ import UpsertServiceCommandHandler from "../../Application/Write/Service/UpsertS
 import FindAllServicesCommandHandler from "../../Application/Query/Service/FindAllServices/FindAllServicesCommandHandler";
 import ServiceRepository from "../../Domain/Service/ServiceRepository";
 import OrmServiceRepository from "../Orm/Services/OrmServiceRepository";
+import ServerMetricsExporter from "../../Domain/Server/ServerMetricsExporter";
+import {PrometheusParser} from "../Server/Prometheus/PrometheusParser";
+import ServerMetricsExplorerClient from "../Server/ServerMetricsExplorerClient";
 
 const myContainer = new Container();
 
@@ -98,6 +101,9 @@ myContainer.bind<NotificationChannelClientFactory>(TYPES.NotificationChannelClie
 // Security
 
 // Services
+myContainer.bind(PrometheusParser).toSelf();
+myContainer.bind(ServerMetricsExplorerClient).toSelf();
+myContainer.bind<ServerMetricsExporter>(TYPES.ServerMetricsExporter).to(ServerMetricsExplorerClient);
 
 // Console Command
 

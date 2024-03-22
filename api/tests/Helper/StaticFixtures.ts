@@ -51,20 +51,20 @@ export const createServer = async(configuration?: Configuration): Promise<Server
     return await myContainer.get<ServerRepository>(TYPES.ServerRepository).upsert(
         new Server(
             'test',
-            'test',
+            'https://server.url',
             true,
             configuration ?? await createConfiguration()
         )
     )
 }
 
-export const createService = async(server?: Server): Promise<Service> => {
+export const createService = async(server?: Server, type?: ServiceType, address?: string): Promise<Service> => {
     return await myContainer.get<ServiceRepository>(TYPES.ServiceRepository).upsert(
         new Service(
             'test',
-            'http://service.url',
+            address ?? 'http://service.url',
             true,
-            ServiceType.RPC,
+            type ?? ServiceType.RPC,
             server ?? await createServer()
         )
     )

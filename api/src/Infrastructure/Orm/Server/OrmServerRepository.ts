@@ -18,7 +18,8 @@ export default class OrmServerRepository implements ServerRepository {
                 id: id
             },
             include: {
-                configuration: true
+                configuration: true,
+                services: true
             }
         });
         if (!data) {
@@ -43,7 +44,8 @@ export default class OrmServerRepository implements ServerRepository {
                 },
                 data: data,
                 include: {
-                    configuration: true
+                    configuration: true,
+                    services: true
                 }
             }));
         }
@@ -58,7 +60,8 @@ export default class OrmServerRepository implements ServerRepository {
                 createdAt: new Date(),
             },
             include: {
-                configuration: true
+                configuration: true,
+                services: true
             }
         });
 
@@ -77,7 +80,8 @@ export default class OrmServerRepository implements ServerRepository {
         const data = await this.ormClient.servers.findMany({
             where: criteria,
             include: {
-                configuration: true
+                configuration: true,
+                services: true,
             }
         });
 

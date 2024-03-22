@@ -6,7 +6,6 @@ import { upsert } from '../../../Ui/Http/Server/upsert'
 import { getMetrics } from '../../../Ui/Http/Server/getMetrics'
 import { deleteServer } from '../../../Ui/Http/Server/delete'
 
-// Configuration Router
 const serverRouter = require('express').Router()
 
 serverRouter.post('/', upsert)

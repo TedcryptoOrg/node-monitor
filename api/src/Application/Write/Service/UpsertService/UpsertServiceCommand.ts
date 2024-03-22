@@ -1,4 +1,5 @@
 import Command from "../../../../Domain/Command/Command";
+import {ServiceType} from "../../../../Domain/Service/ServiceType";
 
 export default class UpsertServiceCommand implements Command {
     constructor(

@@ -1,4 +1,4 @@
-import InvalidLineError from './invalidLineError';
+import InvalidLineError from './InvalidLineError';
 
 const STATE_NAME = 0;
 const STATE_STARTOFLABELNAME = 1;

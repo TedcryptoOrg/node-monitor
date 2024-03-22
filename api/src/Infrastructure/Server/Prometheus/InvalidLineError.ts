@@ -3,7 +3,3 @@ export default class InvalidLineError extends Error {
         super('Encountered invalid line: ' + message);
     }
 }
-
-Object.defineProperty(InvalidLineError.prototype, 'name', {
-    value: InvalidLineError.name
-});

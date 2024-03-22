@@ -1,4 +1,4 @@
-export type MetricType = {
+export type ServerMetrics = {
     freeDiskSpace: number;
     usedDiskSpace: number;
     totalDiskSpace: number;

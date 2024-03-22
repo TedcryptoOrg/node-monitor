@@ -8,7 +8,6 @@ import { findNotificationChannels } from '../../../Ui/Http/Configurations/findNo
 import { associateNotificationChannel } from '../../../Ui/Http/Configurations/associateNotificationChannel';
 import { removeAssociationWithNotificationChannel } from '../../../Ui/Http/Configurations/removeAssociationWithNotificationChannel';
 
-// Configuration Router
 const configurationRouter = require('express').Router()
 
 configurationRouter.post('/', upsert)

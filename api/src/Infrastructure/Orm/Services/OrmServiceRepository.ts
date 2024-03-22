@@ -42,6 +42,10 @@ export default class OrmServiceRepository implements ServiceRepository {
     }
 
     async upsert(service: Service): Promise<Service> {
+        if (!service.server) {
+            throw new Error("Service must have a server");
+        }
+
         const data = {
             name: service.name,
             server: {connect: {id: service.server.id}},

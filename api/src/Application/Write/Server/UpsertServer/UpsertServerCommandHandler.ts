@@ -25,6 +25,7 @@ export default class UpsertServerCommandHandler implements CommandHandler {
             command.address,
             command.isEnabled,
             configuration,
+            [],
             command.id
         ));
 
