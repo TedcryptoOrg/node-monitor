@@ -1,10 +1,11 @@
 import Server, {ServerArray} from "../Server/Server";
+import {ServiceType} from "./ServiceType";
 
 export type ServiceArray = {
     name: string,
     address: string,
     is_enabled: boolean,
-    type: ServiceType,
+    type: string,
     server: ServerArray,
     id?: number,
 }
@@ -13,7 +14,7 @@ export default class Service {
     constructor(
         public name: string,
         public address: string,
-        public is_enabled: boolean,
+        public isEnabled: boolean,
         public type: ServiceType,
         public server: Server,
         public id?: number,
@@ -25,7 +26,7 @@ export default class Service {
             array.name,
             array.address,
             array.is_enabled,
-            array.type,
+            array.type as ServiceType,
             Server.fromArray(array.server),
             array.id,
         );
@@ -35,7 +36,7 @@ export default class Service {
         return {
             name: this.name,
             address: this.address,
-            is_enabled: this.is_enabled,
+            is_enabled: this.isEnabled,
             type: this.type,
             server: this.server.toArray(),
             id: this.id,

@@ -1,4 +1,4 @@
-enum ServiceType {
+export enum ServiceType {
     RPC = 'rpc',
     REST = 'rest',
     PROMETHEUS = 'prometheus',

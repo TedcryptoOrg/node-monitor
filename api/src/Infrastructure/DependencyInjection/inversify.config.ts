@@ -41,6 +41,11 @@ import RemoveAssociationWithNotificationChannelCommandHandler from "../../Applic
 import FindConfigurationNotificationsCommandHandler from "../../Application/Query/Configuration/FindConfigurationNotifications/FindConfigurationNotificationsCommandHandler";
 import FindWarningsCommandHandler from "../../Application/Query/Monitor/FindWarnings/FindWarningsCommandHandler";
 import FindFailedCommandHandler from "../../Application/Query/Monitor/FindFailed/FindFailedCommandHandler";
+import DeleteServiceCommandHandler from "../../Application/Write/Service/DeleteService/DeleteServiceCommandHandler";
+import UpsertServiceCommandHandler from "../../Application/Write/Service/UpsertService/UpsertServiceCommandHandler";
+import FindAllServicesCommandHandler from "../../Application/Query/Service/FindAllServices/FindAllServicesCommandHandler";
+import ServiceRepository from "../../Domain/Service/ServiceRepository";
+import OrmServiceRepository from "../Orm/Services/OrmServiceRepository";
 
 const myContainer = new Container();
 
@@ -52,6 +57,7 @@ myContainer.bind<ServerRepository>(TYPES.ServerRepository).to(OrmServerRepositor
 myContainer.bind<MonitorRepository>(TYPES.MonitorRepository).to(OrmMonitorRepository);
 myContainer.bind<NotificationChannelRepository>(TYPES.NotificationChannelRepository).to(OrmNotificationChannelRepository);
 myContainer.bind<ConfigurationNotificationRepository>(TYPES.NotificationChannelRepository).to(OrmConfigurationNotificationRepository);
+myContainer.bind<ServiceRepository>(TYPES.ServiceRepository).to(OrmServiceRepository);
 
 // Command handlers
 myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(FindLatestCommandHandler);
@@ -77,6 +83,9 @@ myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(RemoveAssociationWithN
 myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(FindConfigurationNotificationsCommandHandler);
 myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(FindWarningsCommandHandler);
 myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(FindFailedCommandHandler);
+myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(DeleteServiceCommandHandler);
+myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(UpsertServiceCommandHandler);
+myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(FindAllServicesCommandHandler);
 myContainer.bind<CommandHandlerManager>(CommandHandlerManager).toSelf();
 
 // Events

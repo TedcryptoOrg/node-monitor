@@ -12,6 +12,9 @@ import MonitorRepository from "../../src/Domain/Monitor/MonitorRepository";
 import {MonitorType} from "../../src/Domain/Monitor/MonitorType";
 import ConfigurationNotification from "../../src/Domain/Configuration/ConfigurationNotification";
 import ConfigurationNotificationRepository from "../../src/Domain/Configuration/ConfigurationNotificationRepository";
+import Service from "../../src/Domain/Service/Service";
+import ServiceRepository from "../../src/Domain/Service/ServiceRepository";
+import {ServiceType} from "../../src/Domain/Service/ServiceType";
 
 export const createConfiguration = async (): Promise<Configuration> => {
     return myContainer.get<ConfigurationRepository>(TYPES.ConfigurationRepository).upsert(
@@ -51,6 +54,18 @@ export const createServer = async(configuration?: Configuration): Promise<Server
             'test',
             true,
             configuration ?? await createConfiguration()
+        )
+    )
+}
+
+export const createService = async(server?: Server): Promise<Service> => {
+    return await myContainer.get<ServiceRepository>(TYPES.ServiceRepository).upsert(
+        new Service(
+            'test',
+            'http://service.url',
+            true,
+            ServiceType.RPC,
+            server ?? await createServer()
         )
     )
 }
