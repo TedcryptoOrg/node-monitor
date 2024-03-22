@@ -4,7 +4,7 @@ import DatabaseUtil from "../../../../Helper/DatabaseUtil";
 import {myContainer} from "../../../../../src/Infrastructure/DependencyInjection/inversify.config";
 import {TYPES} from "../../../../../src/Domain/DependencyInjection/types";
 import { PrismaClient } from "@prisma/client";
-import {createConfiguration, createMonitor} from "../../../../Helper/StaticFixtures";
+import {createConfiguration} from "../../../../Helper/StaticFixtures";
 import {MonitorType} from "../../../../../src/Domain/Monitor/MonitorType";
 
 describe('create monitor controller', () => {
@@ -18,7 +18,7 @@ describe('create monitor controller', () => {
     it('should create', async () => {
         expect((await prismaClient.monitors.findMany()).length).toBe(0)
 
-        request(server)
+        await request(server)
             .post('/api/monitors')
             .send({
                 name: 'test monitor',

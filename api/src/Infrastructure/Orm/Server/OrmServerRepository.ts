@@ -33,7 +33,7 @@ export default class OrmServerRepository implements ServerRepository {
         const data = {
             name: server.name,
             address: server.address,
-            isEnabled: server.isEnabled,
+            is_enabled: server.isEnabled,
             updatedAt: new Date(),
             ...(server.configuration && server.configuration.id ? {configuration: {connect: {id: server.configuration.id}}} : {})
         };
@@ -69,7 +69,7 @@ export default class OrmServerRepository implements ServerRepository {
     }
 
     async delete(id: number): Promise<void> {
-        this.ormClient.servers.delete({
+        await this.ormClient.servers.delete({
             where: {
                 id: id
             }

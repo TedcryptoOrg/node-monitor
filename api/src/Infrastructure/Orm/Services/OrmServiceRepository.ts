@@ -50,7 +50,7 @@ export default class OrmServiceRepository implements ServiceRepository {
             name: service.name,
             server: {connect: {id: service.server.id}},
             address: service.address,
-            isEnabled: service.isEnabled,
+            is_enabled: service.isEnabled,
             type: service.type,
             updatedAt: new Date(),
         }

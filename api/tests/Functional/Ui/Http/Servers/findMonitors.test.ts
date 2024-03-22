@@ -15,12 +15,12 @@ describe('servers find all monitors controller', () => {
     })
 
     it('find all', async () => {
-        const server = await createServer()
-        const monitor1 = await createMonitor(undefined, undefined, undefined, undefined, undefined, server)
-        const monitor2 = await createMonitor(undefined, undefined, undefined, undefined, undefined, server)
+        const server1 = await createServer()
+        const monitor1 = await createMonitor(undefined, undefined, undefined, undefined, undefined, server1)
+        const monitor2 = await createMonitor(undefined, undefined, undefined, undefined, undefined, server1)
 
         const result = await request(server)
-            .get('/api/servers/' + server.id + '/monitors')
+            .get('/api/servers/' + server1.id + '/monitors')
             .expect(200)
 
         expect(result.body.length).toBe(2)

@@ -16,18 +16,18 @@ describe('services - upsert controller', () => {
     })
 
     it('should create', async () => {
-        const server = await createServer()
+        const server1 = await createServer()
 
         expect((await prismaClient.services.findMany()).length).toBe(0)
 
-        request(server)
+        await request(server)
             .post('/api/services')
             .send({
                 name: 'test',
                 address: 'http://localhost',
                 is_enabled: true,
                 type: ServiceType.RPC,
-                server_id: server.id
+                server_id: server1.id
             })
             .expect(202)
 

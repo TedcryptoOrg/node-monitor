@@ -16,9 +16,9 @@ export default class OrmAuditRepository implements AuditRepository {
             data: {
                 message: audit.message,
                 created_at: new Date(),
-                ...(audit.configuration ? {configuration: {connect: {id: audit.configuration.id}}} : {}),
-                //...(audit.monitor ? {monitor: {connect: {id: audit.monitor.id}}} : {}),
-                //...(audit.server ? {server: {connect: {id: audit.server.id}}} : {}),
+                configuration_id: audit.configuration ? audit.configuration.id : undefined,
+                monitor_id: audit.monitor ? audit.monitor.id : undefined,
+                server_id: audit.server ? audit.server.id : undefined,
             }
         }))
     }

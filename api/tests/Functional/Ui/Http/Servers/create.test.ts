@@ -19,7 +19,7 @@ describe('create server controller', () => {
 
         expect((await prismaClient.servers.findMany()).length).toBe(0)
 
-        request(server)
+        await request(server)
             .post('/api/servers')
             .send({
                 name: 'test',

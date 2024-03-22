@@ -10,4 +10,4 @@ dotenv.config({
     debug: true
 })
 
-myContainer.bind<ServerMetricsExporter>(TYPES.ServerMetricsExporter).to(InMemoryServerMetricsExporter);
+myContainer.rebind<ServerMetricsExporter>(TYPES.ServerMetricsExporter).toConstantValue(new InMemoryServerMetricsExporter());

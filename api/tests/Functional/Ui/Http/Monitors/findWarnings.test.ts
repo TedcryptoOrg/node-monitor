@@ -37,7 +37,9 @@ describe('Monitors find all warnings controller', () => {
 
         expect(result.body.length).toBe(2)
         expect(result.body[0].id).toBe(warning1.id)
-        expect(result.body[0].name).toBe(warning2.name)
+        expect(result.body[0].name).toBe(warning1.name)
+        expect(result.body[1].id).toBe(warning2.id)
+        expect(result.body[1].name).toBe(warning2.name)
     })
 
     it('use pagination', async () => {

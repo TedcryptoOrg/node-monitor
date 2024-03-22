@@ -19,9 +19,9 @@ describe('Monitor delete controller', () => {
 
         expect((await prismaClient.monitors.findMany()).length).toBe(1)
 
-        request(server)
+        await request(server)
             .delete('/api/monitors/'+monitor.id)
-            .expect(200)
+            .expect(204)
 
         expect((await prismaClient.monitors.findMany()).length).toBe(0)
     });

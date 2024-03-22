@@ -37,7 +37,9 @@ describe('Monitors find all failed controller', () => {
 
         expect(result.body.length).toBe(2)
         expect(result.body[0].id).toBe(failed1.id)
-        expect(result.body[0].name).toBe(failed2.name)
+        expect(result.body[0].name).toBe(failed1.name)
+        expect(result.body[1].id).toBe(failed2.id)
+        expect(result.body[1].name).toBe(failed2.name)
     })
 
     it('use pagination', async () => {

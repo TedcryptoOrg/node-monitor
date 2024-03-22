@@ -19,7 +19,7 @@ describe('Service delete controller', () => {
 
         expect((await prismaClient.services.findMany()).length).toBe(1)
 
-        request(server)
+        await request(server)
             .delete('/api/services/'+service.id)
             .expect(200)
 

@@ -15,12 +15,12 @@ describe('servers find all services controller', () => {
     })
 
     it('find all', async () => {
-        const server = await createServer()
-        const service1 = await createService(server)
-        const service2 = await createService(server)
+        const server1 = await createServer()
+        const service1 = await createService(server1)
+        const service2 = await createService(server1)
 
         const result = await request(server)
-            .get('/api/servers/' + server.id + '/services')
+            .get('/api/servers/' + server1.id + '/services')
             .expect(200)
 
         expect(result.body.length).toBe(2)

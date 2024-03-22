@@ -8,7 +8,7 @@ export default class InMemoryServerMetricsExporter implements ServerMetricsExpor
         this.metrics.set(address, metrics);
     }
 
-    getMetrics(address: string): Promise<ServerMetrics> {
-        throw new Error("Method not implemented.");
+    async getMetrics(address: string): Promise<ServerMetrics> {
+        return Promise.resolve(this.metrics.get(address) as ServerMetrics);
     }
 }

@@ -13,7 +13,7 @@ export const ping = async (req: any, resp: any) => {
     await handleCommand(
         new PingMonitorCommand(
             Number(req.params.id),
-            req.body.status,
+            req.body.status === 'false' ? false : req.body.status, // TODO: cant make jest send false in boolean
             req.body.last_error ?? null
         ),
         resp,

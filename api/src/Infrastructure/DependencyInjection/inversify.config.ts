@@ -49,17 +49,18 @@ import OrmServiceRepository from "../Orm/Services/OrmServiceRepository";
 import ServerMetricsExporter from "../../Domain/Server/ServerMetricsExporter";
 import {PrometheusParser} from "../Server/Prometheus/PrometheusParser";
 import ServerMetricsExplorerClient from "../Server/ServerMetricsExplorerClient";
+import GetMetricsCommandHandler from "../../Application/Query/Server/GetMetrics/GetMetricsCommandHandler";
 
 const myContainer = new Container();
 
 // Repositories
 myContainer.bind<PrismaClient>(TYPES.OrmClient).toConstantValue(new PrismaClient());
 myContainer.bind<AuditRepository>(TYPES.AuditRepository).to(OrmAuditRepository);
-myContainer.bind<ConfigurationRepository>(TYPES.AuditRepository).to(OrmConfigurationRepository);
+myContainer.bind<ConfigurationRepository>(TYPES.ConfigurationRepository).to(OrmConfigurationRepository);
 myContainer.bind<ServerRepository>(TYPES.ServerRepository).to(OrmServerRepository);
 myContainer.bind<MonitorRepository>(TYPES.MonitorRepository).to(OrmMonitorRepository);
 myContainer.bind<NotificationChannelRepository>(TYPES.NotificationChannelRepository).to(OrmNotificationChannelRepository);
-myContainer.bind<ConfigurationNotificationRepository>(TYPES.NotificationChannelRepository).to(OrmConfigurationNotificationRepository);
+myContainer.bind<ConfigurationNotificationRepository>(TYPES.ConfigurationNotificationRepository).to(OrmConfigurationNotificationRepository);
 myContainer.bind<ServiceRepository>(TYPES.ServiceRepository).to(OrmServiceRepository);
 
 // Command handlers
@@ -89,6 +90,7 @@ myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(FindFailedCommandHandl
 myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(DeleteServiceCommandHandler);
 myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(UpsertServiceCommandHandler);
 myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(FindAllServicesCommandHandler);
+myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(GetMetricsCommandHandler);
 myContainer.bind<CommandHandlerManager>(CommandHandlerManager).toSelf();
 
 // Events

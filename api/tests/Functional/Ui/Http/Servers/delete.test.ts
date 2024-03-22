@@ -15,12 +15,12 @@ describe('Server delete controller', () => {
     })
 
     it('should delete', async () => {
-        const monitorServer = await createServer();
+        const server1 = await createServer();
 
         expect((await prismaClient.servers.findMany()).length).toBe(1)
 
-        request(server)
-            .delete('/api/servers/'+monitorServer.id)
+        await request(server)
+            .delete('/api/servers/'+server1.id)
             .expect(200)
 
         expect((await prismaClient.servers.findMany()).length).toBe(0)
