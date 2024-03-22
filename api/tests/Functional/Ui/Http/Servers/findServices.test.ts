@@ -4,9 +4,9 @@ import DatabaseUtil from "../../../../Helper/DatabaseUtil";
 import {myContainer} from "../../../../../src/Infrastructure/DependencyInjection/inversify.config";
 import {TYPES} from "../../../../../src/Domain/DependencyInjection/types";
 import { PrismaClient } from "@prisma/client";
-import {createConfiguration, createMonitor, createServer} from "../../../../Helper/StaticFixtures";
+import {createConfiguration, createMonitor, createServer, createService} from "../../../../Helper/StaticFixtures";
 
-describe('servers find all monitors controller', () => {
+describe('servers find all services controller', () => {
     let prismaClient: PrismaClient
 
     beforeEach(async () => {
@@ -16,15 +16,15 @@ describe('servers find all monitors controller', () => {
 
     it('find all', async () => {
         const server = await createServer()
-        const monitor1 = await createMonitor(undefined, undefined, undefined, undefined, undefined, server)
-        const monitor2 = await createMonitor(undefined, undefined, undefined, undefined, undefined, server)
+        const service1 = await createService(server)
+        const service2 = await createService(server)
 
         const result = await request(server)
-            .get('/api/servers/' + server.id + '/monitors')
+            .get('/api/servers/' + server.id + '/services')
             .expect(200)
 
         expect(result.body.length).toBe(2)
-        expect(result.body[0].id).toBe(monitor1.id)
-        expect(result.body[1].id).toBe(monitor2.id)
+        expect(result.body[0].id).toBe(service1.id)
+        expect(result.body[1].id).toBe(service2.id)
     });
 });
