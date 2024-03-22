@@ -1,4 +1,4 @@
-import parsePrometheusTextFormat from "../../util/prometheusParser/parsePrometheus";
+import parsePrometheusTextFormat from "./parsePrometheus";
 
 interface PrometheusMetric {
   name: string

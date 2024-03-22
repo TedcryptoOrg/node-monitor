@@ -1,7 +1,8 @@
 import Monitor from "./Monitor";
 
 export type MonitorFindAllProps = {
-    configuration_id?: number;
+    configuration_id?: number
+    server_id?: number
 }
 
 export default interface MonitorRepository {

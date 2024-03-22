@@ -86,7 +86,7 @@ export default class OrmMonitorRepository implements MonitorRepository {
 
     async findAll(criteria?: MonitorFindAllProps): Promise<Monitor[]> {
         const monitors = await this.ormClient.monitors.findMany({
-            where: criteria ?? undefined,
+            where: criteria,
             include: {
                 configuration: true,
                 server: true

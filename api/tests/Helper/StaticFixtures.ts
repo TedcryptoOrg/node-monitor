@@ -61,6 +61,7 @@ export const createMonitor = async(
     isEnabled?: boolean,
     status?: boolean,
     lastError?: string,
+    server?: Server
 ): Promise<Monitor> => {
     return await myContainer.get<MonitorRepository>(TYPES.MonitorRepository).upsert(
         new Monitor(
@@ -70,7 +71,7 @@ export const createMonitor = async(
             {},
             undefined,
             configuration ?? await createConfiguration(),
-            await createServer(),
+            server ?? await createServer(),
             new Date(),
             status ?? true,
             lastError ?? null
