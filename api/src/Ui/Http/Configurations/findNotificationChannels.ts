@@ -1,14 +1,12 @@
-import * as configurationDal from "../../database/dal/configuration";
-import {renderConfiguration} from "../../views/configuration";
+import {handleCommand} from "../handleCommandUtil";
+import FindConfigurationNotificationsCommand from "../../../Application/Query/Configuration/FindConfigurationNotifications/FindConfigurationNotificationsCommand";
+import ConfigurationNotification from "../../../Domain/Configuration/ConfigurationNotification";
 
 export const findNotificationChannels = async (req: any, resp: any) => {
-    const configuration = await configurationDal.get(req.params.id)
-    if (configuration === null) {
-        resp.status(404).send(`Configuration with id ${req.params.id} not found`)
-        return
-    }
-
-    const configurationView = await renderConfiguration(configuration, false, false)
-
-    resp.send(configurationView.notification_channels)
+    await handleCommand(
+        new FindConfigurationNotificationsCommand(Number(req.params.id)),
+        resp,
+        (configurationNotifications: ConfigurationNotification[]) =>
+            resp.send(configurationNotifications.map(configurationNotification => configurationNotification.toArray()))
+    )
 }

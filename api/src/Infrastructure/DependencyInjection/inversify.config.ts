@@ -48,6 +48,8 @@ import AssociateNotificationChannelCommandHandler
     from "../../Application/Write/Configuration/AssociateNotificationChannel/AssociateNotificationChannelCommandHandler";
 import RemoveAssociationWithNotificationChannelCommandHandler
     from "../../Application/Write/Configuration/RemoveAssociationWithNotificationChannel/RemoveAssociationWithNotificationChannelCommandHandler";
+import FindConfigurationNotificationsCommandHandler
+    from "../../Application/Query/Configuration/FindConfigurationNotifications/FindConfigurationNotificationsCommandHandler";
 
 const myContainer = new Container();
 
@@ -81,6 +83,7 @@ myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(PingMonitorCommandHand
 myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(UpsertMonitorCommandHandler);
 myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(AssociateNotificationChannelCommandHandler);
 myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(RemoveAssociationWithNotificationChannelCommandHandler);
+myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(FindConfigurationNotificationsCommandHandler);
 myContainer.bind<CommandHandlerManager>(CommandHandlerManager).toSelf();
 
 // Events

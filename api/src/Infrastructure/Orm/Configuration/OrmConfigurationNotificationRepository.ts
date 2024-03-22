@@ -53,4 +53,18 @@ export default class OrmConfigurationNotificationRepository implements Configura
             where: {id: id}
         });
     }
+
+    async findByConfigurationId(configurationId: number): Promise<ConfigurationNotification[]> {
+        const objs = await this.ormClient.configuration_notification_channels.findMany({
+            where: {
+                configuration_id: configurationId
+            },
+            include: {
+                configuration: true,
+                notification_channel: true,
+            }
+        });
+
+        return objs.map(ConfigurationNotification.fromArray);
+    }
 }
