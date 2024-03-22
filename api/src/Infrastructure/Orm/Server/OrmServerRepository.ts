@@ -1,5 +1,5 @@
 import Server from "../../../Domain/Server/Server";
-import ServerRepository from "../../../Domain/Server/ServerRepository";
+import ServerRepository, {FindAllCriteria} from "../../../Domain/Server/ServerRepository";
 import {inject, injectable} from "inversify";
 import {TYPES} from "../../../Domain/DependencyInjection/types";
 import {PrismaClient} from "@prisma/client";
@@ -73,8 +73,9 @@ export default class OrmServerRepository implements ServerRepository {
         });
     }
 
-    async findAll(): Promise<Server[]> {
+    async findAll(criteria?: FindAllCriteria): Promise<Server[]> {
         const data = await this.ormClient.servers.findMany({
+            where: criteria,
             include: {
                 configuration: true
             }

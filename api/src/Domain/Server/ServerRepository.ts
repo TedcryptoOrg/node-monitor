@@ -1,5 +1,9 @@
 import Server from "./Server";
 
+export type FindAllCriteria = {
+    configuration_id?: number
+}
+
 export default interface ServerRepository {
     /**
      * @throws RecordNotFound
@@ -10,5 +14,5 @@ export default interface ServerRepository {
 
     delete(id: number): Promise<void>;
 
-    findAll(): Promise<Server[]>;
+    findAll(criteria?: FindAllCriteria): Promise<Server[]>;
 }

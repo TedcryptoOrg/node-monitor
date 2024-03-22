@@ -44,13 +44,13 @@ export const createConfigurationNotification = async(): Promise<ConfigurationNot
         )
 }
 
-export const createServer = async(): Promise<Server> => {
+export const createServer = async(configuration?: Configuration): Promise<Server> => {
     return await myContainer.get<ServerRepository>(TYPES.ServerRepository).upsert(
         new Server(
             'test',
             'test',
             true,
-            await createConfiguration()
+            configuration ?? await createConfiguration()
         )
     )
 }

@@ -1,6 +1,11 @@
-import * as serverDal from "../../database/dal/server";
-import {renderServers} from "../../views/servers";
+import {handleCommand} from "../handleCommandUtil";
+import FindAllServerCommand from "../../../Application/Query/Server/FindAllServers/FindAllServerCommand";
+import Server from "../../../Domain/Server/Server";
 
 export const findServers = async (req: any, resp: any) => {
-    resp.json(await renderServers(await serverDal.findByConfigurationId(req.params.id)));
+    await handleCommand(
+        new FindAllServerCommand(Number(req.params.id)),
+        resp,
+        (servers: Server[]) => resp.send(servers.map(server => server.toArray()))
+    )
 }
