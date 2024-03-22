@@ -1,21 +1,21 @@
 import {Request, RequestHandler, Response} from "express";
-import {parse} from "./payload/configurationNotificationChannel";
-import * as configurationNotificationChannelDal from "../../database/dal/configurationNotificationChannels";
+import {handleCommand} from "../handleCommandUtil";
+import AssociateNotificationChannelCommand from "../../../Application/Write/Configuration/AssociateNotificationChannel/AssociateNotificationChannelCommand";
+import ConfigurationNotification from "../../../Domain/Configuration/ConfigurationNotification";
 
 export const associateNotificationChannel: RequestHandler = async (req: Request, resp: Response) => {
-    const configurationNotificationsInput = parse(req);
-    const found = await configurationNotificationChannelDal.findByConfigurationIdAndNotificationChannelId(
-        configurationNotificationsInput.configuration_id,
-        configurationNotificationsInput.notification_channel_id
-    );
-    if (found) {
-        return resp.status(400).send({message: 'This configuration is already associated with this notification channel.'});
+    const requiredFields = ['configuration_id', 'notification_channel_id'];
+    const missingFields = requiredFields.filter((field) => !req.body[field]);
+    if (missingFields.length > 0) {
+        return resp.status(400).send({message: `${missingFields.join(', ')} can not be empty!`});
     }
 
-    const configurationNotificationChannel = await configurationNotificationChannelDal.create({
-        configuration_id: configurationNotificationsInput.configuration_id,
-        notification_channel_id: configurationNotificationsInput.notification_channel_id
-    })
-
-    return resp.send({configurationNotificationChannel});
+    await handleCommand(
+        new AssociateNotificationChannelCommand(
+            Number(req.body.configuration_id),
+            Number(req.body.notification_channel_id)
+        ),
+        resp,
+        (configurationNotification: ConfigurationNotification) => resp.status(200).send(configurationNotification.toArray())
+    )
 }

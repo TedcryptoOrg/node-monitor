@@ -9,6 +9,9 @@ import Server from "../../src/Domain/Server/Server";
 import ServerRepository from "../../src/Domain/Server/ServerRepository";
 import Monitor from "../../src/Domain/Monitor/Monitor";
 import MonitorRepository from "../../src/Domain/Monitor/MonitorRepository";
+import {MonitorType} from "../../src/Domain/Monitor/MonitorType";
+import ConfigurationNotification from "../../src/Domain/Configuration/ConfigurationNotification";
+import ConfigurationNotificationRepository from "../../src/Domain/Configuration/ConfigurationNotificationRepository";
 
 export const createConfiguration = async (): Promise<Configuration> => {
     return myContainer.get<ConfigurationRepository>(TYPES.ConfigurationRepository).upsert(
@@ -31,6 +34,16 @@ export const createNotificationChannel = async (name?: string, isEnabled?: boole
     )
 }
 
+export const createConfigurationNotification = async(): Promise<ConfigurationNotification> => {
+    return await myContainer.get<ConfigurationNotificationRepository>(TYPES.ConfigurationNotificationRepository)
+        .upsert(
+            new ConfigurationNotification(
+                await createConfiguration(),
+                await createNotificationChannel()
+            )
+        )
+}
+
 export const createServer = async(): Promise<Server> => {
     return await myContainer.get<ServerRepository>(TYPES.ServerRepository).upsert(
         new Server(
@@ -46,7 +59,7 @@ export const createMonitor = async(): Promise<Monitor> => {
     return await myContainer.get<MonitorRepository>(TYPES.MonitorRepository).upsert(
         new Monitor(
             'test',
-            'test',
+            MonitorType.BLOCK_CHECK,
             true,
             {},
             undefined,

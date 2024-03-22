@@ -5,10 +5,12 @@ export default class DatabaseUtil {
         await prismaClient.$executeRaw`SET FOREIGN_KEY_CHECKS=0`;
 
         await prismaClient.$executeRaw`TRUNCATE TABLE audit`;
+        await prismaClient.$executeRaw`TRUNCATE TABLE configuration_notification_channels`;
         await prismaClient.$executeRaw`TRUNCATE TABLE configurations`;
+        await prismaClient.$executeRaw`TRUNCATE TABLE monitors`;
         await prismaClient.$executeRaw`TRUNCATE TABLE notification_channels`;
         await prismaClient.$executeRaw`TRUNCATE TABLE servers`;
-        await prismaClient.$executeRaw`TRUNCATE TABLE monitors`;
+        await prismaClient.$executeRaw`TRUNCATE TABLE services`;
 
         await prismaClient.$executeRaw`SET FOREIGN_KEY_CHECKS=1`;
     }

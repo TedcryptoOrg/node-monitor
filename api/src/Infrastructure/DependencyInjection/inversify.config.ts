@@ -17,7 +17,7 @@ import GetConfigurationCommandHandler
 import FindAllConfigurationsCommandHandler
     from "../../Application/Query/Configuration/FindAllConfigurations/FindAllConfigurationsCommandHandler";
 import NotificationChannelRepository from "../../Domain/NotificationChannel/NotificationChannelRepository";
-import OrmNotificationChannel from "../Orm/NotificationChannel/OrmNotificationChannel";
+import OrmNotificationChannelRepository from "../Orm/NotificationChannel/OrmNotificationChannelRepository";
 import UpsertNotificationChannelCommandHandler
     from "../../Application/Write/NotificationChannel/UpsertNotificationChannel/UpsertNotificationChannelCommandHandler";
 import DeleteNotificationChannelCommandHandler
@@ -42,6 +42,12 @@ import PingMonitorCommandHandler from "../../Application/Write/Monitor/PingMonit
 import UpsertMonitorCommandHandler from "../../Application/Write/Monitor/UpsertMonitor/UpsertMonitorCommandHandler";
 import MonitorRepository from "../../Domain/Monitor/MonitorRepository";
 import OrmMonitorRepository from "../Orm/Monitor/OrmMonitorRepository";
+import ConfigurationNotificationRepository from "../../Domain/Configuration/ConfigurationNotificationRepository";
+import OrmConfigurationNotificationRepository from "../Orm/Configuration/OrmConfigurationNotificationRepository";
+import AssociateNotificationChannelCommandHandler
+    from "../../Application/Write/Configuration/AssociateNotificationChannel/AssociateNotificationChannelCommandHandler";
+import RemoveAssociationWithNotificationChannelCommandHandler
+    from "../../Application/Write/Configuration/RemoveAssociationWithNotificationChannel/RemoveAssociationWithNotificationChannelCommandHandler";
 
 const myContainer = new Container();
 
@@ -51,7 +57,8 @@ myContainer.bind<AuditRepository>(TYPES.AuditRepository).to(OrmAuditRepository);
 myContainer.bind<ConfigurationRepository>(TYPES.AuditRepository).to(OrmConfigurationRepository);
 myContainer.bind<ServerRepository>(TYPES.ServerRepository).to(OrmServerRepository);
 myContainer.bind<MonitorRepository>(TYPES.MonitorRepository).to(OrmMonitorRepository);
-myContainer.bind<NotificationChannelRepository>(TYPES.NotificationChannelRepository).to(OrmNotificationChannel);
+myContainer.bind<NotificationChannelRepository>(TYPES.NotificationChannelRepository).to(OrmNotificationChannelRepository);
+myContainer.bind<ConfigurationNotificationRepository>(TYPES.NotificationChannelRepository).to(OrmConfigurationNotificationRepository);
 
 // Command handlers
 myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(FindLatestCommandHandler);
@@ -72,6 +79,8 @@ myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(FindAllMonitorsCommand
 myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(DeleteMonitorCommandHandler);
 myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(PingMonitorCommandHandler);
 myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(UpsertMonitorCommandHandler);
+myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(AssociateNotificationChannelCommandHandler);
+myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(RemoveAssociationWithNotificationChannelCommandHandler);
 myContainer.bind<CommandHandlerManager>(CommandHandlerManager).toSelf();
 
 // Events

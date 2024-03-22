@@ -1,10 +1,10 @@
 import express, {Request, Response, NextFunction} from 'express';
 import dotenv from "dotenv";
 import cors from "cors";
-import configurationRouter from "./Routes/configurations";
+import configurationRouter from "./Routes/configurationsRouter";
 import auditRouter from "./Routes/auditRouter";
 import serverRouter from "./Routes/serverRouter";
-import serviceRouter from "./Routes/service";
+import serviceRouter from "./Routes/serviceRouter";
 import monitorRouter from "./Routes/monitorRouter";
 import notificationChannelsRouter from "./Routes/notificationChannelsRouter";
 

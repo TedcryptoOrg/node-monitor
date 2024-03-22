@@ -5,7 +5,7 @@ import {TYPES} from "../../../Domain/DependencyInjection/types";
 import { PrismaClient } from "@prisma/client";
 
 @injectable()
-export default class OrmNotificationChannel implements NotificationChannelRepository {
+export default class OrmNotificationChannelRepository implements NotificationChannelRepository {
     constructor(
         @inject(TYPES.OrmClient) private ormClient: PrismaClient
     ) {

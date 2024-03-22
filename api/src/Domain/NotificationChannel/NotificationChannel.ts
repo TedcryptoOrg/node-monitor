@@ -2,7 +2,7 @@ import {NotificationChannelType} from "./NotificationChannelType";
 
 export type NotificationChannelArray = {
     name: string
-    type: NotificationChannelType
+    type: string
     configuration_object: string
     is_enabled: boolean
     id?: number
@@ -24,7 +24,7 @@ export default class NotificationChannel {
     static fromArray(array: NotificationChannelArray): NotificationChannel {
         return new NotificationChannel(
             array.name,
-            array.type,
+            array.type as NotificationChannelType,
             JSON.parse(array.configuration_object),
             array.is_enabled,
             array.id,

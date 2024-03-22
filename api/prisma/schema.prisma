@@ -27,8 +27,8 @@ model configuration_notification_channels {
   notification_channel_id Int                   @db.UnsignedInt
   created_at              DateTime              @default(now()) @db.DateTime(0)
   updated_at              DateTime              @default(now()) @db.DateTime(0)
-  configurations          configurations        @relation(fields: [configuration_id], references: [id], onDelete: Cascade, map: "fk_configuration_notification_channels_configuration_id")
-  notification_channels   notification_channels @relation(fields: [notification_channel_id], references: [id], onDelete: Cascade, map: "fk_configuration_notification_channels_notification_channel_id")
+  configuration          configurations        @relation(fields: [configuration_id], references: [id], onDelete: Cascade, map: "fk_configuration_notification_channels_configuration_id")
+  notification_channel   notification_channels @relation(fields: [notification_channel_id], references: [id], onDelete: Cascade, map: "fk_configuration_notification_channels_notification_channel_id")
 
   @@index([configuration_id], map: "fk_configuration_notification_channels_configuration_id")
   @@index([notification_channel_id], map: "fk_configuration_notification_channels_notification_channel_id")
