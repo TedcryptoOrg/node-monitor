@@ -74,9 +74,14 @@ npm-command:
 tests:
 	$(DOCKER_NODE_COMPOSE_RUN) npm test --detectOpenHandles
 
-## [Database] Create a empty migration with name (NAME=name-migration make db-create-migration)
-db-create-migration:
-	$(DOCKER_NODE_COMPOSE_RUN) npx sequelize-cli migration:generate --name $(NAME) --url $(DB_DSN)
+.PHONY: db-diff db.diff db-create-migration db.create_migration
+## [Database] Create migration with name (NAME=name-migration make db-create-migration)
+db-diff db.diff db.create_migration db-create-migration:
+	if [ -z "$(NAME)" ]; then \
+		read -p "Enter migration name: " NAME; \
+    fi; \
+	$(DOCKER_COMPOSE_EXEC) node-app npx prisma migrate dev --name $$NAME --create-only
+	@echo "Migration $$NAME created. Apply it with 'make db-migrate'"
 
 ## [Database] Run migrations
 db-migrate:

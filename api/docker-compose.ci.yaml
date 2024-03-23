@@ -4,7 +4,7 @@ services:
     image: mariadb:11.1.2
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: ted_node_monitor_test
+      MYSQL_DATABASE: ted_node_monitor
       MYSQL_USER: monitor
       MYSQL_PASSWORD: monitor
     ports:
