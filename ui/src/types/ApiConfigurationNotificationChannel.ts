@@ -7,5 +7,5 @@ export interface ApiConfigurationNotificationChannelInput {
 
 export interface ApiConfigurationNotificationChannel {
     id: number
-    channel: ApiNotificationChannel
+    notification_channel: ApiNotificationChannel
 }

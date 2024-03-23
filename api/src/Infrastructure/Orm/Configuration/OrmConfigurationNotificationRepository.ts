@@ -12,7 +12,7 @@ export default class OrmConfigurationNotificationRepository implements Configura
     }
 
     async upsert(configurationNotification: ConfigurationNotification): Promise<ConfigurationNotification> {
-        if (configurationNotification.configuration.id === undefined || configurationNotification.notificationChannel.id === undefined) {
+        if (configurationNotification.configuration?.id === undefined || configurationNotification.notificationChannel?.id === undefined) {
             throw new Error('Configuration and NotificationChannel must have an id');
         }
 

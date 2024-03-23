@@ -13,17 +13,29 @@ export default class OrmConfigurationRepository implements ConfigurationReposito
 
     async get(id: number): Promise<Configuration> {
         return Configuration.fromArray(await this.ormClient.configurations.findUnique({
-            where: {id: id}
+            where: {id: id},
+            include: {
+                monitors: true,
+                servers: true,
+                notification_channels: true
+            }
         }) as ConfigurationArray);
     }
 
     async findAll(): Promise<Configuration[]> {
-        return (await this.ormClient.configurations.findMany())
-            .map((configuration: any) => Configuration.fromArray(configuration as ConfigurationArray));
+        const results = await this.ormClient.configurations.findMany({
+            include: {
+                monitors: true,
+                servers: true,
+                notification_channels: true
+            }
+        })
+
+        return results.map((configuration: any) => Configuration.fromArray(configuration as ConfigurationArray));
     }
 
     async upsert(configuration: Configuration): Promise<Configuration> {
-        const data: ConfigurationArray = {
+        const data = {
             name: configuration.name,
             chain: configuration.chain,
             is_enabled: configuration.is_enabled,
@@ -33,7 +45,12 @@ export default class OrmConfigurationRepository implements ConfigurationReposito
             return Configuration.fromArray(
                 await this.ormClient.configurations.update({
                     where: {id: configuration.id},
-                    data: data
+                    data: data,
+                    include: {
+                        monitors: true,
+                        servers: true,
+                        notification_channels: true
+                    }
                 })
             );
         }
@@ -43,6 +60,11 @@ export default class OrmConfigurationRepository implements ConfigurationReposito
                 data: {
                     ...data,
                     ...{createdAt: new Date(), updatedAt: new Date()}
+                },
+                include: {
+                    monitors: true,
+                    servers: true,
+                    notification_channels: true
                 }
             })
         );

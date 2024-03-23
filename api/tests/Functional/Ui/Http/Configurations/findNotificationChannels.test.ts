@@ -18,11 +18,11 @@ describe('configurations find all notification channels controller', () => {
         const configurationNotification = await createConfigurationNotification()
 
         const result = await request(server)
-            .get('/api/configurations/' + configurationNotification.configuration.id + '/notification-channels')
+            .get('/api/configurations/' + configurationNotification.configuration?.id + '/notification-channels')
             .expect(200)
 
         expect(result.body.length).toBe(1)
-        expect(result.body[0].configuration.id).toBe(configurationNotification.configuration.id)
-        expect(result.body[0].notification_channel.id).toBe(configurationNotification.notificationChannel.id)
+        expect(result.body[0].configuration.id).toBe(configurationNotification.configuration?.id)
+        expect(result.body[0].notification_channel.id).toBe(configurationNotification.notificationChannel?.id)
     });
 });

@@ -20,7 +20,7 @@ describe('configurations remove association controller', () => {
         expect((await prismaClient.configuration_notification_channels.findMany({})).length).toBe(1)
 
         await request(server)
-            .delete('/api/configurations/'+configurationNotification.configuration.id+'/notification-channels/'+configurationNotification.id)
+            .delete('/api/configurations/'+configurationNotification.configuration?.id+'/notification-channels/'+configurationNotification.id)
             .expect(200)
 
         expect((await prismaClient.configuration_notification_channels.findMany({})).length).toBe(0)
