@@ -54,7 +54,7 @@ const ConfigurationNotificationChannelsList: React.FC<NotificationChannelsListPr
     }, [fetchData]);
 
     const handleRemove = (id: number) => {
-        fetch(`${process.env.REACT_APP_API_HOST}/api/configurations/${id}/notification-channels`, {
+        fetch(`${process.env.REACT_APP_API_HOST}/api/configurations/${configuration.id}/notification-channels/${id}`, {
             method: 'DELETE',
         }).then(() => {
             fetchData()
@@ -84,10 +84,10 @@ const ConfigurationNotificationChannelsList: React.FC<NotificationChannelsListPr
                             {notificationChannels.map((notificationChannel) => (
                                 <TableRow key={notificationChannel.id}>
                                     <TableCell>{notificationChannel.id}</TableCell>
-                                    <TableCell>{notificationChannel.channel.type}</TableCell>
-                                    <TableCell>{notificationChannel.channel.name}</TableCell>
+                                    <TableCell>{notificationChannel.notification_channel.type}</TableCell>
+                                    <TableCell>{notificationChannel.notification_channel.name}</TableCell>
                                     <TableCell>
-                                        <BooleanIcon value={notificationChannel.channel.is_enabled} />
+                                        <BooleanIcon value={notificationChannel.notification_channel.is_enabled} />
                                     </TableCell>
                                     <TableCell>
                                         <Button variant="contained" color="secondary"

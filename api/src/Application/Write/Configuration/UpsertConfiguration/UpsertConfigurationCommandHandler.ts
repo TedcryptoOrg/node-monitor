@@ -20,6 +20,9 @@ export default class UpsertConfigurationCommandHandler implements CommandHandler
             command.name,
             command.chain,
             command.is_active,
+            [],
+            [],
+            [],
             command.id
         ));
 

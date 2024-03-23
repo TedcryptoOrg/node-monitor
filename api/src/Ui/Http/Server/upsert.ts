@@ -15,7 +15,7 @@ export const upsert = async (req: any, resp: any) => {
             req.body.name,
             req.body.address,
             req.body.is_enabled,
-            req.body.configuration_id,
+            Number(req.body.configuration_id),
             req.params.id ? Number(req.params.id) : undefined
         ),
         resp,
