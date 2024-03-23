@@ -21,6 +21,6 @@ configurationRouter.get('/:id/servers', findServers)
 
 configurationRouter.get('/:id/notification-channels', findNotificationChannels)
 configurationRouter.post('/:id/notification-channels', associateNotificationChannel)
-configurationRouter.delete('/:id/notification-channels', removeAssociationWithNotificationChannel)
+configurationRouter.delete('/:id/notification-channels/:notificationId', removeAssociationWithNotificationChannel)
 
 export default configurationRouter

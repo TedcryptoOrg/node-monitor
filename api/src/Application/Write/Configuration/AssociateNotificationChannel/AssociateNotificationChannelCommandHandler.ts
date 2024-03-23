@@ -18,11 +18,13 @@ export default class AssociateNotificationChannelCommandHandler implements Comma
         @inject(TYPES.AuditRepository) private auditRepository: AuditRepository,
     ) {
     }
-    async handle(command: AssociateNotificationChannelCommand): Promise<void> {
+    async handle(command: AssociateNotificationChannelCommand): Promise<ConfigurationNotification> {
         const configuration = await this.configurationRepository.get(command.configurationId)
         const notificationChannel = await this.notificationChannelRepository.get(command.notificationChannelId)
 
-        await this.configurationNotificationRepository.upsert(new ConfigurationNotification(configuration, notificationChannel))
+        const configurationNotification = await this.configurationNotificationRepository.upsert(
+            new ConfigurationNotification(configuration, notificationChannel)
+        )
 
         await this.auditRepository.create(new Audit(
             configuration,
@@ -30,5 +32,7 @@ export default class AssociateNotificationChannelCommandHandler implements Comma
             null,
             `Notification channel ${notificationChannel.name} associated to configuration ${configuration.name}`,
         ))
+
+        return configurationNotification;
     }
 }

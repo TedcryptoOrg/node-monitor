@@ -19,7 +19,7 @@ describe('notification channel find all controller', () => {
         const notificationChannel2 = await createNotificationChannel();
 
         const result = await request(server)
-            .get('/api/notification-channels/')
+            .get('/api/notification-channels')
             .expect(200)
 
         expect(result.body.length).toBe(2)
@@ -36,7 +36,7 @@ describe('notification channel find all controller', () => {
         await createNotificationChannel(undefined, false);
 
         const result = await request(server)
-            .get('/api/notification-channels/?only_active=true')
+            .get('/api/notification-channels?only_active=1')
             .expect(200)
 
         expect(result.body.length).toBe(1)

@@ -38,27 +38,25 @@ export default class OrmNotificationChannelRepository implements NotificationCha
     }
 
     async upsert(notificationChannel: NotificationChannel): Promise<NotificationChannel> {
-        const upsertedNotificationChannel = await this.ormClient.notification_channels.upsert({
-            where: {
-                id: notificationChannel.id
-            },
-            update: {
-                name: notificationChannel.name,
-                type: notificationChannel.type,
-                is_enabled: notificationChannel.isEnabled,
-                updated_at: new Date()
-            },
-            create: {
-                name: notificationChannel.name,
-                type: notificationChannel.type.toString(),
-                configuration_object: notificationChannel.toArray().configuration_object,
-                is_enabled: notificationChannel.isEnabled,
-                created_at: new Date(),
-                updated_at: new Date()
-            }
-        });
+        const data = {
+            name: notificationChannel.name,
+            type: notificationChannel.type,
+            is_enabled: notificationChannel.isEnabled,
+            configuration_object: notificationChannel.toArray().configuration_object,
+            updated_at: new Date()
+        }
+        if (notificationChannel.id) {
+            return NotificationChannel.fromArray(
+                await this.ormClient.notification_channels.update({
+                    where: {id: notificationChannel.id},
+                    data: data
+                })
+            )
+        }
 
-        return NotificationChannel.fromArray(upsertedNotificationChannel as NotificationChannelArray);
+        return NotificationChannel.fromArray(await this.ormClient.notification_channels.create({
+            data: data
+        }));
     }
 
     async delete(id: number): Promise<void> {

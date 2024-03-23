@@ -19,7 +19,7 @@ describe('configurations delete controller', () => {
 
         expect((await prismaClient.configurations.findMany()).length).toBe(1)
 
-        request(server)
+        await request(server)
             .delete('/api/configurations/'+configuration.id)
             .expect(200)
 

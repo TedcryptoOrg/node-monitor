@@ -16,7 +16,7 @@ describe('create configurations controller', () => {
     it('should create a configuration', async () => {
         expect((await prismaClient.configurations.findMany()).length).toBe(0)
 
-        request(server)
+        await request(server)
             .post('/api/configurations')
             .send({
                 name: 'test',

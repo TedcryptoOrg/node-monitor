@@ -17,16 +17,16 @@ describe('create notification channel controller', () => {
     it('should create', async () => {
         expect((await prismaClient.notification_channels.findMany()).length).toBe(0)
 
-        request(server)
+        await request(server)
             .post('/api/notification-channels')
             .send({
                 name: 'test',
                 type: NotificationChannelType.TELEGRAM.toString(),
-                configurationObject: JSON.stringify({
+                configuration_object: JSON.stringify({
                     token: 'test',
                     chat_id: 'test'
                 }),
-                isEnabled: true
+                is_enabled: true
             })
             .expect(202)
 

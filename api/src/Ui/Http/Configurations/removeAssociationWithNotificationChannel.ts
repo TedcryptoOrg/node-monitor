@@ -4,7 +4,7 @@ import RemoveAssociationWithNotificationChannelCommand from "../../../Applicatio
 export const removeAssociationWithNotificationChannel = async (req: any, resp: any) => {
     await handleCommand(
         new RemoveAssociationWithNotificationChannelCommand(
-            Number(req.params.id)
+            Number(req.params.notificationId)
         ),
         resp,
         () => resp.status(200).send({})

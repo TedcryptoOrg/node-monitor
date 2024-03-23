@@ -17,12 +17,12 @@ describe('notification channel delete controller', () => {
     it('should delete', async () => {
         const notificationChannel = await createNotificationChannel();
 
-        expect((await prismaClient.configurations.findMany()).length).toBe(1)
+        expect((await prismaClient.notification_channels.findMany()).length).toBe(1)
 
-        request(server)
+        await request(server)
             .delete('/api/notification-channels/'+notificationChannel.id)
             .expect(200)
 
-        expect((await prismaClient.configurations.findMany()).length).toBe(0)
+        expect((await prismaClient.notification_channels.findMany()).length).toBe(0)
     });
 });

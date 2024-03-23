@@ -50,6 +50,8 @@ import ServerMetricsExporter from "../../Domain/Server/ServerMetricsExporter";
 import {PrometheusParser} from "../Server/Prometheus/PrometheusParser";
 import ServerMetricsExplorerClient from "../Server/ServerMetricsExplorerClient";
 import GetMetricsCommandHandler from "../../Application/Query/Server/GetMetrics/GetMetricsCommandHandler";
+import GetNotificationChannelCommandHandler
+    from "../../Application/Query/NotificationChannel/GetNotificationChannel/GetNotificationChannelCommandHandler";
 
 const myContainer = new Container();
 
@@ -91,6 +93,7 @@ myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(DeleteServiceCommandHa
 myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(UpsertServiceCommandHandler);
 myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(FindAllServicesCommandHandler);
 myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(GetMetricsCommandHandler);
+myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(GetNotificationChannelCommandHandler);
 myContainer.bind<CommandHandlerManager>(CommandHandlerManager).toSelf();
 
 // Events

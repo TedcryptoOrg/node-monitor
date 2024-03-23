@@ -4,12 +4,7 @@ import DatabaseUtil from "../../../../Helper/DatabaseUtil";
 import {myContainer} from "../../../../../src/Infrastructure/DependencyInjection/inversify.config";
 import {TYPES} from "../../../../../src/Domain/DependencyInjection/types";
 import { PrismaClient } from "@prisma/client";
-import {
-    createConfiguration,
-    createConfigurationNotification,
-    createMonitor,
-    createNotificationChannel
-} from "../../../../Helper/StaticFixtures";
+import {createConfigurationNotification} from "../../../../Helper/StaticFixtures";
 
 describe('configurations find all notification channels controller', () => {
     let prismaClient: PrismaClient
