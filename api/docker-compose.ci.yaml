@@ -1,0 +1,34 @@
+version: '3.8'
+services:
+  database:
+    image: mariadb:11.1.2
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: ted_node_monitor
+      MYSQL_USER: monitor
+      MYSQL_PASSWORD: monitor
+    ports:
+      - "${API_DATABASE_PORT:-3306}:3306"
+    volumes:
+      - mariadb_data:/var/lib/mysql
+    healthcheck:
+      test: [ "CMD", "/usr/local/bin/healthcheck.sh", "--su-mysql", "--connect", "--innodb_initialized" ]
+      interval: 2s
+      retries: 120
+
+  node-app:
+    init: true
+    build:
+      context: .
+      dockerfile: docker/node/Dockerfile
+      target: test
+    env_file:
+      - .env
+    ports:
+      - "${SERVER_PORT:-3003}:3003"
+    restart: always
+    depends_on:
+      - "database"
+
+volumes:
+  mariadb_data:

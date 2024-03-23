@@ -1,0 +1,26 @@
+name: 'Shared: Failure Notification'
+
+on:
+  workflow_run:
+    workflows: ["*"]
+    types:
+      - completed
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'failure' }}
+    steps:
+      - name: "Checkout"
+        uses: actions/checkout@v4
+
+      - name: 'Send failure message'
+        uses: ./.github/actions/send-telegram-message
+        with:
+          bot_token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          chat_id: ${{ secrets.TELEGRAM_CHAT_ID }}
+          thread_id: ${{ secrets.TELEGRAM_THREAD_ID }}
+          message: |
+            Workflow ${{ github.event.workflow_run.name }} failed!
+            Repository: ${{ github.repository }}
+            Run: ${{ github.event.workflow_run.html_url }}

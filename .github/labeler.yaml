@@ -1,0 +1,20 @@
+# General
+
+"Documentation":
+  - "**/docs/**"
+  - "**/README.md"
+
+"Workflows":
+  - ".github/workflows/**"
+
+# Libraries
+
+"API":
+  - "api/**"
+
+"UI":
+  - "ui/**"
+
+"Monitor":
+  - "monitor/**"
+
