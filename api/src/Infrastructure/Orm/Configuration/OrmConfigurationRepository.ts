@@ -19,9 +19,7 @@ export default class OrmConfigurationRepository implements ConfigurationReposito
 
     async findAll(): Promise<Configuration[]> {
         return (await this.ormClient.configurations.findMany())
-            .map((configuration) => Configuration.fromArray(
-                configuration as ConfigurationArray
-            ));
+            .map((configuration: any) => Configuration.fromArray(configuration as ConfigurationArray));
     }
 
     async upsert(configuration: Configuration): Promise<Configuration> {

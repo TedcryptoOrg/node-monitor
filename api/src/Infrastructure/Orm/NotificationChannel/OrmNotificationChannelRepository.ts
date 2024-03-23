@@ -33,7 +33,7 @@ export default class OrmNotificationChannelRepository implements NotificationCha
         });
 
         return notificationChannels.map(
-            notificationChannel => NotificationChannel.fromArray(notificationChannel as NotificationChannelArray)
+            (notificationChannel: any) => NotificationChannel.fromArray(notificationChannel as NotificationChannelArray)
         );
     }
 

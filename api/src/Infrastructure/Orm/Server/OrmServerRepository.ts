@@ -85,6 +85,6 @@ export default class OrmServerRepository implements ServerRepository {
             }
         });
 
-        return data.map((server) => Server.fromArray(server));
+        return data.map((server: any) => Server.fromArray(server));
     }
 }
