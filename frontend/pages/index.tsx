@@ -60,18 +60,14 @@ const Dashboard = () => {
           <Grid.Col span={12}>
             <Title order={3}>On going issues</Title>
             <Skeleton visible={loadingIssues}>
-              <TedyTable
-                data={{ header: tableHeaders, body: issues }}
-              ></TedyTable>
+              <TedyTable></TedyTable>
             </Skeleton>
           </Grid.Col>
 
           <Grid.Col span={12} mt={50}>
             <Title order={3}>Warnings</Title>
             <Skeleton visible={loadingWarnings}>
-              <TedyTable
-                data={{ header: tableHeaders, body: warnings }}
-              ></TedyTable>
+              <TedyTable></TedyTable>
             </Skeleton>
           </Grid.Col>
         </Grid>
