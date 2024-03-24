@@ -19,7 +19,7 @@ export default class OrmAuditRepository implements AuditRepository {
                 configuration_id: audit.configuration ? audit.configuration.id : undefined,
                 monitor_id: audit.monitor ? audit.monitor.id : undefined,
                 server_id: audit.server ? audit.server.id : undefined,
-            }
+            },
         }))
     }
 
@@ -33,7 +33,7 @@ export default class OrmAuditRepository implements AuditRepository {
                 },
             });
 
-        throw new Error('Method not implemented.');
+        return data.map(Audit.fromArray)
     }
 
 }
