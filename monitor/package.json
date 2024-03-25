@@ -4,10 +4,12 @@
   "description": "Simple library to monitor cosmos nodes",
   "scripts": {
     "start": "ts-node src/index.ts",
-    "test": "jest",
-    "clean": "rm -rf ./dist",
-    "lint": "eslint src/**/*.ts scripts/**/*.ts",
-    "lint:fix": "eslint --fix src/**/*.ts scripts/**/*.ts"
+    "start:watch": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/index.ts",
+    "check:type": "tsc --noEmit",
+    "test": "npx jest",
+    "lint": "npm run check:type && eslint src/**/*.ts",
+    "lint:fix": "eslint --fix src/**/*.ts",
+    "build": "tsc -p ."
   },
   "keywords": [],
   "author": "Josh_Lopes<josluis.lopes@gmail.com>",

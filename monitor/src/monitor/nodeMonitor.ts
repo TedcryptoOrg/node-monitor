@@ -1,15 +1,15 @@
-import {type AlertChannel} from '../AlertChannel/alertChannel'
-import {BlockCheck} from './checkers/blockCheck'
-import {AbstractMonitor} from './abstractMonitor'
-import {UrlCheck} from './checkers/urlCheck'
-import {DiskSpace} from './checkers/nodeExporter/diskSpace'
-import {SignMissCheck} from './checkers/signMissCheck'
-import {type Chain} from '@tedcryptoorg/cosmos-directory'
-import {MissCounter} from './checkers/priceFeeder/missCounter'
-import {ApiMonitor} from '../type/api/ApiMonitor'
-import {ApiConfiguration} from "../type/api/ApiConfiguration";
-import {ApiService} from "../type/api/ApiService";
-import {MonitorTypeEnum} from "../type/api/MonitorTypeEnum";
+import { type AlertChannel } from '../AlertChannel/alertChannel'
+import { BlockCheck } from './checkers/blockCheck'
+import { AbstractMonitor } from './abstractMonitor'
+import { UrlCheck } from './checkers/urlCheck'
+import { DiskSpace } from './checkers/nodeExporter/diskSpace'
+import { SignMissCheck } from './checkers/signMissCheck'
+import { type Chain } from '@tedcryptoorg/cosmos-directory'
+import { MissCounter } from './checkers/priceFeeder/missCounter'
+import { type ApiMonitor } from '../type/api/ApiMonitor'
+import { type ApiConfiguration } from '../type/api/ApiConfiguration'
+import { type ApiService } from '../type/api/ApiService'
+import { MonitorTypeEnum } from '../type/api/MonitorTypeEnum'
 
 export class NodeMonitor extends AbstractMonitor {
   constructor (
@@ -39,12 +39,12 @@ export class NodeMonitor extends AbstractMonitor {
           break
         case MonitorTypeEnum.PRICE_FEEDER_MISS_COUNT:
           this.monitor_params.push(
-              new MissCounter(monitor, this.alertChannels, this.services)
+            new MissCounter(monitor, this.alertChannels, this.services)
           )
           break
         case MonitorTypeEnum.BLOCK_CHECK:
           this.monitor_params.push(
-              new BlockCheck(monitor, this.alertChannels)
+            new BlockCheck(monitor, this.alertChannels)
           )
           break
         case MonitorTypeEnum.URL_CHECK:
@@ -52,7 +52,7 @@ export class NodeMonitor extends AbstractMonitor {
           break
         case MonitorTypeEnum.SIGN_MISS_CHECK:
           this.monitor_params.push(
-              new SignMissCheck(monitor, this.alertChannels, this.services, this.chain)
+            new SignMissCheck(monitor, this.alertChannels, this.services, this.chain)
           )
           break
       }
