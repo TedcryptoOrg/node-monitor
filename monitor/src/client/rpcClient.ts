@@ -8,7 +8,7 @@ import { type QueryClientImpl as SlashingQueryClient } from 'cosmjs-types/cosmos
 import { createSlashingClient, createStakingClient } from './queryClientFactory'
 import { type SigningInfosResponse } from './type/uniformisation/slashing/signingInfosResponse'
 import { type ValidatorInfoResponse } from './type/uniformisation/staking/validatorInfoResponse'
-import { createDateFromSeconds } from '../util/dateTools'
+import { createDateFromSeconds } from '../Application/Shared/dateTools'
 
 export class RpcClient implements ClientInterface {
   private readonly clients: Record<string, any> = {}

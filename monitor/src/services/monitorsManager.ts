@@ -1,5 +1,5 @@
 import axios from "axios";
-import {sleep} from "../util/sleep";
+import {sleep} from "../Application/Shared/sleep";
 
 export async function pingMonitor(
     id: number,

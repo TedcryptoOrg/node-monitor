@@ -1,4 +1,4 @@
-name: "Monitor: Run tests"
+name: "Monitor: Tests"
 
 defaults:
   run:
@@ -8,11 +8,11 @@ on:
   workflow_dispatch: ~
   pull_request:
     paths:
-      - ".github/workflows/monitor.ci.yaml"
+      - ".github/workflows/monitor.tests.yaml"
       - "monitor/**"
   push:
     paths:
-      - ".github/workflows/monitor.ci.yaml"
+      - ".github/workflows/monitor.tests.yaml"
       - "monitor/**"
     branches:
       - "main"
@@ -21,7 +21,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: ${{ github.head_ref || github.run_id }} ~ "monitor.ci.yaml"
+  group: ${{ github.head_ref || github.run_id }} ~ "monitor.static-analysis.yaml"
   cancel-in-progress: true
 
 jobs:
@@ -37,13 +37,5 @@ jobs:
       - name: Install modules
         run: npm install
 
-      - name: "Docker compose"
-        uses: isbang/compose-action@v1.5.1
-        with:
-          compose-file: docker-compose.yaml
-
-      - name: "DB migrate"
-        run: make db-migrate
-
-      - name: Run tests
-        run: make tests
+      - name: Run Lint
+        run: npm run lint

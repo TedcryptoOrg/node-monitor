@@ -1,6 +1,6 @@
 import {MonitorCheck} from "./monitorCheck";
 import {ClientInterface} from "../../client/clientInterface";
-import {getValConsAddressFromPubKey} from "../../util/validatorTools";
+import {getValConsAddressFromPubKey} from "../../Application/Shared/validatorTools";
 import {ApiMonitor, SignMissCheckConfiguration} from "../../type/api/ApiMonitor";
 import {ApiService} from "../../type/api/ApiService";
 import {buildClient} from "../../services/clientManager";

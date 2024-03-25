@@ -1,4 +1,5 @@
-version: '3'
+version: '3.7'
+
 services:
   node-app:
     image: node:20.8.0

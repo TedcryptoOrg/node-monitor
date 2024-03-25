@@ -1,5 +1,5 @@
 import axios from 'axios'
-import {CryptoTools} from '../../../crypto/crypto_tools'
+import {CryptoTools} from '../../../Application/Shared/CryptoTools'
 import {type AlertChannel} from '../../../AlertChannel/alertChannel'
 import {NoRecoverableException} from '../../exception/noRecoverableException'
 import {RecoverableException} from '../../exception/recoverableException'

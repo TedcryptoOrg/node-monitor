@@ -2,12 +2,13 @@
 .PHONY: tests
 .SILENT:
 
-include .env
-
 ## Colors
 COLOR_RESET   = \033[0m
 COLOR_INFO    = \033[32m
 COLOR_COMMENT = \033[33m
+
+PROJECT_NAME = 'node-monitor-monitor'
+NETWORK = 'node-monitor-monitor_default'
 
 ## Help
 help:
@@ -34,24 +35,30 @@ help:
 	} \
 	{ lastLine = $$0 }' $(MAKEFILE_LIST)
 
-DOCKER_COMPOSE_EXEC ?= docker compose exec
-DOCKER_NODE_COMPOSE_RUN ?= docker compose run node-app
+DOCKER_COMPOSE = docker compose --project-name $(PROJECT_NAME)
+DOCKER_COMPOSE_EXEC ?= $(DOCKER_COMPOSE) exec
+DOCKER_NODE_COMPOSE_RUN ?= $(DOCKER_COMPOSE) run --rm -it node-app
+SEQUELIZE_IMAGE ?= "calipsaci/sequelize-cli"
+SEQUELIZE_RUN ?= docker run --rm -it --network=$(NETWORK) -v .:/app -w /app $(SEQUELIZE_IMAGE)
 
 ## [Docker] Start containers
 up:
-	docker compose up -d
+	$(DOCKER_COMPOSE) up -d
 
 ## [Docker] Stop containers
 stop:
-	docker compose stop
+	$(DOCKER_COMPOSE) stop
 
 ## [Docker] Down containers
 down:
-	docker compose down
+	$(DOCKER_COMPOSE) down
 
 ## [Docker] Build containers
 build:
-	docker compose build
+	$(DOCKER_COMPOSE) build
+
+shell:
+	$(DOCKER_COMPOSE_EXEC) node-app /bin/sh
 
 ## [NPM] Install packages
 install:
