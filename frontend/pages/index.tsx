@@ -1,6 +1,5 @@
 'use client';
 import { Grid, Group, SimpleGrid, Skeleton, Title } from '@mantine/core';
-import TedyTable from '../components/Table';
 import { useEffect, useState } from 'react';
 import { apiCall, RequestType } from '../utils/api';
 
@@ -59,16 +58,12 @@ const Dashboard = () => {
         <Grid align='stretch' justify='stretch'>
           <Grid.Col span={12}>
             <Title order={3}>On going issues</Title>
-            <Skeleton visible={loadingIssues}>
-              <TedyTable></TedyTable>
-            </Skeleton>
+            <Skeleton visible={loadingIssues}></Skeleton>
           </Grid.Col>
 
           <Grid.Col span={12} mt={50}>
             <Title order={3}>Warnings</Title>
-            <Skeleton visible={loadingWarnings}>
-              <TedyTable></TedyTable>
-            </Skeleton>
+            <Skeleton visible={loadingWarnings}></Skeleton>
           </Grid.Col>
         </Grid>
       </Group>

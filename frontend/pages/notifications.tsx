@@ -1,5 +1,4 @@
 import { Button, Group, SimpleGrid, Title } from '@mantine/core';
-import TedyTable from '../components/Table';
 import { IconTablePlus } from '@tabler/icons-react';
 const Notifications = () => {
   return (
@@ -13,9 +12,7 @@ const Notifications = () => {
         </SimpleGrid>
       </Group>
 
-      <Group justify='center'>
-        <TedyTable></TedyTable>
-      </Group>
+      <Group justify='center'></Group>
     </SimpleGrid>
   );
 };

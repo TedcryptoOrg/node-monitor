@@ -1,4 +1,12 @@
-import { Box, Button, Group, SimpleGrid, Title } from '@mantine/core';
+import {
+  Box,
+  Button,
+  Group,
+  SimpleGrid,
+  Skeleton,
+  Switch,
+  Title,
+} from '@mantine/core';
 import {
   IconEdit,
   IconTablePlus,
@@ -17,6 +25,7 @@ import { ApiConfiguration } from '../types/ApiConfiguration';
 
 const Configurations = () => {
   const [configData, setConfigData] = useState<ApiConfiguration[]>([]);
+  const [loadingData, setLoadingData] = useState(true);
 
   useEffect(() => {
     getConfigurations();
@@ -33,6 +42,7 @@ const Configurations = () => {
         console.info('Configurations Data:');
         console.table(data);
         setConfigData(data);
+        setLoadingData(false);
       },
     });
 
@@ -41,6 +51,7 @@ const Configurations = () => {
     {
       header: 'ID',
       accessorKey: 'id',
+      enableEditing: false,
     },
     {
       header: 'Name',
@@ -49,19 +60,33 @@ const Configurations = () => {
     {
       header: 'Chain',
       accessorKey: 'chain',
+      editVariant: 'select',
+      mantineEditSelectProps: {
+        data: [
+          { value: 'chain 1', label: 'chain 1' },
+          { value: 'chain 2', label: 'chain 2' },
+        ],
+      },
     },
     {
       header: 'Enabled',
       accessorKey: 'is_enabled',
+      editVariant: 'select',
+      mantineEditSelectProps: {
+        data: [
+          { value: 'enabled', label: 'Enabled' },
+          { value: 'disabled', label: 'Disabled' },
+        ],
+      },
       mantineTableBodyCellProps: {
         align: 'center',
       },
       Cell: ({ cell }) => (
         <span>
           {cell.getValue<boolean>() ? (
-            <IconWorldOff color='#d80e0e' />
-          ) : (
             <IconWorldCheck color='#1adb00' />
+          ) : (
+            <IconWorldOff color='#d80e0e' />
           )}
         </span>
       ),
@@ -78,8 +103,10 @@ const Configurations = () => {
     values,
   }) => {
     // updated values from edit modal
+    // to-do:
+    // 1. convert the value from the select dropdown to a boolean
     console.table(values);
-    table.setEditingRow(null); //exit editing mode
+    table.setEditingRow(null);
   };
 
   const table = useMantineReactTable({
@@ -106,7 +133,8 @@ const Configurations = () => {
       </Box>
     ),
     enableEditing: true,
-    onEditingRowSave: handleSaveRow,
+    onEditingRowSave:
+      handleSaveRow as MRT_TableOptions<ApiConfiguration>['onEditingRowSave'],
   });
 
   return (
@@ -128,7 +156,9 @@ const Configurations = () => {
       </Group>
 
       <Group justify='center'>
-        <MantineReactTable table={table}></MantineReactTable>
+        <Skeleton visible={loadingData}>
+          <MantineReactTable table={table}></MantineReactTable>
+        </Skeleton>
       </Group>
     </SimpleGrid>
   );
