@@ -6,10 +6,10 @@ import { DiskSpace } from './checkers/nodeExporter/diskSpace'
 import { SignMissCheck } from './checkers/signMissCheck'
 import { type Chain } from '@tedcryptoorg/cosmos-directory'
 import { MissCounter } from './checkers/priceFeeder/missCounter'
-import { type ApiMonitor } from '../type/api/ApiMonitor'
-import { type ApiConfiguration } from '../type/api/ApiConfiguration'
-import { type ApiService } from '../type/api/ApiService'
-import { MonitorTypeEnum } from '../type/api/MonitorTypeEnum'
+import { type ApiMonitor } from '../Infrastructure/Api/Tedcrypto/Types/ApiMonitor'
+import { type ApiConfiguration } from '../Infrastructure/Api/Tedcrypto/Types/ApiConfiguration'
+import { type ApiService } from '../Infrastructure/Api/Tedcrypto/Types/ApiService'
+import { MonitorTypeEnum } from '../Infrastructure/Api/Tedcrypto/Types/MonitorTypeEnum'
 
 export class NodeMonitor extends AbstractMonitor {
   constructor (

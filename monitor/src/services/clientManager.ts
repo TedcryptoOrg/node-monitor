@@ -1,8 +1,8 @@
 import type { ClientInterface } from '../client/clientInterface'
-import { ServiceTypeEnum } from '../type/api/ServiceTypeEnum'
+import { ServiceTypeEnum } from '../Infrastructure/Api/Tedcrypto/Types/ServiceTypeEnum'
 import { RpcClient } from '../client/rpcClient'
 import { RestClient } from '../client/restClient'
-import { type ApiService } from '../type/api/ApiService'
+import { type ApiService } from '../Infrastructure/Api/Tedcrypto/Types/ApiService'
 
 export function buildClient (services: ApiService[], type?: ServiceTypeEnum): ClientInterface {
   for (const apiService of services) {

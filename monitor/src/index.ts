@@ -2,13 +2,13 @@ import NotificationChannelManager from "./services/NotificationChannelManager";
 
 require('dotenv').config({ path: '.env', override: false })
 
-import {ApiConfiguration} from "./type/api/ApiConfiguration";
+import {ApiConfiguration} from "./Infrastructure/Api/Tedcrypto/Types/ApiConfiguration";
 import { NodeMonitor } from './monitor/nodeMonitor'
 import {ChainDirectory} from "@tedcryptoorg/cosmos-directory";
 import {ConfigurationManager} from "./services/configurationManager";
-import {ApiMonitor} from "./type/api/ApiMonitor";
+import {ApiMonitor} from "./Infrastructure/Api/Tedcrypto/Types/ApiMonitor";
 import {ServersManager} from "./services/serversManager";
-import {ApiService} from "./type/api/ApiService";
+import {ApiService} from "./Infrastructure/Api/Tedcrypto/Types/ApiService";
 const axios = require('axios').default;
 
 async function setupHealthCheckPing(): Promise<void> {

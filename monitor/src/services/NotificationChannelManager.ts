@@ -1,7 +1,7 @@
-import { type ApiConfiguration } from '../type/api/ApiConfiguration'
+import { type ApiConfiguration } from '../Infrastructure/Api/Tedcrypto/Types/ApiConfiguration'
 import { Telegram } from '../AlertChannel/telegram'
-import { type ApiNotificationChannel } from '../type/api/ApiNotificationChannel'
-import { NotificationChannelTypeEnum } from '../type/api/NotificationChannelType'
+import { type ApiNotificationChannel } from '../Infrastructure/Api/Tedcrypto/Types/ApiNotificationChannel'
+import { NotificationChannelTypeEnum } from '../Infrastructure/Api/Tedcrypto/Types/NotificationChannelType'
 import { type TelegramBotConfiguration } from '../type/notificationChannels/TelegramBotConfiguration'
 import { type AlertChannel } from '../AlertChannel/alertChannel'
 

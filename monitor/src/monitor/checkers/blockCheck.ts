@@ -1,10 +1,10 @@
 import {MonitorCheck} from "./monitorCheck";
 import {Chain, ChainDirectory} from "@tedcryptoorg/cosmos-directory";
-import {BlockAlertConfiguration} from "../../type/api/ApiMonitor";
+import {BlockAlertConfiguration} from "../../Infrastructure/Api/Tedcrypto/Types/ApiMonitor";
 import {buildClient} from "../../services/clientManager";
-import {ServiceTypeEnum} from "../../type/api/ServiceTypeEnum";
+import {ServiceTypeEnum} from "../../Infrastructure/Api/Tedcrypto/Types/ServiceTypeEnum";
 import {RpcClient} from "../../client/rpcClient";
-import {NoRecoverableException} from "../exception/noRecoverableException";
+import {NoRecoverableException} from "../../Domain/NoRecoverableException";
 
 const chainDirectory = new ChainDirectory(false);
 

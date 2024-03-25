@@ -1,11 +1,11 @@
 import axios from 'axios'
 import {CryptoTools} from '../../../Application/Shared/CryptoTools'
 import {type AlertChannel} from '../../../AlertChannel/alertChannel'
-import {NoRecoverableException} from '../../exception/noRecoverableException'
+import {NoRecoverableException} from '../../../Domain/NoRecoverableException'
 import {RecoverableException} from '../../exception/recoverableException'
-import {ApiMonitor, PriceFeederMissCountConfiguration} from "../../../type/api/ApiMonitor";
-import {ApiService} from "../../../type/api/ApiService";
-import {ServiceTypeEnum} from "../../../type/api/ServiceTypeEnum";
+import {ApiMonitor, PriceFeederMissCountConfiguration} from "../../../Infrastructure/Api/Tedcrypto/Types/ApiMonitor";
+import {ApiService} from "../../../Infrastructure/Api/Tedcrypto/Types/ApiService";
+import {ServiceTypeEnum} from "../../../Infrastructure/Api/Tedcrypto/Types/ServiceTypeEnum";
 import {MonitorCheck} from "../monitorCheck";
 
 export class MissCounter extends MonitorCheck {

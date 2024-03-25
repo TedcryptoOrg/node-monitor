@@ -1,8 +1,8 @@
 import {AlertChannel} from "../../../AlertChannel/alertChannel";
-import {ApiMonitor, NodeExporterDiskSpaceUsageConfiguration} from "../../../type/api/ApiMonitor";
-import {ApiMetric} from "../../../type/api/ApiMetric";
-import {NoRecoverableException} from "../../exception/noRecoverableException";
-import {ApiServer} from "../../../type/api/ApiServer";
+import {ApiMonitor, NodeExporterDiskSpaceUsageConfiguration} from "../../../Infrastructure/Api/Tedcrypto/Types/ApiMonitor";
+import {ApiMetric} from "../../../Infrastructure/Api/Tedcrypto/Types/ApiMetric";
+import {NoRecoverableException} from "../../../Domain/NoRecoverableException";
+import {ApiServer} from "../../../Infrastructure/Api/Tedcrypto/Types/ApiServer";
 import {sleep} from "../../../Application/Shared/sleep";
 import {MonitorCheck} from "../monitorCheck";
 

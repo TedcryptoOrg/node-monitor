@@ -1,7 +1,7 @@
 import axios from 'axios'
-import { type ApiConfiguration } from '../type/api/ApiConfiguration'
-import { type ApiMonitor } from '../type/api/ApiMonitor'
-import { type ApiServer } from '../type/api/ApiServer'
+import { type ApiConfiguration } from '../Infrastructure/Api/Tedcrypto/Types/ApiConfiguration'
+import { type ApiMonitor } from '../Infrastructure/Api/Tedcrypto/Types/ApiMonitor'
+import { type ApiServer } from '../Infrastructure/Api/Tedcrypto/Types/ApiServer'
 
 export class ConfigurationManager {
   async getAllConfigurations (): Promise<ApiConfiguration[]> {

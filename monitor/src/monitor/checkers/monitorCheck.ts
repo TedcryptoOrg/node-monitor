@@ -5,7 +5,7 @@ import {
   BlockAlertConfiguration,
   NodeExporterDiskSpaceUsageConfiguration,
   UrlCheckConfiguration
-} from "../../type/api/ApiMonitor";
+} from "../../Infrastructure/Api/Tedcrypto/Types/ApiMonitor";
 import {Alerter} from "../../Alerter/alerter";
 import {AlertChannel} from "../../AlertChannel/alertChannel";
 

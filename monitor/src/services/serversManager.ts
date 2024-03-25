@@ -1,5 +1,5 @@
-import { type ApiServer } from '../type/api/ApiServer'
-import { type ApiService } from '../type/api/ApiService'
+import { type ApiServer } from '../Infrastructure/Api/Tedcrypto/Types/ApiServer'
+import { type ApiService } from '../Infrastructure/Api/Tedcrypto/Types/ApiService'
 import axios from 'axios'
 
 export class ServersManager {

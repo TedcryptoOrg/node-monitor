@@ -1,4 +1,4 @@
-import {ApiMonitor, UrlCheckConfiguration} from "../../type/api/ApiMonitor";
+import {ApiMonitor, UrlCheckConfiguration} from "../../Infrastructure/Api/Tedcrypto/Types/ApiMonitor";
 import axios from "axios";
 import {AlertChannel} from "../../AlertChannel/alertChannel";
 import {MonitorCheck} from "./monitorCheck";
