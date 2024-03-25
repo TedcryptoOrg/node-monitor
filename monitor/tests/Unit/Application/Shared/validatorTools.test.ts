@@ -1,4 +1,4 @@
-import {getValConsAddressFromPubKey} from "../../../src/util/validatorTools";
+import {getValConsAddressFromPubKey} from "../../../../src/Application/Shared/validatorTools";
 
 describe('ValidatorTools', () => {
     it('should convert validator addresses into their consensus addresses', () => {

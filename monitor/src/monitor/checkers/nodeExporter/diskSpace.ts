@@ -3,7 +3,7 @@ import {ApiMonitor, NodeExporterDiskSpaceUsageConfiguration} from "../../../type
 import {ApiMetric} from "../../../type/api/ApiMetric";
 import {NoRecoverableException} from "../../exception/noRecoverableException";
 import {ApiServer} from "../../../type/api/ApiServer";
-import {sleep} from "../../../util/sleep";
+import {sleep} from "../../../Application/Shared/sleep";
 import {MonitorCheck} from "../monitorCheck";
 
 export class DiskSpace extends MonitorCheck {

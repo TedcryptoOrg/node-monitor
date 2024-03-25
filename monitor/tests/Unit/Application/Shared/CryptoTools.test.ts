@@ -1,4 +1,4 @@
-import { CryptoTools } from '../../../src/crypto/crypto_tools';
+import { CryptoTools } from '../../../../src/Application/Shared/CryptoTools';
 
 describe('CryptoTools', () => {
     let cryptoTools: CryptoTools;

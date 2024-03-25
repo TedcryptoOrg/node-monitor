@@ -21,7 +21,7 @@ export class Alerter {
     const timeDifferenceInMin = (new Date().getTime() - this.lastAlertedPeriod) / 1000 / 60
     if (timeDifferenceInMin < this.alertSleepDurationMinutes) {
       console.log(`[${this.name}][${this.checkerName}] Alert message sent too recently. Skipping.`, timeDifferenceInMin)
-      return;
+      return
     }
 
     console.log(`[${this.name}][${this.checkerName}] Sending an alert...`, timeDifferenceInMin, this.alertSleepDurationMinutes)
@@ -29,7 +29,7 @@ export class Alerter {
     this.lastAlertedPeriod = new Date().getTime()
   }
 
-  private async sendMessage(message: string): Promise<void> {
+  private async sendMessage (message: string): Promise<void> {
     for (const alerter of this.alertChannels) {
       try {
         await alerter.alert(message)

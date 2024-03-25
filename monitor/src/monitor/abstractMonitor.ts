@@ -1,8 +1,8 @@
 import { type MonitorCheck } from './checkers/monitorCheck'
 import { RecoverableException } from './exception/recoverableException'
-import {AlertChannel} from "../AlertChannel/alertChannel";
-import {Alerter} from "../Alerter/alerter";
-import {Checker} from "../Domain/Checker/Checker";
+import { type AlertChannel } from '../AlertChannel/alertChannel'
+import { Alerter } from '../Alerter/alerter'
+import { type Checker } from '../Domain/Checker/Checker'
 
 interface PromiseParamPair {
   promise: () => Promise<unknown>
@@ -12,17 +12,17 @@ interface PromiseParamPair {
 export abstract class AbstractMonitor implements Checker {
   protected monitor_params: MonitorCheck[] = []
   private readonly alerter: Alerter
-  private readonly isErrored: Record<string, number|undefined> = {}
+  private readonly isErrored: Record<string, number | undefined> = {}
 
-  protected constructor(
-      protected readonly alertChannels: AlertChannel[],
-      protected readonly name: string
+  protected constructor (
+    protected readonly alertChannels: AlertChannel[],
+    protected readonly name: string
   ) {
     this.alerter = new Alerter(
-        'General',
-        'General',
-        this.alertChannels,
-        1
+      'General',
+      'General',
+      this.alertChannels,
+      1
     )
   }
 
@@ -39,36 +39,36 @@ export abstract class AbstractMonitor implements Checker {
   }
 
   async runPromiseWithRetry (pair: PromiseParamPair, attempt?: number): Promise<void> {
-    const { promise, param } = pair;
-    const monitorName = param.constructor.name;
-    attempt = attempt ?? 1;
+    const { promise, param } = pair
+    const monitorName = param.constructor.name
+    attempt = attempt ?? 1
     try {
-      console.log(`🚀 ${this.name} Node checker ${monitorName} started.`);
-      await promise(); // call the function to get the promise and then await it
+      console.log(`🚀 ${this.name} Node checker ${monitorName} started.`)
+      await promise() // call the function to get the promise and then await it
     } catch (error: any) {
-      console.log(`🚨 ${this.name} Node checker ${monitorName} failed to start. Error:\n${error}`);
-      console.error(error);
-      this.isErrored[monitorName] = new Date().getTime();
+      console.log(`🚨 ${this.name} Node checker ${monitorName} failed to start. Error:\n${error}`)
+      console.error(error)
+      this.isErrored[monitorName] = new Date().getTime()
 
       if (attempt >= 3 || !(error instanceof RecoverableException)) {
-        attempt = 0;
+        attempt = 0
         try {
-          await this.alerter?.alert(`🚨[${this.name}][${monitorName}] Node checker failed to start. Error:\n${error}`);
+          await this.alerter?.alert(`🚨[${this.name}][${monitorName}] Node checker failed to start. Error:\n${error}`)
           if (attempt === 3) {
             // start the timer to check if resolved, only on 3rd attempt
             this.setTimer(monitorName)
           }
         } catch (error) {
-          console.error('Alert failed to alert', error);
+          console.error('Alert failed to alert', error)
         }
       }
 
       if (error instanceof RecoverableException) {
-        const sleepInterval = 5 * attempt;
-        console.log(`Waiting ${sleepInterval} seconds before retrying...`);
-        await new Promise(resolve => setTimeout(resolve, sleepInterval * 1000));
+        const sleepInterval = 5 * attempt
+        console.log(`Waiting ${sleepInterval} seconds before retrying...`)
+        await new Promise(resolve => setTimeout(resolve, sleepInterval * 1000))
 
-        await this.runPromiseWithRetry(pair, attempt+1);
+        await this.runPromiseWithRetry(pair, attempt + 1)
       }
     }
   }
@@ -78,16 +78,16 @@ export abstract class AbstractMonitor implements Checker {
    */
   setTimer (name: string): void {
     const timer = setInterval(async () => {
-      const lastErrored = this.isErrored[name];
+      const lastErrored = this.isErrored[name]
       if (
-          lastErrored !== undefined
-          && (new Date().getTime() - lastErrored > 60000)
+        lastErrored !== undefined &&
+          (new Date().getTime() - lastErrored > 60000)
       ) {
-        console.log(`✅ ${this.name} Node checker ${name} recovered.`);
-        this.isErrored[name] = undefined;
-        await this.alerter?.resolve(`✅ ${this.name} Node checker ${name} recovered.`);
-        clearInterval(timer);
+        console.log(`✅ ${this.name} Node checker ${name} recovered.`)
+        this.isErrored[name] = undefined
+        await this.alerter?.resolve(`✅ ${this.name} Node checker ${name} recovered.`)
+        clearInterval(timer)
       }
-    }, 10000);
+    }, 10000)
   }
 }
