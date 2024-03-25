@@ -5,7 +5,7 @@
   "scripts": {
     "start": "ts-node src/index.ts",
     "test": "jest",
-    "clean": "rm -rf ./lib",
+    "clean": "rm -rf ./dist",
     "lint": "eslint src/**/*.ts scripts/**/*.ts",
     "lint:fix": "eslint --fix src/**/*.ts scripts/**/*.ts"
   },

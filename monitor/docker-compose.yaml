@@ -2,8 +2,12 @@ version: '3.7'
 
 services:
   node-app:
-    image: node:20.8.0
-    working_dir: /app
+    build:
+      context: .
+      dockerfile: docker/node/Dockerfile
+      target: dev
+    env_file:
+      - .env
+    restart: always
     volumes:
       - ./:/app
-    command: ["npm", "start"]
