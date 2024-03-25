@@ -1,6 +1,6 @@
 import { type RestConfiguration } from '../type/restConfiguration'
 import axios from 'axios'
-import { RecoverableException } from '../monitor/exception/recoverableException'
+import { RecoverableException } from '../Domain/RecoverableException'
 import { type SigningInfosResponse as RestSigningInfosResponse } from './type/rest/slashing/signingInfosResponse'
 import { type ValidatorInfoResponse as RestValidatorInfoResponse } from './type/rest/staking/validatorInfoResponse'
 import { type ClientInterface } from './clientInterface'

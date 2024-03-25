@@ -1,5 +1,5 @@
 import { type MonitorCheck } from './checkers/monitorCheck'
-import { RecoverableException } from './exception/recoverableException'
+import { RecoverableException } from '../Domain/RecoverableException'
 import { type AlertChannel } from '../AlertChannel/alertChannel'
 import { Alerter } from '../Alerter/alerter'
 import { type Checker } from '../Domain/Checker/Checker'

@@ -1,6 +1,6 @@
 import { type RpcConfiguration } from '../type/rpcConfiguration'
 import { type RpcStatus } from './type/rpc/rpcStatus'
-import { RecoverableException } from '../monitor/exception/recoverableException'
+import { RecoverableException } from '../Domain/RecoverableException'
 import axios from 'axios'
 import { type ClientInterface } from './clientInterface'
 import { type QueryClientImpl as StakingQueryClient } from 'cosmjs-types/cosmos/staking/v1beta1/query'

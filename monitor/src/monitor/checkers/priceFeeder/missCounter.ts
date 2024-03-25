@@ -2,7 +2,7 @@ import axios from 'axios'
 import {CryptoTools} from '../../../Application/Shared/CryptoTools'
 import {type AlertChannel} from '../../../AlertChannel/alertChannel'
 import {NoRecoverableException} from '../../../Domain/NoRecoverableException'
-import {RecoverableException} from '../../exception/recoverableException'
+import {RecoverableException} from '../../../Domain/RecoverableException'
 import {ApiMonitor, PriceFeederMissCountConfiguration} from "../../../Infrastructure/Api/Tedcrypto/Types/ApiMonitor";
 import {ApiService} from "../../../Infrastructure/Api/Tedcrypto/Types/ApiService";
 import {ServiceTypeEnum} from "../../../Infrastructure/Api/Tedcrypto/Types/ServiceTypeEnum";
