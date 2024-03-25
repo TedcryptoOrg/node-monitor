@@ -1,17 +1,16 @@
+import { Box, Button, Group, SimpleGrid, Title } from '@mantine/core';
 import {
-  ActionIcon,
-  Box,
-  Button,
-  Group,
-  SimpleGrid,
-  Title,
-} from '@mantine/core';
-import {
+  IconEdit,
   IconTablePlus,
+  IconTrash,
   IconWorldCheck,
   IconWorldOff,
 } from '@tabler/icons-react';
-import { MantineReactTable, useMantineReactTable } from 'mantine-react-table';
+import {
+  MRT_TableOptions,
+  MantineReactTable,
+  useMantineReactTable,
+} from 'mantine-react-table';
 import { useEffect, useState } from 'react';
 import { RequestType, apiCall } from '../utils/api';
 import { ApiConfiguration } from '../types/ApiConfiguration';
@@ -37,7 +36,8 @@ const Configurations = () => {
       },
     });
 
-  const columns = [
+  // infer types from columns
+  const columns: MRT_TableOptions<ApiConfiguration>['columns'] = [
     {
       header: 'ID',
       accessorKey: 'id',
@@ -72,13 +72,41 @@ const Configurations = () => {
     },
   ];
 
+  const handleSaveRow: MRT_TableOptions<any>['onEditingRowSave'] = async ({
+    table,
+    row,
+    values,
+  }) => {
+    // updated values from edit modal
+    console.table(values);
+    table.setEditingRow(null); //exit editing mode
+  };
+
   const table = useMantineReactTable({
     columns,
     data: configData,
+    positionActionsColumn: 'last',
     enableRowActions: true,
     renderRowActions: ({ row }) => (
-      <Box style={{ display: 'flex', flexWrap: 'nowrap', gap: '8px' }}></Box>
+      <Box style={{ display: 'flex', flexWrap: 'nowrap', gap: '8px' }}>
+        <Button
+          size='xs'
+          variant='gradient'
+          onClick={() => table.setEditingRow(row)}
+        >
+          <IconEdit />
+        </Button>
+        <Button
+          size='xs'
+          variant='gradient'
+          onClick={() => console.log(row.original)}
+        >
+          <IconTrash />
+        </Button>
+      </Box>
     ),
+    enableEditing: true,
+    onEditingRowSave: handleSaveRow,
   });
 
   return (
@@ -87,7 +115,13 @@ const Configurations = () => {
         <SimpleGrid cols={1}>
           <Title order={3}>Configurations</Title>
           <Title order={6}>Your main configurations</Title>
-          <Button leftSection={<IconTablePlus size={14} />} variant='gradient'>
+          <Button
+            leftSection={<IconTablePlus size={14} />}
+            variant='gradient'
+            onClick={() => {
+              table.setCreatingRow(true);
+            }}
+          >
             Add configuration
           </Button>
         </SimpleGrid>
