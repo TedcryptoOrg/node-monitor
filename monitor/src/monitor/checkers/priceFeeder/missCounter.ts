@@ -1,6 +1,6 @@
 import axios from 'axios'
 import {CryptoTools} from '../../../Application/Shared/CryptoTools'
-import {type AlertChannel} from '../../../AlertChannel/alertChannel'
+import {type AlertChannel} from '../../../Domain/Alerter/AlertChannel'
 import {NoRecoverableException} from '../../../Domain/NoRecoverableException'
 import {RecoverableException} from '../../../Domain/RecoverableException'
 import {ApiMonitor, PriceFeederMissCountConfiguration} from "../../../Infrastructure/Api/Tedcrypto/Types/ApiMonitor";

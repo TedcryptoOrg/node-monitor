@@ -5,7 +5,7 @@ import {ApiMonitor, SignMissCheckConfiguration} from "../../Infrastructure/Api/T
 import {ApiService} from "../../Infrastructure/Api/Tedcrypto/Types/ApiService";
 import {buildClient} from "../../services/clientManager";
 import {ServiceTypeEnum} from "../../Infrastructure/Api/Tedcrypto/Types/ServiceTypeEnum";
-import {AlertChannel} from "../../AlertChannel/alertChannel";
+import {AlertChannel} from "../../Domain/Alerter/AlertChannel";
 import {Chain} from "@tedcryptoorg/cosmos-directory";
 
 export class SignMissCheck extends MonitorCheck {

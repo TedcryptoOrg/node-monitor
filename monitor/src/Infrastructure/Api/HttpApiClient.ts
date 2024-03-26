@@ -12,4 +12,8 @@ export class HttpApiClient implements ApiClient {
     async getServerMetrics(serverId: number): Promise<ServerMetricsResponse> {
         return await this.provider.getServerMetrics(serverId);
     }
+
+    async pingMonitor(id: any, payload: {last_error: string|null; status: boolean}): Promise<void> {
+        await this.provider.pingMonitor(id, payload);
+    }
 }

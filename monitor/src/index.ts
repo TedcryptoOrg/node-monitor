@@ -1,56 +1,20 @@
-import NotificationChannelManager from "./services/NotificationChannelManager";
+import Configuration from "./Domain/Configuration/Configuration";
 
 require('dotenv').config({ path: '.env', override: false })
 
-import {ApiConfiguration} from "./Infrastructure/Api/Tedcrypto/Types/ApiConfiguration";
-import { NodeMonitor } from './monitor/nodeMonitor'
-import {ChainDirectory} from "@tedcryptoorg/cosmos-directory";
 import {ConfigurationManager} from "./services/configurationManager";
-import {ApiMonitor} from "./Infrastructure/Api/Tedcrypto/Types/ApiMonitor";
-import {ServersManager} from "./services/serversManager";
-import {ApiService} from "./Infrastructure/Api/Tedcrypto/Types/ApiService";
-const axios = require('axios').default;
-
-async function setupHealthCheckPing(): Promise<void> {
-  if (process.env.HEALTH_CHECK_URL === undefined) {
-    console.warn('Health check url not set. Skipping health check ping setup.')
-    return;
-  }
-
-  setInterval(async () => {
-    try {
-      await axios.get(`${process.env.HEALTHCHECK_URL}/ping`);
-    } catch (error) {
-      console.error('Health check ping failed', error);
-    }
-  }, parseInt(process.env.HEALTHCHECK_INTERVAL_MS ?? '60000'));
-}
-
-async function startNodeMonitor (configuration: ApiConfiguration, monitors: ApiMonitor[], services: ApiService[]): Promise<void> {
-  console.log(
-    `Starting ${configuration.name}. \n\n` +
-    `Monitors: \n -${monitors.map(monitor => monitor.name).join('\n -')}\n\n`+
-    `Services: \n -${services.map(service => service.name).join('\n -')}`)
-
-  try {
-    const chain = (await new ChainDirectory().getChainData(configuration.chain)).chain;
-
-    await new NodeMonitor(
-        configuration,
-        chain,
-        monitors,
-        services,
-        await NotificationChannelManager.getConfigurationNotificationChannels(configuration)
-    ).start()
-  } catch (error) {
-    const message = `🚨 ${configuration.name} Node monitor failed!\n${error}`
-    console.error(message)
-  }
-}
+import {NodeExporterDiskSpaceUsageConfiguration} from "./Infrastructure/Api/Tedcrypto/Types/ApiMonitor";
+import {MonitorTypeEnum} from "./Infrastructure/Api/Tedcrypto/Types/MonitorTypeEnum";
+import DiskSpaceChecker from "./Application/Monitor/Check/CheckDiskSpace/DiskSpaceChecker";
+import {myContainer} from "./Infrastructure/DependencyInjection/inversify.config";
+import CommandHandlerManager from "./Infrastructure/CommandHandler/CommandHandlerManager";
+import DiskSpaceCheckMonitor from "./Domain/Monitor/DiskSpaceCheckMonitor";
+import Server from "./Domain/Server/Server";
+import CheckState from "./Application/Monitor/Check/CheckState";
+import {CheckStatus} from "./Domain/Checker/CheckStatusEnum";
 
 async function main (): Promise<void> {
   const configurationManager = new ConfigurationManager();
-  const serversManager = new ServersManager();
 
   const configurations = await configurationManager.getAllConfigurations();
   if (configurations.length === 0) {
@@ -68,14 +32,37 @@ async function main (): Promise<void> {
       console.warn(`No monitors found for configuration: ${configuration.name}`)
       continue
     }
-    const servers = await configurationManager.getServers(configuration.id);
-    const services: ApiService[] = [];
-    for (const server of servers) {
-      services.push(...await serversManager.getServices(server));
+
+    const liveMonitors = [];
+    for(const monitor of monitors) {
+      if (monitor.type === MonitorTypeEnum.NODE_EXPORTER_DISK_SPACE) {
+        if (monitor.server === undefined) {
+          throw Error(`Monitor ${monitor.name} has no server associated with it`)
+        }
+
+        // TODO: bug here, configuration object should not be parsed twice
+        // https://trello.com/c/niqWP4wh/39-configuration-object-needs-to-be-parsed-twice-in-monitor-after-prisma-changes
+        const monitorConfig = JSON.parse(JSON.parse(monitor.configuration_object)) as NodeExporterDiskSpaceUsageConfiguration;
+        liveMonitors.push(new DiskSpaceChecker(
+            myContainer.get(CommandHandlerManager),
+            new DiskSpaceCheckMonitor(
+                Number(monitor.id),
+                new Configuration(configuration.id, configuration.name),
+                monitor.name,
+                new Server(Number(monitor.server.id), monitor.server.name, monitor.server.name),
+                monitorConfig.threshold,
+                monitorConfig.alert_sleep_duration_minutes,
+                monitorConfig.check_interval_seconds,
+                60
+            ),
+            new CheckState(CheckStatus.UNKNOWN, 0, 0)
+        ))
+      }
     }
 
-    startNodeMonitor(configuration, monitors, services);
-    setupHealthCheckPing();
+    for (const monitor of liveMonitors) {
+      monitor.check();
+    }
   }
 }
 

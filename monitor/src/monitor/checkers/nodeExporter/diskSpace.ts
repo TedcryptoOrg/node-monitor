@@ -1,4 +1,4 @@
-import {AlertChannel} from "../../../AlertChannel/alertChannel";
+import {AlertChannel} from "../../../Domain/Alerter/AlertChannel";
 import {ApiMonitor, NodeExporterDiskSpaceUsageConfiguration} from "../../../Infrastructure/Api/Tedcrypto/Types/ApiMonitor";
 import {ApiMetric} from "../../../Infrastructure/Api/Tedcrypto/Types/ApiMetric";
 import {NoRecoverableException} from "../../../Domain/NoRecoverableException";

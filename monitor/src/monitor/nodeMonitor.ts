@@ -1,4 +1,4 @@
-import { type AlertChannel } from '../AlertChannel/alertChannel'
+import { type AlertChannel } from '../Domain/Alerter/AlertChannel'
 import { BlockCheck } from './checkers/blockCheck'
 import { AbstractMonitor } from './abstractMonitor'
 import { UrlCheck } from './checkers/urlCheck'

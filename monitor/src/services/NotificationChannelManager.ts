@@ -3,7 +3,7 @@ import { Telegram } from '../AlertChannel/telegram'
 import { type ApiNotificationChannel } from '../Infrastructure/Api/Tedcrypto/Types/ApiNotificationChannel'
 import { NotificationChannelTypeEnum } from '../Infrastructure/Api/Tedcrypto/Types/NotificationChannelType'
 import { type TelegramBotConfiguration } from '../type/notificationChannels/TelegramBotConfiguration'
-import { type AlertChannel } from '../AlertChannel/alertChannel'
+import { type AlertChannel } from '../Domain/Alerter/AlertChannel'
 
 const NotificationChannelManager = {
   async getConfigurationNotificationChannels (configuration: ApiConfiguration): Promise<AlertChannel[]> {

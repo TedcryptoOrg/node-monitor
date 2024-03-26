@@ -1,5 +1,6 @@
 import {ApiMetric} from "./Types/ApiMetric";
 import {injectable} from "inversify";
+import axios from "axios";
 
 @injectable()
 export default class TedcryptoApiClient {
@@ -9,8 +10,10 @@ export default class TedcryptoApiClient {
     }
 
     async getServerMetrics(serverId: number): Promise<ApiMetric> {
-        const metricsResponse = await fetch(`${this.baseUrl}/api/servers/${serverId}/metrics`);
+        return (await axios.get(`${this.baseUrl}/api/servers/${serverId}/metrics`)).data
+    }
 
-        return await metricsResponse.json();
+    async pingMonitor(id: number, payload: {last_error: string|null; status: boolean}): Promise<void> {
+        await axios.post(`${this.baseUrl}/api/monitors/${id}/ping`, payload)
     }
 }

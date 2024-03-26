@@ -1,8 +1,6 @@
-export default class Server {
+export default class Configuration {
     constructor(
         public readonly id: number,
         public readonly name: string,
-        public readonly address: string,
-    ) {
-    }
+    ) {}
 }

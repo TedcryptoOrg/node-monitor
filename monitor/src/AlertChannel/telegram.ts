@@ -1,5 +1,5 @@
 import TelegramBot from 'node-telegram-bot-api'
-import { type AlertChannel } from './alertChannel'
+import { type AlertChannel } from '../Domain/Alerter/AlertChannel'
 
 export interface TelegramOptions {
   token: string

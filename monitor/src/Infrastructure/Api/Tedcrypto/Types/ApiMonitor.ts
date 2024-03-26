@@ -9,7 +9,6 @@ export type BlockAlertConfiguration = {
     alert_sleep_duration_minutes: number
 }
 
-
 export type NodeExporterDiskSpaceUsageConfiguration = {
     threshold: number
     alert_sleep_duration_minutes: number
@@ -36,19 +35,6 @@ export type SignMissCheckConfiguration = {
     sleep_duration_seconds: number
     alert_sleep_duration_minutes: number
     valoper_address: string
-}
-
-export type ApiMonitorInput = {
-    id?: number,
-    name: string,
-    type: MonitorTypeEnum,
-    is_enabled: boolean,
-    configuration_id: number,
-    server_id?: number,
-    configuration_object: string,
-    status?: boolean,
-    last_check?: Date,
-    last_error?: string,
 }
 
 export type ApiMonitor = {

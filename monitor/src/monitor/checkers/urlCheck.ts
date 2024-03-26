@@ -1,6 +1,6 @@
 import {ApiMonitor, UrlCheckConfiguration} from "../../Infrastructure/Api/Tedcrypto/Types/ApiMonitor";
 import axios from "axios";
-import {AlertChannel} from "../../AlertChannel/alertChannel";
+import {AlertChannel} from "../../Domain/Alerter/AlertChannel";
 import {MonitorCheck} from "./monitorCheck";
 
 export class UrlCheck extends MonitorCheck {

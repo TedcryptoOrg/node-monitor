@@ -1,3 +1,8 @@
-export interface Checker {
-    start: () => Promise<void>
+import Monitor from "../Monitor/Monitor";
+
+export default interface Checker {
+
+    toArray(): object
+
+    check(monitor: Monitor): Promise<void>;
 }

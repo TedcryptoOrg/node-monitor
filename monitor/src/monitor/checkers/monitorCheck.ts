@@ -6,12 +6,12 @@ import {
   NodeExporterDiskSpaceUsageConfiguration,
   UrlCheckConfiguration
 } from "../../Infrastructure/Api/Tedcrypto/Types/ApiMonitor";
-import {Alerter} from "../../Alerter/alerter";
-import {AlertChannel} from "../../AlertChannel/alertChannel";
+import {OldAlerter} from "../../Alerter/OldAlerter";
+import {AlertChannel} from "../../Domain/Alerter/AlertChannel";
 
 export abstract class MonitorCheck {
   protected readonly configuration: BlockAlertConfiguration|NodeExporterDiskSpaceUsageConfiguration|UrlCheckConfiguration
-  protected readonly alerter: Alerter
+  protected readonly alerter: OldAlerter
   protected status: CheckStatus = CheckStatus.UNKNOWN
   private lastTimePing: number = 0
   private pingInterval: number = 60
@@ -22,7 +22,7 @@ export abstract class MonitorCheck {
   ) {
     this.configuration = JSON.parse(this.monitor.configuration_object) as BlockAlertConfiguration|NodeExporterDiskSpaceUsageConfiguration|UrlCheckConfiguration
 
-    this.alerter = new Alerter(
+    this.alerter = new OldAlerter(
         this.monitor.configuration.name,
         'BlockCheck',
         this.alertChannels,

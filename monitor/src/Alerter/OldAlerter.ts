@@ -1,6 +1,6 @@
-import { type AlertChannel } from '../AlertChannel/alertChannel'
+import { type AlertChannel } from '../Domain/Alerter/AlertChannel'
 
-export class Alerter {
+export class OldAlerter {
   private lastAlertedPeriod: number = 0
 
   constructor (
