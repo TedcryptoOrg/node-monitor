@@ -20,8 +20,9 @@ import {
   useMantineReactTable,
 } from 'mantine-react-table';
 import { useEffect, useState } from 'react';
-import { RequestType, apiCall } from '../utils/api';
-import { ApiConfiguration } from '../types/ApiConfiguration';
+import { RequestType, apiCall } from '../../utils/api';
+import { ApiConfiguration } from '../../types/ApiConfiguration';
+import Link from 'next/link';
 
 const Configurations = () => {
   const [configData, setConfigData] = useState<ApiConfiguration[]>([]);
@@ -56,6 +57,11 @@ const Configurations = () => {
     {
       header: 'Name',
       accessorKey: 'name',
+      Cell: ({ cell }) => (
+        <Link href={`/config/${cell.getValue<string>()}`}>
+          {cell.getValue<string>()}
+        </Link>
+      ),
     },
     {
       header: 'Chain',
@@ -112,6 +118,7 @@ const Configurations = () => {
   const table = useMantineReactTable({
     columns,
     data: configData,
+    state: { isLoading: loadingData },
     positionActionsColumn: 'last',
     enableRowActions: true,
     renderRowActions: ({ row }) => (
@@ -155,10 +162,8 @@ const Configurations = () => {
         </SimpleGrid>
       </Group>
 
-      <Group justify='center'>
-        <Skeleton visible={loadingData}>
-          <MantineReactTable table={table}></MantineReactTable>
-        </Skeleton>
+      <Group justify='center' grow>
+        <MantineReactTable table={table}></MantineReactTable>
       </Group>
     </SimpleGrid>
   );

@@ -20,6 +20,7 @@ interface FetchOptions {
   beforeRequest?: BeforeRequestFunction;
   successCallback?: SuccessCallbackFunction<any>;
   errorCallback?: ErrorCallbackFunction;
+  delay?: number;
 }
 
 async function apiCall<T>(options: FetchOptions): Promise<void> {
@@ -31,11 +32,16 @@ async function apiCall<T>(options: FetchOptions): Promise<void> {
     beforeRequest,
     successCallback,
     errorCallback,
+    delay,
   } = options;
   const defaultUrl = process.env.NEXT_PUBLIC_API_HOST;
 
   const endpointUrl = options.url ? options.url : defaultUrl;
   try {
+    if (delay) {
+      await new Promise((resolve) => setTimeout(resolve, delay));
+    }
+
     beforeRequest && beforeRequest();
 
     if (endpointUrl) {
@@ -61,6 +67,7 @@ async function apiCall<T>(options: FetchOptions): Promise<void> {
 }
 
 export { apiCall, RequestType };
+
 export type {
   BeforeRequestFunction,
   SuccessCallbackFunction,

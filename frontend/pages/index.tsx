@@ -1,6 +1,6 @@
 'use client';
 import { Grid, Group, SimpleGrid, Skeleton, Title } from '@mantine/core';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { apiCall, RequestType } from '../utils/api';
 
 const Dashboard = () => {
