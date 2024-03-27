@@ -29,7 +29,7 @@ export default class DiskSpaceChecker implements Checker {
                 this.monitor.threshold,
             ));
 
-            console.log(`[${this.monitor.name}][Status: ${result.status.toString()}] ${result.message}`);
+            console.log(`${this.monitor.getFullName()}[Status: ${result.status.toString()}] ${result.message}`);
 
             if (this.state.status !== result.status) {
                 //await this.eventDispatcher.dispatch(new CheckStatusChanged(this.monitor, this.state.status, result));
@@ -37,7 +37,7 @@ export default class DiskSpaceChecker implements Checker {
 
             this.state = this.state.withStatus(CheckStatus.OK);
 
-            console.log(`[${this.monitor.name}] Sleeping for ${this.monitor.checkIntervalSeconds} seconds`)
+            console.log(`${this.monitor.getFullName()} Sleeping for ${this.monitor.checkIntervalSeconds} seconds`)
 
             await sleep(1000 * this.monitor.checkIntervalSeconds);
         }

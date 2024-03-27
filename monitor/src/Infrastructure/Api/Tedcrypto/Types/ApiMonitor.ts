@@ -1,4 +1,4 @@
-import {MonitorTypeEnum} from "./MonitorTypeEnum";
+import {ApiMonitorTypeEnum} from "./ApiMonitorTypeEnum";
 import {ApiConfiguration} from "./ApiConfiguration";
 import {ApiServer} from "./ApiServer";
 
@@ -40,7 +40,7 @@ export type SignMissCheckConfiguration = {
 export type ApiMonitor = {
     id?: number,
     name: string,
-    type: MonitorTypeEnum,
+    type: ApiMonitorTypeEnum,
     is_enabled: boolean,
     configuration: ApiConfiguration,
     server: ApiServer|undefined,

@@ -19,7 +19,7 @@ export default class CheckDiskSpaceCommandHandler implements CommandHandler
     async handle(command: CheckDiskSpaceCommand): Promise<CheckResult> {
         const metrics = await this.fetchMetrics(command);
 
-        console.log(`${command.messagePrefix} Used disk space: ${metrics.usedDiskSpacePercentage}%`);
+        console.debug(`${command.messagePrefix} Used disk space: ${metrics.usedDiskSpacePercentage}%`);
 
         if (metrics.usedDiskSpacePercentage >= command.threshold) {
             return new CheckResult(

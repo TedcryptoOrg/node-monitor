@@ -13,12 +13,14 @@ import {Telegram} from "../../AlertChannel/telegram";
 import Alerter from "../../Domain/Alerter/Alerter";
 import AppAlerter from "../Alerter/AppAlerter";
 import EventHandler from "../../Domain/Event/EventHandler";
+import RunCheckCommandHandler from "../../Application/Monitor/RunCheck/RunCheckCommandHandler";
 
 const myContainer = new Container();
 
 // Command handlers
 myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(PingHealthcheckCommandHandler);
 myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(CheckDiskSpaceCommandHandler);
+myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(RunCheckCommandHandler);
 myContainer.bind<CommandHandlerManager>(CommandHandlerManager).toSelf();
 
 // Alerter

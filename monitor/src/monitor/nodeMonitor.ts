@@ -9,7 +9,7 @@ import { MissCounter } from './checkers/priceFeeder/missCounter'
 import { type ApiMonitor } from '../Infrastructure/Api/Tedcrypto/Types/ApiMonitor'
 import { type ApiConfiguration } from '../Infrastructure/Api/Tedcrypto/Types/ApiConfiguration'
 import { type ApiService } from '../Infrastructure/Api/Tedcrypto/Types/ApiService'
-import { MonitorTypeEnum } from '../Infrastructure/Api/Tedcrypto/Types/MonitorTypeEnum'
+import { ApiMonitorTypeEnum } from '../Infrastructure/Api/Tedcrypto/Types/ApiMonitorTypeEnum'
 
 export class NodeMonitor extends AbstractMonitor {
   constructor (
@@ -34,23 +34,23 @@ export class NodeMonitor extends AbstractMonitor {
       }
 
       switch (monitor.type) {
-        case MonitorTypeEnum.NODE_EXPORTER_DISK_SPACE:
+        case ApiMonitorTypeEnum.NODE_EXPORTER_DISK_SPACE:
           this.monitor_params.push(new DiskSpace(monitor, this.alertChannels))
           break
-        case MonitorTypeEnum.PRICE_FEEDER_MISS_COUNT:
+        case ApiMonitorTypeEnum.PRICE_FEEDER_MISS_COUNT:
           this.monitor_params.push(
             new MissCounter(monitor, this.alertChannels, this.services)
           )
           break
-        case MonitorTypeEnum.BLOCK_CHECK:
+        case ApiMonitorTypeEnum.BLOCK_CHECK:
           this.monitor_params.push(
             new BlockCheck(monitor, this.alertChannels)
           )
           break
-        case MonitorTypeEnum.URL_CHECK:
+        case ApiMonitorTypeEnum.URL_CHECK:
           this.monitor_params.push(new UrlCheck(monitor, this.alertChannels))
           break
-        case MonitorTypeEnum.SIGN_MISS_CHECK:
+        case ApiMonitorTypeEnum.SIGN_MISS_CHECK:
           this.monitor_params.push(
             new SignMissCheck(monitor, this.alertChannels, this.services, this.chain)
           )

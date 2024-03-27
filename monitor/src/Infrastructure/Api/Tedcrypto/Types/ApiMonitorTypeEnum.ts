@@ -1,4 +1,4 @@
-export enum MonitorTypeEnum {
+export enum ApiMonitorTypeEnum {
     URL_CHECK = 'urlCheck',
     BLOCK_CHECK = 'blockCheck',
     SIGN_MISS_CHECK = 'signMissCheck',
