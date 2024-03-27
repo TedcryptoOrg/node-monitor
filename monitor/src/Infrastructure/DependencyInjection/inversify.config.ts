@@ -14,6 +14,8 @@ import Alerter from "../../Domain/Alerter/Alerter";
 import AppAlerter from "../Alerter/AppAlerter";
 import EventHandler from "../../Domain/Event/EventHandler";
 import RunCheckCommandHandler from "../../Application/Monitor/RunCheck/RunCheckCommandHandler";
+import {EventDispatcher as EventDispatcherInterface } from "../../Domain/Event/EventDispatcher";
+import RunCheckFailedHandler from "../../Application/Event/Monitor/RunCheckFailedHandler";
 
 const myContainer = new Container();
 
@@ -34,8 +36,9 @@ myContainer.bind(HttpApiClient).toSelf()
 myContainer.bind<ApiClient>(TYPES.ApiClient).to(HttpApiClient);
 
 // Events
-//myContainer.bind<EventHandler>(TYPES.EventHandler).to();
-//myContainer.bind<EventDispatcher>(EventDispatcher).toSelf();
+myContainer.bind<EventHandler>(TYPES.EventHandler).to(RunCheckFailedHandler);
+myContainer.bind(EventDispatcher).toSelf();
+myContainer.bind<EventDispatcherInterface>(TYPES.EventDispatcher).to(EventDispatcher);
 
 // Console Command
 

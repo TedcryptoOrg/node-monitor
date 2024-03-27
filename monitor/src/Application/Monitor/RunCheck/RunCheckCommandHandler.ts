@@ -1,5 +1,5 @@
 import CommandHandler from "../../../Domain/Command/CommandHandler";
-import {injectable} from "inversify";
+import {inject, injectable} from "inversify";
 import RunCheckCommand from "./RunCheckCommand";
 import {MonitorType} from "../../../Domain/Monitor/MonitorType";
 import Checker from "../../../Domain/Checker/Checker";
@@ -11,10 +11,22 @@ import CheckState from "../Check/CheckState";
 import CommandHandlerManager from "../../../Infrastructure/CommandHandler/CommandHandlerManager";
 import {myContainer} from "../../../Infrastructure/DependencyInjection/inversify.config";
 import {sleep} from "../../Shared/sleep";
+import EventDispatcher from "../../Event/EventDispatcher";
+import RunCheckFailed from "./RunCheckFailed";
+import {TYPES} from "../../../Domain/DependencyInjection/types";
 
 @injectable()
 export default class RunCheckCommandHandler implements CommandHandler {
+    constructor(
+        @inject(TYPES.EventDispatcher) private readonly eventDispatcher: EventDispatcher,
+    ) {
+    }
+
     async handle(command: RunCheckCommand): Promise<void> {
+        if (command.maxAttempts < command.attempt) {
+            console.error(`Max attempts reached for ${command.monitor.getFullName()}. Skipping check.`)
+            return;
+        }
         if (!command.monitor.configuration.isEnabled) {
             console.error(`${command.monitor.configuration.name} is disabled. Skipping check.`)
             return
@@ -26,7 +38,9 @@ export default class RunCheckCommandHandler implements CommandHandler {
 
         try {
             await this.getChecker(command.monitor).check()
-        } catch (error) {
+        } catch (error: any) {
+            await this.eventDispatcher.dispatch(new RunCheckFailed(command.monitor, command.attempt, error))
+
             console.error(error)
             console.debug(`${command.monitor.getFullName()}[Attempt: ${command.attempt}] Retrying in ${(command.attempt ** 2)} seconds`)
             await sleep(1000 * command.attempt ** 2)

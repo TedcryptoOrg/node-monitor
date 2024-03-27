@@ -7,6 +7,7 @@ import {CheckStatus} from "../../../../../../src/Domain/Checker/CheckStatusEnum"
 import InMemoryHttpApiClient from "../../../../../Helper/InMemoryHttpApiClient";
 import {TYPES} from "../../../../../../src/Domain/DependencyInjection/types";
 import ServerMetricsResponseBuilder from "../../../../../Helper/ServerMetricsResponseBuilder";
+import {createServer} from "../../../../../Helper/fixedStaticObjects";
 
 describe('CheckDiskSpaceCommandHandler', () => {
     const commandHandler = myContainer.get(CommandHandlerManager);
@@ -20,7 +21,7 @@ describe('CheckDiskSpaceCommandHandler', () => {
 
         const result = await commandHandler.handle(new CheckDiskSpaceCommand(
             'test',
-            new Server(1),
+            createServer(),
             80
         ));
 
@@ -37,7 +38,7 @@ describe('CheckDiskSpaceCommandHandler', () => {
 
         const result = await commandHandler.handle(new CheckDiskSpaceCommand(
             'test',
-            new Server(1),
+            createServer(),
             5
         ));
 
