@@ -35,6 +35,7 @@ export default class Monitor {
     }
 
     static fromArray(array: MonitorArray): Monitor {
+        console.log('Monitor array', array)
         return new Monitor(
             array.name,
             array.type as MonitorType,

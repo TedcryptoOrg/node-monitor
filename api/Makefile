@@ -85,7 +85,7 @@ db-diff db.diff db.create_migration db-create-migration:
 
 ## [Database] Run migrations
 db-migrate:
-	$(SEQUELIZE_RUN) npx sequelize-cli db:migrate --url $(DB_DSN)
+	$(DOCKER_COMPOSE_EXEC) node-app npx prisma migrate dev
 
 ## [Database] Undo last migration
 db-migrate-undo:
