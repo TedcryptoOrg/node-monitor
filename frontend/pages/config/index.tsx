@@ -57,8 +57,8 @@ const Configurations = () => {
     {
       header: 'Name',
       accessorKey: 'name',
-      Cell: ({ cell }) => (
-        <Link href={`/config/${cell.getValue<string>()}`}>
+      Cell: ({ cell, row }) => (
+        <Link href={`/config/${row.getValue('id')}`}>
           {cell.getValue<string>()}
         </Link>
       ),

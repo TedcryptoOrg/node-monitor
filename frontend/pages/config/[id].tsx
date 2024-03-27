@@ -4,15 +4,39 @@ import {
   Grid,
   Group,
   List,
-  Select,
   SimpleGrid,
   Title,
 } from '@mantine/core';
 import { useRouter } from 'next/router';
+import { useEffect, useState } from 'react';
+import { RequestType, apiCall } from '../../utils/api';
+import { ApiConfiguration } from '../../types/ApiConfiguration';
+import { IconWorldCheck, IconWorldOff } from '@tabler/icons-react';
+import dayjs from 'dayjs';
+import ConfigNotificationChannels from '../../components/notificationChannels';
 
 const ConfigDetails = () => {
   const router = useRouter();
-  console.log('🚀 ~ ConfigDetails ~ router.query.id:', router.query.id);
+
+  const [configData, setConfigData] = useState<ApiConfiguration>({});
+
+  useEffect(() => {
+    router.query.id && getConfiguration(router.query.id as string);
+  }, []);
+
+  const getConfiguration = (id: string) =>
+    apiCall({
+      method: RequestType.GET,
+      path: `/api/configurations/${id}`,
+      beforeRequest: () => {
+        console.log();
+      },
+      successCallback: (data) => {
+        console.info('Configuration Data:');
+        console.table(data);
+        setConfigData(data);
+      },
+    });
 
   return (
     <SimpleGrid>
@@ -21,45 +45,30 @@ const ConfigDetails = () => {
           <Grid.Col span={6}>
             <Card shadow='sm' padding='lg' radius='md' withBorder>
               <Title order={5}>Configuration Overview</Title>
-              <List>
-                <List.Item>Name:</List.Item>
-                <List.Item>Chain:</List.Item>
-                <List.Item>Is Enabled:</List.Item>
-                <List.Item>Created At:</List.Item>
-                <List.Item>Updated At:</List.Item>
+              <List listStyleType='none'>
+                <List.Item>Name: {configData.name}</List.Item>
+                <List.Item>Chain: {configData.chain}</List.Item>
+                <List.Item>
+                  Is Enabled:{' '}
+                  {configData.is_enabled ? (
+                    <IconWorldCheck color='#1adb00' />
+                  ) : (
+                    <IconWorldOff color='#d80e0e' />
+                  )}
+                </List.Item>
+                <List.Item>
+                  Created At:{' '}
+                  {dayjs(configData.createdAt).format('YYYY-MM-DD HH:mm:ss')}
+                </List.Item>
+                <List.Item>
+                  Updated At:{' '}
+                  {dayjs(configData.updatedAt).format('YYYY-MM-DD HH:mm:ss')}
+                </List.Item>
               </List>
             </Card>
           </Grid.Col>
           <Grid.Col span={6}>
-            <Title order={4}>Configuration Notification Channels</Title>
-            <table>
-              <thead>
-                <tr>
-                  <th>Id</th>
-                  <th>Type</th>
-                  <th>Name</th>
-                  <th>Enabled</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>Id</td>
-                  <td>Type</td>
-                  <td>Name</td>
-                  <td>Enabled</td>
-                  <td>Actions</td>
-                </tr>
-              </tbody>
-            </table>
-            <Select
-              label='Your favorite library'
-              placeholder='Pick value'
-              data={['React', 'Angular', 'Vue', 'Svelte']}
-            />
-            <Button variant='gradient' onClick={() => {}}>
-              Add notification channel
-            </Button>
+            <ConfigNotificationChannels id={configData.id} />
           </Grid.Col>
         </Grid>
       </Group>
