@@ -1,13 +1,13 @@
-import {myContainer} from "../../../../../../src/Infrastructure/DependencyInjection/inversify.config";
-import CommandHandlerManager from "../../../../../../src/Infrastructure/CommandHandler/CommandHandlerManager";
+import {myContainer} from "../../../../../src/Infrastructure/DependencyInjection/inversify.config";
+import CommandHandlerManager from "../../../../../src/Infrastructure/CommandHandler/CommandHandlerManager";
 import CheckDiskSpaceCommand
-    from "../../../../../../src/Application/Monitor/CheckDiskSpace/CheckDiskSpaceCommand";
-import Server from "../../../../../../src/Domain/Server/Server";
-import {CheckStatus} from "../../../../../../src/Domain/Checker/CheckStatusEnum";
-import InMemoryHttpApiClient from "../../../../../Helper/InMemoryHttpApiClient";
-import {TYPES} from "../../../../../../src/Domain/DependencyInjection/types";
-import ServerMetricsResponseBuilder from "../../../../../Helper/ServerMetricsResponseBuilder";
-import {createServer} from "../../../../../Helper/fixedStaticObjects";
+    from "../../../../../src/Application/Monitor/CheckDiskSpace/CheckDiskSpaceCommand";
+import Server from "../../../../../src/Domain/Server/Server";
+import {CheckStatus} from "../../../../../src/Domain/Checker/CheckStatusEnum";
+import InMemoryHttpApiClient from "../../../../Helper/InMemoryHttpApiClient";
+import {TYPES} from "../../../../../src/Domain/DependencyInjection/types";
+import ServerMetricsResponseBuilder from "../../../../Helper/ServerMetricsResponseBuilder";
+import {createServer} from "../../../../Helper/fixedStaticObjects";
 
 describe('CheckDiskSpaceCommandHandler', () => {
     const commandHandler = myContainer.get(CommandHandlerManager);

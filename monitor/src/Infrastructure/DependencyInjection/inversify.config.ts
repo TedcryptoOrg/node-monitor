@@ -20,12 +20,14 @@ import WsWebSocketServer from "../Server/WsWebSocketServer";
 import MonitorManager from "../../Application/Monitor/MonitorManager";
 import MonitorCheckerFactory from "../../Application/Monitor/MonitorCheckerFactory";
 import {MonitorCheckerFactory as MonitorCheckerFactoryInterface} from "../../Domain/Monitor/MonitorCheckerFactory";
+import CheckUrlCommandHandler from "../../Application/Monitor/CheckUrl/CheckUrlCommandHandler";
 
 const myContainer = new Container();
 
 // Command handlers
 myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(PingHealthcheckCommandHandler);
 myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(CheckDiskSpaceCommandHandler);
+myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(CheckUrlCommandHandler);
 myContainer.bind<CommandHandlerManager>(CommandHandlerManager).toSelf();
 
 // Alerter

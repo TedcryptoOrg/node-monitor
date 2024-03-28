@@ -18,6 +18,8 @@ import {sleep} from "../../../../src/Application/Shared/sleep";
 
 
 describe('MonitorManager', () => {
+    myContainer.rebind(TYPES.MonitorCheckerFactory).toConstantValue(new StubMonitorCheckerFactory());
+
     const eventDispatcher = myContainer.get<SpyEventDispatcher>(TYPES.EventDispatcher);
     const monitorManager = myContainer.get(MonitorManager);
     const apiClient = myContainer.get<InMemoryHttpApiClient>(TYPES.ApiClient);

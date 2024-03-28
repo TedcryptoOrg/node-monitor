@@ -1,4 +1,5 @@
 import Monitor from "../Monitor/Monitor";
+import {CheckStatus} from "./CheckStatusEnum";
 
 export default interface Checker {
     start(): void;
@@ -8,4 +9,6 @@ export default interface Checker {
     updateMonitor(monitor: Monitor): void;
 
     check(): Promise<void>;
+
+    getStatus(): CheckStatus;
 }

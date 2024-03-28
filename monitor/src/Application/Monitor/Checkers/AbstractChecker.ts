@@ -1,17 +1,17 @@
 import Checker from "../../../Domain/Checker/Checker";
+import Monitor from "../../../Domain/Monitor/Monitor";
 import CommandHandler from "../../../Domain/Command/CommandHandler";
-import CheckDiskSpaceCommand from "./CheckDiskSpaceCommand";
-import CheckResult from "../CheckResult";
-import DiskSpaceCheckMonitor from "../../../Domain/Monitor/DiskSpaceCheckMonitor";
-import {sleep} from "../../Shared/sleep";
 import {CheckStatus} from "../../../Domain/Checker/CheckStatusEnum";
+import CheckResult from "../CheckResult";
+import {sleep} from "../../Shared/sleep";
+import Command from "../../../Domain/Command/Command";
 
-export default class DiskSpaceChecker implements Checker {
+export abstract class AbstractChecker implements Checker {
     constructor(
-        private readonly commandHandler: CommandHandler,
-        private monitor: DiskSpaceCheckMonitor,
-        private status: CheckStatus,
-        private stopSignal: boolean = false
+        protected commandHandler: CommandHandler,
+        protected monitor: Monitor,
+        protected status: CheckStatus = CheckStatus.UNKNOWN,
+        protected stopSignal: boolean = false
     ) {
     }
 
@@ -21,6 +21,7 @@ export default class DiskSpaceChecker implements Checker {
             return;
         }
         console.log(`${this.monitor.getFullName()} Starting...`);
+
         this.stopSignal = false;
         this.check();
     }
@@ -30,17 +31,19 @@ export default class DiskSpaceChecker implements Checker {
         this.stopSignal = true;
     }
 
-    updateMonitor(monitor: DiskSpaceCheckMonitor): void {
+    updateMonitor(monitor: Monitor): void {
         this.monitor = monitor;
     }
 
+    getStatus(): CheckStatus {
+        return this.status;
+    }
+
+    abstract getCommand(): Command;
+
     async check(): Promise<void> {
-        while (!this.stopSignal) {
-            const result: CheckResult = await this.commandHandler.handle(new CheckDiskSpaceCommand(
-                this.monitor.name,
-                this.monitor.server,
-                this.monitor.threshold,
-            ));
+        do {
+            const result: CheckResult = await this.commandHandler.handle(this.getCommand());
 
             console.log(`${this.monitor.getFullName()}[Status: ${result.status.toString()}] ${result.message}`);
 
@@ -52,7 +55,9 @@ export default class DiskSpaceChecker implements Checker {
 
             console.log(`${this.monitor.getFullName()} Sleeping for ${this.monitor.checkIntervalSeconds} seconds`)
 
-            await sleep(1000 * this.monitor.checkIntervalSeconds);
-        }
+            if (!this.stopSignal) {
+                await sleep(1000 * this.monitor.checkIntervalSeconds);
+            }
+        } while (!this.stopSignal);
     }
 }

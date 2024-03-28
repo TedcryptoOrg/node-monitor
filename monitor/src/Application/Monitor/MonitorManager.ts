@@ -9,6 +9,7 @@ import DiskSpaceCheckMonitor from "../../Domain/Monitor/DiskSpaceCheckMonitor";
 import ApiClient from "../../Domain/ApiClient";
 import {WebSocketServer} from "../../Domain/Server/WebSocketServer";
 import MonitorCheckerFactory from "./MonitorCheckerFactory";
+import {CheckStatus} from "../../Domain/Checker/CheckStatusEnum";
 
 type WebSocketMessage = {
     event: "monitor_updated"|"monitor_disabled"|"monitor_enabled",
@@ -69,12 +70,24 @@ export default class MonitorManager {
         }
 
         this.monitors[monitor.id] = monitor;
+        this.checkers[monitor.id] = this.monitorCheckerFactory.create(monitor);
     }
 
     public run(): void {
         Object.values(this.monitors).forEach(async (monitor: Monitor) => {
             this.runCheck(monitor);
         });
+    }
+
+    public runOnce(): void {
+        Object.values(this.monitors).forEach(async (monitor: Monitor) => {
+            this.checkers[monitor.id].stop(); // we let checker know we want to stop after first run
+            this.runCheck(monitor);
+        });
+    }
+
+    public getStatus(monitor: Monitor): CheckStatus {
+        return this.checkers[monitor.id].getStatus();
     }
 
     public updateCheck(monitor: Monitor): void {
@@ -110,7 +123,6 @@ export default class MonitorManager {
         }
 
         try {
-            this.checkers[monitor.id] = this.monitorCheckerFactory.create(monitor);
             await this.checkers[monitor.id].check()
         } catch (error: any) {
             await this.eventDispatcher.dispatch(new RunCheckFailed(monitor, attempt, error))

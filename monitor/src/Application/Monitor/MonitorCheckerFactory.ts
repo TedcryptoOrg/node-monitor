@@ -1,11 +1,11 @@
 import Monitor from "../../Domain/Monitor/Monitor";
 import {MonitorType} from "../../Domain/Monitor/MonitorType";
-import DiskSpaceChecker from "./CheckDiskSpace/DiskSpaceChecker";
+import DiskSpaceChecker from "./Checkers/DiskSpaceChecker";
 import CommandHandlerManager from "../../Infrastructure/CommandHandler/CommandHandlerManager";
-import DiskSpaceCheckMonitor from "../../Domain/Monitor/DiskSpaceCheckMonitor";
 import {CheckStatus} from "../../Domain/Checker/CheckStatusEnum";
 import {inject, injectable} from "inversify";
 import {MonitorCheckerFactory as MonitorCheckerFactoryInterface} from "../../Domain/Monitor/MonitorCheckerFactory";
+import UrlChecker from "./Checkers/UrlChecker";
 
 @injectable()
 export default class MonitorCheckerFactory implements MonitorCheckerFactoryInterface {
@@ -19,9 +19,16 @@ export default class MonitorCheckerFactory implements MonitorCheckerFactoryInter
             case MonitorType.DISK_SPACE_CHECK: {
                 return new DiskSpaceChecker(
                     this.commandHandlerManager,
-                    monitor as DiskSpaceCheckMonitor,
+                    monitor,
                     CheckStatus.UNKNOWN
                 );
+            }
+            case MonitorType.URL_CHECK: {
+                return new UrlChecker(
+                    this.commandHandlerManager,
+                    monitor,
+                    CheckStatus.UNKNOWN
+                )
             }
             default:
                 throw new Error(`Unsupported monitor type ${monitor.type}`);

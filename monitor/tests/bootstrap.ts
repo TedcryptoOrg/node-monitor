@@ -17,4 +17,3 @@ dotenv.config({
 myContainer.rebind(TYPES.ApiClient).toConstantValue(new InMemoryHttpApiClient());
 myContainer.rebind(TYPES.EventDispatcher).toConstantValue(new SpyEventDispatcher(myContainer.get(EventDispatcher)));
 myContainer.rebind(TYPES.WebSocketServer).toConstantValue(new StubWebSocketServer());
-myContainer.rebind(TYPES.MonitorCheckerFactory).toConstantValue(new StubMonitorCheckerFactory());

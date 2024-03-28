@@ -8,6 +8,7 @@ export default interface Monitor {
     configuration: Configuration,
     alertSleepDurationMinutes: number
     isEnabled: boolean;
+    checkIntervalSeconds: number;
 
     getFullName(): string;
 }

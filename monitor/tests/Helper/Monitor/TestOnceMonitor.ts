@@ -10,6 +10,7 @@ export default class TestOnceMonitor implements Monitor {
         public configuration: Configuration,
         public alertSleepDurationMinutes: number,
         public isEnabled: boolean,
+        public checkIntervalSeconds: number
     ) {}
 
     getFullName(): string {
