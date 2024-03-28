@@ -1,6 +1,6 @@
 import Event from "../../../Domain/Event/Event";
 import EventHandler from "../../../Domain/Event/EventHandler";
-import RunCheckFailed from "../../Monitor/RunCheck/RunCheckFailed";
+import RunCheckFailed from "../../Monitor/RunCheckFailed";
 import {inject, injectable} from "inversify";
 import {TYPES} from "../../../Domain/DependencyInjection/types";
 import ApiClient from "../../../Domain/ApiClient";

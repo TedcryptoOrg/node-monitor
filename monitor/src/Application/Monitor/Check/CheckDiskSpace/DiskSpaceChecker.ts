@@ -10,19 +10,33 @@ import CheckState from "../CheckState";
 export default class DiskSpaceChecker implements Checker {
     constructor(
         private readonly commandHandler: CommandHandler,
-        private readonly monitor: DiskSpaceCheckMonitor,
+        private monitor: DiskSpaceCheckMonitor,
         private state: CheckState,
+        private stopSignal: boolean = false
     ) {
     }
 
-    toArray(): object {
-        return {
-            state: this.state
+    start(): void {
+        if (!this.stopSignal) {
+            console.log(`${this.monitor.getFullName()} Already running`)
+            return;
         }
+        console.log(`${this.monitor.getFullName()} Starting...`);
+        this.stopSignal = false;
+        this.check();
+    }
+
+    stop(): void {
+        console.log(`${this.monitor.getFullName()} Stopping...`)
+        this.stopSignal = true;
+    }
+
+    updateMonitor(monitor: DiskSpaceCheckMonitor): void {
+        this.monitor = monitor;
     }
 
     async check(): Promise<void> {
-        while (true) {
+        while (!this.stopSignal) {
             const result: CheckResult = await this.commandHandler.handle(new CheckDiskSpaceCommand(
                 this.monitor.name,
                 this.monitor.server,

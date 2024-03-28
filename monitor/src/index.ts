@@ -1,17 +1,24 @@
-import CommandHandlerManager from "./Infrastructure/CommandHandler/CommandHandlerManager";
+import Configuration from "./Domain/Configuration/Configuration";
 
 require('dotenv').config({ path: '.env', override: false })
 
 import {myContainer} from "./Infrastructure/DependencyInjection/inversify.config";
 import {TYPES} from "./Domain/DependencyInjection/types";
 import ApiClient from "./Domain/ApiClient";
-import RunCheckCommand from "./Application/Monitor/RunCheck/RunCheckCommand";
+import MonitorManager from "./Application/Monitor/MonitorManager";
 
 async function main (): Promise<void> {
   console.log('Booting up monitor...')
 
-  const commandHandler = myContainer.get(CommandHandlerManager)
-  const configurations = await myContainer.get<ApiClient>(TYPES.ApiClient).getConfigurations();
+  const monitorManager = myContainer.get(MonitorManager)
+  let configurations: Configuration[] = []
+  try {
+    configurations = await myContainer.get<ApiClient>(TYPES.ApiClient).getConfigurations();
+  } catch (error) {
+    console.error('Failed to get configurations:', error)
+    process.exit(1)
+  }
+
   if (configurations.length === 0) {
     throw new Error('No configurations found!');
   }
@@ -28,9 +35,12 @@ async function main (): Promise<void> {
     }
 
     for (const monitor of configuration.monitors) {
-      commandHandler.handle(new RunCheckCommand(monitor))
+      console.log(`${monitor.getFullName()} loaded`)
+      monitorManager.pushMonitor(monitor)
     }
   }
+
+  monitorManager.run()
 }
 
 main().catch((error) => {

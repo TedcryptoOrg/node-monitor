@@ -4,11 +4,13 @@ import { ping } from '../../../Ui/Http/Monitors/ping'
 import { deleteMonitor } from '../../../Ui/Http/Monitors/delete'
 import {findFailed} from '../../../Ui/Http/Monitors/findFailed';
 import {findWarnings} from '../../../Ui/Http/Monitors/findWarnings';
+import {findById} from "../../../Ui/Http/Monitors/findById";
 
 const monitorRouter = require('express').Router()
 
 monitorRouter.post('/', upsert)
 monitorRouter.get('/', findAll)
+monitorRouter.get('/:id', findById)
 monitorRouter.put('/:id', upsert)
 monitorRouter.delete('/:id', deleteMonitor)
 monitorRouter.post('/:id/ping', ping)

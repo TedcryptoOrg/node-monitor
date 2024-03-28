@@ -8,4 +8,6 @@ export const TYPES = {
 
     // Clients
     ApiClient: Symbol.for('ApiClient'),
+    WebSocketServer: Symbol.for('WebSocketServer'),
+    MonitorCheckerFactory: Symbol.for('MonitorCheckerFactory'),
 }

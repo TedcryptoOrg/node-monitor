@@ -13,16 +13,19 @@ import {Telegram} from "../../AlertChannel/telegram";
 import Alerter from "../../Domain/Alerter/Alerter";
 import AppAlerter from "../Alerter/AppAlerter";
 import EventHandler from "../../Domain/Event/EventHandler";
-import RunCheckCommandHandler from "../../Application/Monitor/RunCheck/RunCheckCommandHandler";
 import {EventDispatcher as EventDispatcherInterface } from "../../Domain/Event/EventDispatcher";
 import RunCheckFailedHandler from "../../Application/Event/Monitor/RunCheckFailedHandler";
+import {WebSocketServer as WebsocketServerInterface} from "../../Domain/Server/WebSocketServer";
+import WsWebSocketServer from "../Server/WsWebSocketServer";
+import MonitorManager from "../../Application/Monitor/MonitorManager";
+import MonitorCheckerFactory from "../../Application/Monitor/MonitorCheckerFactory";
+import {MonitorCheckerFactory as MonitorCheckerFactoryInterface} from "../../Domain/Monitor/MonitorCheckerFactory";
 
 const myContainer = new Container();
 
 // Command handlers
 myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(PingHealthcheckCommandHandler);
 myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(CheckDiskSpaceCommandHandler);
-myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(RunCheckCommandHandler);
 myContainer.bind<CommandHandlerManager>(CommandHandlerManager).toSelf();
 
 // Alerter
@@ -34,6 +37,10 @@ myContainer.bind<Alerter>(TYPES.Alerter).to(AppAlerter);
 myContainer.bind(TedcryptoApiClient).toConstantValue(new TedcryptoApiClient(process.env.API_HOST ?? ''));
 myContainer.bind(HttpApiClient).toSelf()
 myContainer.bind<ApiClient>(TYPES.ApiClient).to(HttpApiClient);
+
+myContainer.bind<MonitorCheckerFactoryInterface>(TYPES.MonitorCheckerFactory).to(MonitorCheckerFactory);
+myContainer.bind(MonitorManager).toSelf();
+myContainer.bind<WebsocketServerInterface>(TYPES.WebSocketServer).toConstantValue(new WsWebSocketServer(8081));
 
 // Events
 myContainer.bind<EventHandler>(TYPES.EventHandler).to(RunCheckFailedHandler);

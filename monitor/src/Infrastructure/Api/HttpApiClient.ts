@@ -8,6 +8,7 @@ import {ApiMonitor, NodeExporterDiskSpaceUsageConfiguration} from "./Tedcrypto/T
 import {ApiMonitorTypeEnum} from "./Tedcrypto/Types/ApiMonitorTypeEnum";
 import DiskSpaceCheckMonitor from "../../Domain/Monitor/DiskSpaceCheckMonitor";
 import {MonitorType} from "../../Domain/Monitor/MonitorType";
+import {ApiConfiguration} from "./Tedcrypto/Types/ApiConfiguration";
 
 @injectable()
 export class HttpApiClient implements ApiClient {
@@ -41,6 +42,12 @@ export class HttpApiClient implements ApiClient {
         return configurations
     }
 
+    async getMonitor(monitorId: number): Promise<Monitor> {
+        const apiMonitor = await this.provider.getMonitor(monitorId);
+
+        return this.parseMonitor(this.parseConfiguration(apiMonitor.configuration), apiMonitor);
+    }
+
     async getServerMetrics(serverId: number): Promise<ServerMetricsResponse> {
         return await this.provider.getServerMetrics(serverId);
     }
@@ -49,13 +56,29 @@ export class HttpApiClient implements ApiClient {
         await this.provider.pingMonitor(id, payload);
     }
 
+    private parseConfiguration(apiConfiguration: ApiConfiguration): Configuration {
+        return new Configuration(
+            apiConfiguration.id,
+            apiConfiguration.name,
+            [],
+            apiConfiguration.servers ? apiConfiguration.servers.map((server) => {
+                return new Server(
+                    Number(server.id),
+                    server.name,
+                    server.address,
+                )
+            }) : [],
+            apiConfiguration.is_enabled
+        )
+    }
+
     private parseMonitor(configuration: Configuration, monitor: ApiMonitor): Monitor {
         switch (monitor.type) {
             case ApiMonitorTypeEnum.NODE_EXPORTER_DISK_SPACE:
                 if (monitor.server === undefined) {
                     throw Error(`[Configuration: ${configuration.name}(${configuration.id})] Monitor ${monitor.name} has no server associated with it`)
                 }
-                const monitorConfig = JSON.parse(JSON.parse(monitor.configuration_object)) as NodeExporterDiskSpaceUsageConfiguration;
+                const monitorConfig = JSON.parse(monitor.configuration_object) as NodeExporterDiskSpaceUsageConfiguration;
 
                 return new DiskSpaceCheckMonitor(
                     Number(monitor.id),
