@@ -6,8 +6,7 @@ import InMemoryHttpApiClient from "./Helper/InMemoryHttpApiClient";
 import SpyEventDispatcher from "./Helper/SpyEventDispatcher";
 import EventDispatcher from "../src/Application/Event/EventDispatcher";
 import StubWebSocketServer from "./Helper/Monitor/StubWebSocketServer";
-import MonitorCheckerFactory from "../src/Application/Monitor/MonitorCheckerFactory";
-import StubMonitorCheckerFactory from "./Helper/Monitor/StubMonitorCheckerFactory";
+import InMemoryBlockchainClientFactory from "./Helper/Blockchain/InMemoryBlockchainClientFactory";
 
 dotenv.config({
     path: path.join(__dirname, '/../.env.test'),
@@ -17,3 +16,4 @@ dotenv.config({
 myContainer.rebind(TYPES.ApiClient).toConstantValue(new InMemoryHttpApiClient());
 myContainer.rebind(TYPES.EventDispatcher).toConstantValue(new SpyEventDispatcher(myContainer.get(EventDispatcher)));
 myContainer.rebind(TYPES.WebSocketServer).toConstantValue(new StubWebSocketServer());
+myContainer.rebind(TYPES.BlockchainClientFactory).toConstantValue(new InMemoryBlockchainClientFactory())

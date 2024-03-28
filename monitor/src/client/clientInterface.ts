@@ -1,5 +1,5 @@
-import { type SigningInfosResponse } from './type/uniformisation/slashing/signingInfosResponse'
-import { type ValidatorInfoResponse } from './type/uniformisation/staking/validatorInfoResponse'
+import { type SigningInfosResponse } from '../Infrastructure/Blockchain/Cosmos/Cosmjs/Response/Slashing/SigningInfosResponse'
+import { type ValidatorInfoResponse } from '../Infrastructure/Blockchain/Cosmos/Cosmjs/Response/Staking/ValidatorInfoResponse'
 
 export interface ClientInterface {
   isSyncing: () => Promise<boolean>

@@ -21,6 +21,11 @@ import MonitorManager from "../../Application/Monitor/MonitorManager";
 import MonitorCheckerFactory from "../../Application/Monitor/MonitorCheckerFactory";
 import {MonitorCheckerFactory as MonitorCheckerFactoryInterface} from "../../Domain/Monitor/MonitorCheckerFactory";
 import CheckUrlCommandHandler from "../../Application/Monitor/CheckUrl/CheckUrlCommandHandler";
+import CosmosBlockchainClient from "../Blockchain/Cosmos/CosmosBlockchainClient";
+import BlockchainClient from "../../Domain/Blockchain/BlockchainClient";
+import BlockchainClientFactory from "../../Domain/Blockchain/BlockchainClientFactory";
+import CosmosBlockchainClientFactory from "../Blockchain/Cosmos/CosmosBlockchainClientFactory";
+import CheckSignMissCommandHandler from "../../Application/Monitor/CheckSignMiss/CheckSignMissCommandHandler";
 
 const myContainer = new Container();
 
@@ -28,6 +33,7 @@ const myContainer = new Container();
 myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(PingHealthcheckCommandHandler);
 myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(CheckDiskSpaceCommandHandler);
 myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(CheckUrlCommandHandler);
+myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(CheckSignMissCommandHandler);
 myContainer.bind<CommandHandlerManager>(CommandHandlerManager).toSelf();
 
 // Alerter
@@ -43,6 +49,9 @@ myContainer.bind<ApiClient>(TYPES.ApiClient).to(HttpApiClient);
 myContainer.bind<MonitorCheckerFactoryInterface>(TYPES.MonitorCheckerFactory).to(MonitorCheckerFactory);
 myContainer.bind(MonitorManager).toSelf();
 myContainer.bind<WebsocketServerInterface>(TYPES.WebSocketServer).toConstantValue(new WsWebSocketServer(8081));
+
+myContainer.bind(CosmosBlockchainClientFactory).toSelf()
+myContainer.bind<BlockchainClientFactory>(TYPES.BlockchainClientFactory).to(CosmosBlockchainClientFactory)
 
 // Events
 myContainer.bind<EventHandler>(TYPES.EventHandler).to(RunCheckFailedHandler);

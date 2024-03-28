@@ -1,6 +1,6 @@
 import {MonitorCheck} from "./monitorCheck";
 import {ClientInterface} from "../../client/clientInterface";
-import {getValConsAddressFromPubKey} from "../../Application/Shared/validatorTools";
+import {getValConsAddressFromPubKey} from "../../Infrastructure/Blockchain/Cosmos/Cosmjs/validatorTools";
 import {ApiMonitor, SignMissCheckConfiguration} from "../../Infrastructure/Api/Tedcrypto/Types/ApiMonitor";
 import {ApiService} from "../../Infrastructure/Api/Tedcrypto/Types/ApiService";
 import {buildClient} from "../../services/clientManager";

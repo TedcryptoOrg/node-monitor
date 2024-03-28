@@ -20,14 +20,12 @@ export abstract class AbstractChecker implements Checker {
             console.log(`${this.monitor.getFullName()} Already running`)
             return;
         }
-        console.log(`${this.monitor.getFullName()} Starting...`);
 
         this.stopSignal = false;
         this.check();
     }
 
     stop(): void {
-        console.log(`${this.monitor.getFullName()} Stopping...`)
         this.stopSignal = true;
     }
 
@@ -39,7 +37,11 @@ export abstract class AbstractChecker implements Checker {
         return this.status;
     }
 
-    abstract getCommand(): Command;
+    protected abstract getCommand(): Command;
+
+    protected async postCheck(result: CheckResult): Promise<void> {
+        // Do nothing by default
+    }
 
     async check(): Promise<void> {
         do {
@@ -53,9 +55,11 @@ export abstract class AbstractChecker implements Checker {
 
             this.status = result.status;
 
-            console.log(`${this.monitor.getFullName()} Sleeping for ${this.monitor.checkIntervalSeconds} seconds`)
+            await this.postCheck(result)
 
             if (!this.stopSignal) {
+                console.log(`${this.monitor.getFullName()} Sleeping for ${this.monitor.checkIntervalSeconds} seconds`)
+
                 await sleep(1000 * this.monitor.checkIntervalSeconds);
             }
         } while (!this.stopSignal);

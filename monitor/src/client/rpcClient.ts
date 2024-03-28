@@ -6,8 +6,8 @@ import { type ClientInterface } from './clientInterface'
 import { type QueryClientImpl as StakingQueryClient } from 'cosmjs-types/cosmos/staking/v1beta1/query'
 import { type QueryClientImpl as SlashingQueryClient } from 'cosmjs-types/cosmos/slashing/v1beta1/query'
 import { createSlashingClient, createStakingClient } from './queryClientFactory'
-import { type SigningInfosResponse } from './type/uniformisation/slashing/signingInfosResponse'
-import { type ValidatorInfoResponse } from './type/uniformisation/staking/validatorInfoResponse'
+import { type SigningInfosResponse } from '../Infrastructure/Blockchain/Cosmos/Cosmjs/Response/Slashing/SigningInfosResponse'
+import { type ValidatorInfoResponse } from '../Infrastructure/Blockchain/Cosmos/Cosmjs/Response/Staking/ValidatorInfoResponse'
 import { createDateFromSeconds } from '../Application/Shared/dateTools'
 
 export class RpcClient implements ClientInterface {

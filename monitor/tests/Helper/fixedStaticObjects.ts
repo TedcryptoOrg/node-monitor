@@ -4,21 +4,37 @@ import DiskSpaceCheckMonitor from "../../src/Domain/Monitor/DiskSpaceCheckMonito
 import {MonitorType} from "../../src/Domain/Monitor/MonitorType";
 import TestOnceMonitor from "./Monitor/TestOnceMonitor";
 import UrlMonitor from "../../src/Domain/Monitor/UrlMonitor";
+import SignMissMonitor from "../../src/Domain/Monitor/SignMissMonitor";
+import Monitor from "../../src/Domain/Monitor/Monitor";
+import Service from "../../src/Domain/Services/Service";
+import {ServiceType} from "../../src/Domain/Services/ServiceType";
 
-export const createConfiguration = (): Configuration => {
+export const createConfiguration = (monitors?: Monitor[], servers?: Server[]): Configuration => {
     return new Configuration(
         1,
         "Test Configuration",
-        [],
-        [],
+        'test',
+        monitors ?? [],
+        servers ?? [],
         true
     )
 }
 
-export const createServer = (): Server => {
+export const createServer = (services?: Service[]): Server => {
     return new Server(
         1,
         "Test Server",
+        "http://localhost",
+        services ?? [],
+    )
+}
+
+export const createService = (): Service => {
+    return new Service(
+        1,
+        ServiceType.REST,
+        "Test Service",
+        true,
         "http://localhost",
     )
 }
@@ -60,5 +76,20 @@ export const createUrlMonitor = (url?: string): UrlMonitor => {
         60,
         true,
         url ?? 'http://localhost',
+    )
+}
+
+export const createSignMissMonitor = (configuration?: Configuration): SignMissMonitor => {
+    return new SignMissMonitor(
+        1,
+        'Test monitor',
+        MonitorType.SIGN_MISS_CHECK,
+        configuration ?? createConfiguration(),
+        1,
+        60,
+        true,
+        1,
+        60,
+        'test'
     )
 }

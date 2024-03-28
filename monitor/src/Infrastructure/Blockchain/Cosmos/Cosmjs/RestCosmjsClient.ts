@@ -1,35 +1,44 @@
-import { type RestConfiguration } from '../type/restConfiguration'
 import axios from 'axios'
-import { RecoverableException } from '../Domain/RecoverableException'
-import { type SigningInfosResponse as RestSigningInfosResponse } from './type/rest/slashing/signingInfosResponse'
-import { type ValidatorInfoResponse as RestValidatorInfoResponse } from './type/rest/staking/validatorInfoResponse'
-import { type ClientInterface } from './clientInterface'
-import { type ValidatorInfoResponse } from '../Infrastructure/Blockchain/Cosmos/Cosmjs/Response/Staking/ValidatorInfoResponse'
+import {RecoverableException} from "../../../../Domain/RecoverableException";
+import CosmjsClient from "./CosmjsClient";
+import {ValidatorInfoResponse} from "./Response/Staking/ValidatorInfoResponse";
+import {SigningInfosResponse} from "./Response/Slashing/SigningInfosResponse";
 
-export class RestClient implements ClientInterface {
+type RestSigningInfosResponse = {
+  val_signing_info: {
+    address: string
+    start_height: string
+    index_offset: string
+    jailed_until: string
+    tombstoned: boolean
+    missed_blocks_counter: string
+  }
+}
+
+export class RestCosmjsClient implements CosmjsClient {
   constructor (
-    private readonly configuration: RestConfiguration
+    private readonly address: string
   ) {
   }
 
   async isSyncing (): Promise<boolean> {
     try {
-      const restUrl = this.configuration.address + '/cosmos/base/tendermint/v1beta1/syncing'
+      const restUrl = this.address + '/cosmos/base/tendermint/v1beta1/syncing'
       return (await axios.get(restUrl)).data.syncing
     } catch (error: any) {
       throw new RecoverableException('Error fetching syncing status from REST: ' + String(error.message))
     }
   }
 
-  async getValidatorSigningInfo (valconsAddress: string): Promise<RestSigningInfosResponse> {
+  async getValidatorSigningInfo (valconsAddress: string): Promise<SigningInfosResponse> {
     if (!valconsAddress.includes('valcons')) {
       throw new Error('Expected valcons address. Got' + valconsAddress)
     }
 
     try {
-      const restUrl = this.configuration.address + '/cosmos/slashing/v1beta1/signing_infos/' + valconsAddress
+      const restUrl = this.address + '/cosmos/slashing/v1beta1/signing_infos/' + valconsAddress
       console.log('Fetching signing infos from: ' + restUrl)
-      return (await axios.get(restUrl)).data
+      return (await axios.get(restUrl)).data as RestSigningInfosResponse
     } catch (error: any) {
       if (error.response?.data?.message) {
         throw new Error(`Error fetching validator signing info from REST. Code ${error.response.data.code}: ${error.response.data.message}`)
@@ -41,9 +50,9 @@ export class RestClient implements ClientInterface {
 
   async getValidatorInfo (valoperAddress: string): Promise<ValidatorInfoResponse> {
     try {
-      const restUrl = this.configuration.address + '/cosmos/staking/v1beta1/validators/' + valoperAddress
+      const restUrl = this.address + '/cosmos/staking/v1beta1/validators/' + valoperAddress
       console.log(restUrl)
-      const response: RestValidatorInfoResponse = (await axios.get(restUrl)).data
+      const response: ValidatorInfoResponse = (await axios.get(restUrl)).data
 
       return {
         validator: {

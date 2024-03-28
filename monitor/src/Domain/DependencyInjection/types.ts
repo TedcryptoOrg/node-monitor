@@ -10,4 +10,5 @@ export const TYPES = {
     ApiClient: Symbol.for('ApiClient'),
     WebSocketServer: Symbol.for('WebSocketServer'),
     MonitorCheckerFactory: Symbol.for('MonitorCheckerFactory'),
+    BlockchainClientFactory: Symbol.for('BlockchainClientFactory'),
 }

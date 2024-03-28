@@ -6,6 +6,7 @@ import {CheckStatus} from "../../Domain/Checker/CheckStatusEnum";
 import {inject, injectable} from "inversify";
 import {MonitorCheckerFactory as MonitorCheckerFactoryInterface} from "../../Domain/Monitor/MonitorCheckerFactory";
 import UrlChecker from "./Checkers/UrlChecker";
+import SignMissChecker from "./Checkers/SignMissChecker";
 
 @injectable()
 export default class MonitorCheckerFactory implements MonitorCheckerFactoryInterface {
@@ -25,6 +26,13 @@ export default class MonitorCheckerFactory implements MonitorCheckerFactoryInter
             }
             case MonitorType.URL_CHECK: {
                 return new UrlChecker(
+                    this.commandHandlerManager,
+                    monitor,
+                    CheckStatus.UNKNOWN
+                )
+            }
+            case MonitorType.SIGN_MISS_CHECK: {
+                return new SignMissChecker(
                     this.commandHandlerManager,
                     monitor,
                     CheckStatus.UNKNOWN

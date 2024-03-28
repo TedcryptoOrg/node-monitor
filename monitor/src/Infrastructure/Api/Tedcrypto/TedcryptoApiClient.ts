@@ -2,8 +2,8 @@ import {ApiMetric} from "./Types/ApiMetric";
 import {injectable} from "inversify";
 import axios from "axios";
 import {ApiConfiguration} from "./Types/ApiConfiguration";
-import Configuration from "../../../Domain/Configuration/Configuration";
 import {ApiMonitor} from "./Types/ApiMonitor";
+import {ApiServer} from "./Types/ApiServer";
 
 @injectable()
 export default class TedcryptoApiClient {
@@ -30,5 +30,9 @@ export default class TedcryptoApiClient {
 
     async getMonitor(monitorId: number): Promise<ApiMonitor> {
         return (await axios.get(`${this.baseUrl}/api/monitors/${monitorId}`)).data
+    }
+
+    async getConfigurationServers(configurationId: number): Promise<ApiServer[]> {
+        return (await axios.get(`${this.baseUrl}/api/configurations/${configurationId}/servers`)).data
     }
 }
