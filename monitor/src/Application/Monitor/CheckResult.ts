@@ -1,4 +1,4 @@
-import {CheckStatus} from "../../../Domain/Checker/CheckStatusEnum";
+import {CheckStatus} from "../../Domain/Checker/CheckStatusEnum";
 
 export default class CheckResult {
     constructor(

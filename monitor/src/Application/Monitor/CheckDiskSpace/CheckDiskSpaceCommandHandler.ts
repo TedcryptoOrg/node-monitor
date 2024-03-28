@@ -1,12 +1,12 @@
-import CommandHandler from "../../../../Domain/Command/CommandHandler";
-import {sleep} from "../../../Shared/sleep";
+import CommandHandler from "../../../Domain/Command/CommandHandler";
+import {sleep} from "../../Shared/sleep";
 import CheckResult from "../CheckResult";
-import {CheckStatus} from "../../../../Domain/Checker/CheckStatusEnum";
+import {CheckStatus} from "../../../Domain/Checker/CheckStatusEnum";
 import CheckDiskSpaceCommand from "./CheckDiskSpaceCommand";
-import {NoRecoverableException} from "../../../../Domain/NoRecoverableException";
+import {NoRecoverableException} from "../../../Domain/NoRecoverableException";
 import {inject, injectable} from "inversify";
-import {TYPES} from "../../../../Domain/DependencyInjection/types";
-import ApiClient, {ServerMetricsResponse} from "../../../../Domain/ApiClient";
+import {TYPES} from "../../../Domain/DependencyInjection/types";
+import ApiClient, {ServerMetricsResponse} from "../../../Domain/ApiClient";
 
 @injectable()
 export default class CheckDiskSpaceCommandHandler implements CommandHandler

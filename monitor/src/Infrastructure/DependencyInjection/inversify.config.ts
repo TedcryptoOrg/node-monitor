@@ -7,7 +7,7 @@ import PingHealthcheckCommandHandler from "../../Application/Healthchecker/Ping/
 import ApiClient from "../../Domain/ApiClient";
 import {HttpApiClient} from "../Api/HttpApiClient";
 import TedcryptoApiClient from "../Api/Tedcrypto/TedcryptoApiClient";
-import CheckDiskSpaceCommandHandler from "../../Application/Monitor/Check/CheckDiskSpace/CheckDiskSpaceCommandHandler";
+import CheckDiskSpaceCommandHandler from "../../Application/Monitor/CheckDiskSpace/CheckDiskSpaceCommandHandler";
 import {AlertChannel} from "../../Domain/Alerter/AlertChannel";
 import {Telegram} from "../../AlertChannel/telegram";
 import Alerter from "../../Domain/Alerter/Alerter";

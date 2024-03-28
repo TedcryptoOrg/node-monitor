@@ -1,17 +1,16 @@
-import Checker from "../../../../Domain/Checker/Checker";
-import CommandHandler from "../../../../Domain/Command/CommandHandler";
+import Checker from "../../../Domain/Checker/Checker";
+import CommandHandler from "../../../Domain/Command/CommandHandler";
 import CheckDiskSpaceCommand from "./CheckDiskSpaceCommand";
 import CheckResult from "../CheckResult";
-import DiskSpaceCheckMonitor from "../../../../Domain/Monitor/DiskSpaceCheckMonitor";
-import {sleep} from "../../../Shared/sleep";
-import {CheckStatus} from "../../../../Domain/Checker/CheckStatusEnum";
-import CheckState from "../CheckState";
+import DiskSpaceCheckMonitor from "../../../Domain/Monitor/DiskSpaceCheckMonitor";
+import {sleep} from "../../Shared/sleep";
+import {CheckStatus} from "../../../Domain/Checker/CheckStatusEnum";
 
 export default class DiskSpaceChecker implements Checker {
     constructor(
         private readonly commandHandler: CommandHandler,
         private monitor: DiskSpaceCheckMonitor,
-        private state: CheckState,
+        private status: CheckStatus,
         private stopSignal: boolean = false
     ) {
     }
@@ -45,11 +44,11 @@ export default class DiskSpaceChecker implements Checker {
 
             console.log(`${this.monitor.getFullName()}[Status: ${result.status.toString()}] ${result.message}`);
 
-            if (this.state.status !== result.status) {
+            if (this.status !== result.status) {
                 //await this.eventDispatcher.dispatch(new CheckStatusChanged(this.monitor, this.state.status, result));
             }
 
-            this.state = this.state.withStatus(CheckStatus.OK);
+            this.status = result.status;
 
             console.log(`${this.monitor.getFullName()} Sleeping for ${this.monitor.checkIntervalSeconds} seconds`)
 

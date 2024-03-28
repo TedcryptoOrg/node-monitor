@@ -1,5 +1,5 @@
-import Command from "../../../../Domain/Command/Command";
-import Server from "../../../../Domain/Server/Server";
+import Command from "../../../Domain/Command/Command";
+import Server from "../../../Domain/Server/Server";
 
 export default class CheckDiskSpaceCommand implements Command {
     constructor(

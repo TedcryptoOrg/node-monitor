@@ -1,7 +1,7 @@
 import {myContainer} from "../../../../../../src/Infrastructure/DependencyInjection/inversify.config";
 import CommandHandlerManager from "../../../../../../src/Infrastructure/CommandHandler/CommandHandlerManager";
 import CheckDiskSpaceCommand
-    from "../../../../../../src/Application/Monitor/Check/CheckDiskSpace/CheckDiskSpaceCommand";
+    from "../../../../../../src/Application/Monitor/CheckDiskSpace/CheckDiskSpaceCommand";
 import Server from "../../../../../../src/Domain/Server/Server";
 import {CheckStatus} from "../../../../../../src/Domain/Checker/CheckStatusEnum";
 import InMemoryHttpApiClient from "../../../../../Helper/InMemoryHttpApiClient";
