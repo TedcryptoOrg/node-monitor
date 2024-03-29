@@ -1,8 +1,12 @@
 import BlockchainClient from "../../../src/Domain/Blockchain/BlockchainClient";
 
 export default class StubBlockchainClient implements BlockchainClient {
+    async fetchOracleMissCounter(chain: string, validatorAddress: string): Promise<number> {
+        return 10
+    }
+
     async isSyncing(): Promise<boolean> {
-        return false;
+        return false
     }
 
     async getBlockHeight(): Promise<number> {
@@ -10,6 +14,6 @@ export default class StubBlockchainClient implements BlockchainClient {
     }
 
     async fetchMissCounter(validatorAddress: string): Promise<number> {
-        return 10;
+        return 10
     }
 }

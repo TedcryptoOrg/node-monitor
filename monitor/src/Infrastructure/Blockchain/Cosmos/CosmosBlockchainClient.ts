@@ -10,6 +10,10 @@ export default class CosmosBlockchainClient implements BlockchainClient
         private readonly chain: Chain
     ) {}
 
+    async fetchOracleMissCounter(chain: string, validatorAddress: string): Promise<number> {
+        return await this.client.fetchOracleMissCounter(chain, validatorAddress);
+    }
+
     async isSyncing(): Promise<boolean> {
         return await this.client.isSyncing();
     }

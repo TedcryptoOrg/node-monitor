@@ -6,7 +6,7 @@ import Server from "../../Domain/Server/Server";
 import Monitor from "../../Domain/Monitor/Monitor";
 import {
     ApiMonitor,
-    NodeExporterDiskSpaceUsageConfiguration,
+    NodeExporterDiskSpaceUsageConfiguration, PriceFeederMissCountConfiguration,
     SignMissCheckConfiguration,
     UrlCheckConfiguration
 } from "./Tedcrypto/Types/ApiMonitor";
@@ -20,6 +20,7 @@ import {ApiServer} from "./Tedcrypto/Types/ApiServer";
 import {ApiService} from "./Tedcrypto/Types/ApiService";
 import Service from "../../Domain/Services/Service";
 import {ServiceType} from "../../Domain/Services/ServiceType";
+import OracleSignMissMonitor from "../../Domain/Monitor/OracleSignMissMonitor";
 
 @injectable()
 export class HttpApiClient implements ApiClient {
@@ -110,6 +111,21 @@ export class HttpApiClient implements ApiClient {
                     Number(monitor.id),
                     monitor.name,
                     MonitorType.SIGN_MISS_CHECK,
+                    configuration,
+                    monitorConfig.alert_sleep_duration_minutes,
+                    monitorConfig.sleep_duration_seconds,
+                    monitor.is_enabled,
+                    monitorConfig.miss_tolerance,
+                    monitorConfig.miss_tolerance_period_seconds,
+                    monitorConfig.valoper_address
+                )
+            } case ApiMonitorTypeEnum.PRICE_FEEDER_MISS_COUNT: {
+                const monitorConfig = JSON.parse(monitor.configuration_object) as PriceFeederMissCountConfiguration;
+
+                return new OracleSignMissMonitor(
+                    Number(monitor.id),
+                    monitor.name,
+                    MonitorType.PRICE_FEEDER_MISS_COUNT,
                     configuration,
                     monitorConfig.alert_sleep_duration_minutes,
                     monitorConfig.sleep_duration_seconds,

@@ -9,6 +9,7 @@ import Monitor from "../../src/Domain/Monitor/Monitor";
 import Service from "../../src/Domain/Services/Service";
 import {ServiceType} from "../../src/Domain/Services/ServiceType";
 import BlockCheckMonitor from "../../src/Domain/Monitor/BlockCheckMonitor";
+import OracleSignMissMonitor from "../../src/Domain/Monitor/OracleSignMissMonitor";
 
 export const createConfiguration = (monitors?: Monitor[], servers?: Server[]): Configuration => {
     return new Configuration(
@@ -107,5 +108,20 @@ export const createBlockCheckMonitor = (configuration?: Configuration): BlockChe
         createServer(),
         1,
         60,
+    )
+}
+
+export const createOracleSignMissMonitor = (configuration?: Configuration): OracleSignMissMonitor => {
+    return new OracleSignMissMonitor(
+        1,
+        'Test monitor',
+        MonitorType.PRICE_FEEDER_MISS_COUNT,
+        configuration ?? createConfiguration(),
+        1,
+        60,
+        true,
+        1,
+        60,
+        'test'
     )
 }

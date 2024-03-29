@@ -8,6 +8,7 @@ import {MonitorCheckerFactory as MonitorCheckerFactoryInterface} from "../../Dom
 import UrlChecker from "./Checkers/UrlChecker";
 import SignMissChecker from "./Checkers/SignMissChecker";
 import BlockChecker from "./Checkers/BlockChecker";
+import OracleSignMissChecker from "./Checkers/OracleSignMissChecker";
 
 @injectable()
 export default class MonitorCheckerFactory implements MonitorCheckerFactoryInterface {
@@ -45,6 +46,13 @@ export default class MonitorCheckerFactory implements MonitorCheckerFactoryInter
                     monitor,
                     CheckStatus.UNKNOWN
                 );
+            }
+            case MonitorType.PRICE_FEEDER_MISS_COUNT: {
+                return new OracleSignMissChecker(
+                    this.commandHandlerManager,
+                    monitor,
+                    CheckStatus.UNKNOWN
+                )
             }
             default:
                 throw new Error(`Unsupported monitor type ${monitor.type}`);

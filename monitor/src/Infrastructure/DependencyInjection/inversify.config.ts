@@ -27,6 +27,8 @@ import BlockchainClientFactory from "../../Domain/Blockchain/BlockchainClientFac
 import CosmosBlockchainClientFactory from "../Blockchain/Cosmos/CosmosBlockchainClientFactory";
 import CheckSignMissCommandHandler from "../../Application/Monitor/CheckSignMiss/CheckSignMissCommandHandler";
 import CheckBlockCommandHandler from "../../Application/Monitor/CheckBlock/CheckBlockCommandHandler";
+import CheckOracleSignMissCommandHandler
+    from "../../Application/Monitor/CheckOracleSignMiss/CheckOracleSignMissCommandHandler";
 
 const myContainer = new Container();
 
@@ -36,6 +38,7 @@ myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(CheckDiskSpaceCommandH
 myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(CheckUrlCommandHandler);
 myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(CheckSignMissCommandHandler);
 myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(CheckBlockCommandHandler);
+myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(CheckOracleSignMissCommandHandler);
 myContainer.bind<CommandHandlerManager>(CommandHandlerManager).toSelf();
 
 // Alerter
