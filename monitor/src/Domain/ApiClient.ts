@@ -1,6 +1,6 @@
-import Configuration from "./Configuration/Configuration";
-import Monitor from "./Monitor/Monitor";
-import Server from "./Server/Server";
+import type Configuration from './Configuration/Configuration'
+import type Monitor from './Monitor/Monitor'
+import type Server from './Server/Server'
 
 export interface ServerMetricsResponse {
   freeDiskSpace: number
@@ -13,13 +13,13 @@ export interface ServerMetricsResponse {
 }
 
 export default interface ApiClient {
-  getConfigurations(): Promise<Configuration[]>
+  getConfigurations: () => Promise<Configuration[]>
 
-  getMonitor(id: number): Promise<Monitor>
+  getMonitor: (id: number) => Promise<Monitor>
 
-  getServerMetrics(serverId: number): Promise<ServerMetricsResponse>
+  getServerMetrics: (serverId: number) => Promise<ServerMetricsResponse>
 
-  pingMonitor(id: number, payload: { last_error: string | null, status: boolean }): Promise<void>
+  pingMonitor: (id: number, payload: { last_error: string | null, status: boolean }) => Promise<void>
 
-  getConfigurationServers(configurationId: number): Promise<Server[]>;
+  getConfigurationServers: (configurationId: number) => Promise<Server[]>
 }
