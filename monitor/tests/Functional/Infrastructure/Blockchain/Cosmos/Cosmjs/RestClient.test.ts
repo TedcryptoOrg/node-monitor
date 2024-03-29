@@ -1,17 +1,13 @@
-import {OSMOSIS_VALCONS_ADDRESS, OSMOSIS_VALOPER_ADDRESS, REST_CONFIGURATION} from "../../Helper/fixedConfigurations";
-import {RestClient} from "../../../src/client/restClient";
+import {OSMOSIS_VALCONS_ADDRESS, OSMOSIS_VALOPER_ADDRESS, REST_ADDRESS} from "../../../../../Helper/fixedConfigurations";
+import {RestCosmjsClient} from "../../../../../../src/Infrastructure/Blockchain/Cosmos/Cosmjs/RestCosmjsClient";
 
 jest.retryTimes(3)
 
 describe('REST Client', () => {
-    let restClient: RestClient;
-    beforeAll(
-        () => {
-            restClient = new RestClient(
-                REST_CONFIGURATION,
-            )
-        }
-    )
+    let restClient: RestCosmjsClient;
+    beforeAll(() => {
+        restClient = new RestCosmjsClient(REST_ADDRESS)
+    })
 
     it('should return whether is syncing or not', async () => {
         expect(await restClient.isSyncing()).toBe(false);

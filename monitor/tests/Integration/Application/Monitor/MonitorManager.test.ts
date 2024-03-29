@@ -1,14 +1,8 @@
 import {myContainer} from "../../../../src/Infrastructure/DependencyInjection/inversify.config";
 import MonitorManager from "../../../../src/Application/Monitor/MonitorManager";
-import {
-    createConfiguration,
-    createServer,
-    createTestOnceMonitor
-} from "../../../Helper/fixedStaticObjects";
+import {createTestOnceMonitor} from "../../../Helper/fixedStaticObjects";
 import SpyEventDispatcher from "../../../Helper/SpyEventDispatcher";
 import {TYPES} from "../../../../src/Domain/DependencyInjection/types";
-import DiskSpaceCheckMonitor from "../../../../src/Domain/Monitor/DiskSpaceCheckMonitor";
-import {MonitorType} from "../../../../src/Domain/Monitor/MonitorType";
 import RunCheckFailed from "../../../../src/Application/Monitor/RunCheckFailed";
 import StubMonitorCheckerFactory from "../../../Helper/Monitor/StubMonitorCheckerFactory";
 import OnceChecker from "../../../Helper/Monitor/OnceChecker";
@@ -18,30 +12,25 @@ import {sleep} from "../../../../src/Application/Shared/sleep";
 
 
 describe('MonitorManager', () => {
-    myContainer.rebind(TYPES.MonitorCheckerFactory).toConstantValue(new StubMonitorCheckerFactory());
+    const stubMonitorCheckerFactory = new StubMonitorCheckerFactory();
+    myContainer.rebind(TYPES.MonitorCheckerFactory).toConstantValue(stubMonitorCheckerFactory);
 
     const eventDispatcher = myContainer.get<SpyEventDispatcher>(TYPES.EventDispatcher);
     const monitorManager = myContainer.get(MonitorManager);
     const apiClient = myContainer.get<InMemoryHttpApiClient>(TYPES.ApiClient);
 
     it('should dispatch event when fails to run', async () => {
+        const monitor = createTestOnceMonitor()
+        const checker = new OnceChecker()
+        checker.setCheckerException(new Error('Failed to run'))
+
+        stubMonitorCheckerFactory.addChecker(monitor, checker)
         monitorManager.setMaxAttempts(1)
-        monitorManager.pushMonitor(
-            new DiskSpaceCheckMonitor(
-                1,
-                createConfiguration(),
-                'Test monitor',
-                'foo' as MonitorType,
-                createServer(),
-                80,
-                1,
-                60,
-                1,
-                true
-            ),
-        );
+        monitorManager.pushMonitor(monitor);
 
         monitorManager.run()
+
+        await sleep(1)
 
         expect(eventDispatcher.events.length).toBe(1)
         expect(eventDispatcher.wasEventDispatched(RunCheckFailed.name)).toBe(true)

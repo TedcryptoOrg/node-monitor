@@ -7,6 +7,7 @@ export const TYPES = {
     Alerter: Symbol.for('Alerter'),
 
     // Clients
+    HttpClient: Symbol.for('HttpClient'),
     ApiClient: Symbol.for('ApiClient'),
     WebSocketServer: Symbol.for('WebSocketServer'),
     MonitorCheckerFactory: Symbol.for('MonitorCheckerFactory'),

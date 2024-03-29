@@ -2,8 +2,8 @@ import {
     createDistributionClient,
     createSlashingClient, createStakingClient,
     createTendermintClient
-} from "../../../src/Infrastructure/Blockchain/Cosmos/Cosmjs/queryClientFactory";
-import {OSMOSIS_VALCONS_ADDRESS, OSMOSIS_VALOPER_ADDRESS, RPC_CONFIGURATION} from "../../Helper/fixedConfigurations";
+} from "../../../../../../src/Infrastructure/Blockchain/Cosmos/Cosmjs/queryClientFactory";
+import {OSMOSIS_VALCONS_ADDRESS, OSMOSIS_VALOPER_ADDRESS, RPC_ADDRESS} from "../../../../../Helper/fixedConfigurations";
 
 jest.retryTimes(3);
 
@@ -18,7 +18,7 @@ describe('Query Client Factory', () => {
     }, 30000);
 
     it('should create a working distribution client', async () => {
-        const client = await createDistributionClient(RPC_CONFIGURATION.address);
+        const client = await createDistributionClient(RPC_ADDRESS);
         const commissionResponse = await client.ValidatorCommission({
             validatorAddress: OSMOSIS_VALOPER_ADDRESS
         });
@@ -28,7 +28,7 @@ describe('Query Client Factory', () => {
     }, 30000);
 
     it('should create a working slashing client', async () => {
-        const client = await createSlashingClient(RPC_CONFIGURATION.address);
+        const client = await createSlashingClient(RPC_ADDRESS);
         const params = await client.Params({});
 
         expect(params.params?.downtimeJailDuration?.seconds.toNumber()).toBe(60)
@@ -39,7 +39,7 @@ describe('Query Client Factory', () => {
     }, 30000);
 
     it('should create a working staking client', async () => {
-        const client = await createStakingClient(RPC_CONFIGURATION.address);
+        const client = await createStakingClient(RPC_ADDRESS);
 
         const response = await client.Params({})
         expect(response.params?.bondDenom).toBe('uosmo')

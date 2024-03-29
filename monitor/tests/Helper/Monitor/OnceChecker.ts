@@ -4,6 +4,11 @@ import Monitor from "../../../src/Domain/Monitor/Monitor";
 
 export default class OnceChecker implements Checker {
     private events: string[] = [];
+    private checkerException: Error|null = null;
+
+    setCheckerException(error: Error) {
+        this.checkerException = error
+    }
 
     getEvents(): string[] {
         return this.events;
@@ -31,6 +36,10 @@ export default class OnceChecker implements Checker {
     }
 
     check(): Promise<void> {
+        if (this.checkerException) {
+            return Promise.reject(this.checkerException);
+        }
+
         this.events.push('check');
         return Promise.resolve();
     }

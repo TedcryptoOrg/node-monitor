@@ -9,7 +9,6 @@ import {HttpApiClient} from "../Api/HttpApiClient";
 import TedcryptoApiClient from "../Api/Tedcrypto/TedcryptoApiClient";
 import CheckDiskSpaceCommandHandler from "../../Application/Monitor/CheckDiskSpace/CheckDiskSpaceCommandHandler";
 import {AlertChannel} from "../../Domain/Alerter/AlertChannel";
-import {Telegram} from "../../AlertChannel/telegram";
 import Alerter from "../../Domain/Alerter/Alerter";
 import AppAlerter from "../Alerter/AppAlerter";
 import EventHandler from "../../Domain/Event/EventHandler";
@@ -29,6 +28,9 @@ import CheckSignMissCommandHandler from "../../Application/Monitor/CheckSignMiss
 import CheckBlockCommandHandler from "../../Application/Monitor/CheckBlock/CheckBlockCommandHandler";
 import CheckOracleSignMissCommandHandler
     from "../../Application/Monitor/CheckOracleSignMiss/CheckOracleSignMissCommandHandler";
+import Telegram from "../Alerter/Channels/Telegram";
+import {HttpClient} from "../../Domain/Http/HttpClient";
+import AxiosHttpClient from "../Http/AxiosHttpClient";
 
 const myContainer = new Container();
 
@@ -47,6 +49,8 @@ myContainer.bind(AppAlerter).toSelf();
 myContainer.bind<Alerter>(TYPES.Alerter).to(AppAlerter);
 
 // Services
+myContainer.bind<HttpClient>(TYPES.HttpClient).to(AxiosHttpClient);
+
 myContainer.bind(TedcryptoApiClient).toConstantValue(new TedcryptoApiClient(process.env.API_HOST ?? ''));
 myContainer.bind(HttpApiClient).toSelf()
 myContainer.bind<ApiClient>(TYPES.ApiClient).to(HttpApiClient);

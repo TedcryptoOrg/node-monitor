@@ -1,24 +1,21 @@
-import {RpcClient} from "../../../src/client/rpcClient";
-import {OSMOSIS_VALCONS_ADDRESS, OSMOSIS_VALOPER_ADDRESS, RPC_CONFIGURATION} from "../../Helper/fixedConfigurations";
+import {RpcCosmjsClient} from "../../../../../../src/Infrastructure/Blockchain/Cosmos/Cosmjs/RpcCosmjsClient";
+import {OSMOSIS_VALCONS_ADDRESS, OSMOSIS_VALOPER_ADDRESS, RPC_ADDRESS} from "../../../../../Helper/fixedConfigurations";
 
 jest.retryTimes(3);
 
 describe('RPC Client', () => {
-    let rpcClient: RpcClient;
-    beforeAll(
-        () => {
-            rpcClient = new RpcClient(
-                RPC_CONFIGURATION,
-            )
-        }
-    )
+    let client: RpcCosmjsClient
+
+    beforeAll(async () => {
+        client = new RpcCosmjsClient(RPC_ADDRESS)
+    })
 
     it('should return whether is syncing or not', () => {
-        expect(rpcClient.isSyncing()).resolves.toBe(false);
+        expect(client.isSyncing()).resolves.toBe(false);
     }, 30000);
 
     it('should return the validator signing info', async () => {
-        const signingInfo = await rpcClient.getValidatorSigningInfo(OSMOSIS_VALCONS_ADDRESS);
+        const signingInfo = await client.getValidatorSigningInfo(OSMOSIS_VALCONS_ADDRESS);
 
         expect(signingInfo.val_signing_info.address).toEqual(OSMOSIS_VALCONS_ADDRESS);
         expect(signingInfo.val_signing_info.tombstoned).toBe(false)
@@ -26,7 +23,7 @@ describe('RPC Client', () => {
     }, 30000);
 
     it('should return the validator information', async () => {
-        const validatorInfo = await rpcClient.getValidatorInfo(OSMOSIS_VALOPER_ADDRESS);
+        const validatorInfo = await client.getValidatorInfo(OSMOSIS_VALOPER_ADDRESS);
 
         expect(validatorInfo.validator.commission.commission_rates.rate.substring(0, 4)).toEqual('0.05')
         expect(validatorInfo.validator.description.moniker).toBe('Tedcrypto.io 🧸 | TedLotto')
