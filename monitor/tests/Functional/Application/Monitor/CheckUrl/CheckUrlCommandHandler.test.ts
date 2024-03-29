@@ -13,7 +13,10 @@ describe('CheckUrlCommandHandler', () => {
         monitorManager.pushMonitor(monitor);
         monitorManager.runOnce();
 
-        await lazyAssert(() => monitorManager.getStatus(monitor) === CheckStatus.OK)
+        await lazyAssert(
+            () => monitorManager.getStatus(monitor) === CheckStatus.OK,
+            5000
+        )
     })
 
     it('should return ERROR status when URL is NOT reachable', async () => {

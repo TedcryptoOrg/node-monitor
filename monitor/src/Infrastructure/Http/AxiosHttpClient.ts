@@ -1,6 +1,8 @@
 import {HttpClient} from "../../Domain/Http/HttpClient";
 import axios from "axios";
+import {injectable} from "inversify";
 
+@injectable()
 export default class AxiosHttpClient implements HttpClient {
     async get(url: string): Promise<any> {
         return (await axios.get(url)).data;
