@@ -25,6 +25,7 @@ const Configurations = () => {
   const [configData, setConfigData] = useState<ApiConfiguration[]>([]);
   const [loadingData, setLoadingData] = useState(true);
   const [validationErrors, setValidationErrors] = useState({} as any);
+  const [chains, setChains] = useState([] as any[]);
 
   useEffect(() => {
     getConfigurations();
@@ -35,9 +36,7 @@ const Configurations = () => {
     apiCall({
       method: RequestType.GET,
       path: '/api/configurations',
-      beforeRequest: () => {
-        console.log();
-      },
+      beforeRequest: () => {},
       successCallback: (data) => {
         console.info('Configurations Data:');
         console.table(data);
@@ -50,12 +49,15 @@ const Configurations = () => {
     apiCall({
       method: RequestType.GET,
       url: 'https://chains.cosmos.directory/',
-      beforeRequest: () => {
-        console.log('chain requesting...');
-      },
+      beforeRequest: () => {},
       successCallback: (data) => {
         console.info('Chains:');
-        console.table(data);
+        // from data.chains array build a new array of strings from chain.name, remove the duplicates
+        const chains = data.chains
+          .map((chain: any) => chain.name)
+          .filter((v: any, i: any, a: any) => a.indexOf(v) === i);
+
+        setChains(chains);
       },
     });
 
@@ -79,10 +81,7 @@ const Configurations = () => {
       accessorKey: 'chain',
       editVariant: 'select',
       mantineEditSelectProps: {
-        data: [
-          { value: 'chain 1', label: 'chain 1' },
-          { value: 'chain 2', label: 'chain 2' },
-        ],
+        data: chains,
       },
     },
     {
@@ -102,10 +101,7 @@ const Configurations = () => {
       ),
       editVariant: 'select',
       mantineEditSelectProps: {
-        data: [
-          { value: 'true', label: 'Enabled' },
-          { value: 'false', label: 'Disabled' },
-        ],
+        data: chains,
       },
     },
     {
@@ -119,20 +115,9 @@ const Configurations = () => {
     row,
     values,
   }) => {
-    debugger;
     // updated values from edit modal
     // to-do:
     // 1. convert the value from the select dropdown to a boolean
-    console.table(values);
-    table.setEditingRow(null);
-  };
-
-  const handleAddRow: MRT_TableOptions<any>['onCreatingRowSave'] = async ({
-    table,
-    row,
-    values,
-  }) => {
-    console.log('adding row');
     console.table(values);
     table.setEditingRow(null);
   };
@@ -164,8 +149,6 @@ const Configurations = () => {
     enableEditing: true,
     onEditingRowSave:
       handleSaveRow as MRT_TableOptions<ApiConfiguration>['onEditingRowSave'],
-    onCreatingRowSave:
-      handleAddRow as MRT_TableOptions<ApiConfiguration>['onCreatingRowSave'],
   });
 
   return (
@@ -178,7 +161,7 @@ const Configurations = () => {
             leftSection={<IconTablePlus size={14} />}
             variant='gradient'
             onClick={() => {
-              table.setCreatingRow(true);
+              console.log('Add configuration');
             }}
           >
             Add configuration
