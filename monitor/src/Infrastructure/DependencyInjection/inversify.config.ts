@@ -26,6 +26,7 @@ import BlockchainClient from "../../Domain/Blockchain/BlockchainClient";
 import BlockchainClientFactory from "../../Domain/Blockchain/BlockchainClientFactory";
 import CosmosBlockchainClientFactory from "../Blockchain/Cosmos/CosmosBlockchainClientFactory";
 import CheckSignMissCommandHandler from "../../Application/Monitor/CheckSignMiss/CheckSignMissCommandHandler";
+import CheckBlockCommandHandler from "../../Application/Monitor/CheckBlock/CheckBlockCommandHandler";
 
 const myContainer = new Container();
 
@@ -34,6 +35,7 @@ myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(PingHealthcheckCommand
 myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(CheckDiskSpaceCommandHandler);
 myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(CheckUrlCommandHandler);
 myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(CheckSignMissCommandHandler);
+myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(CheckBlockCommandHandler);
 myContainer.bind<CommandHandlerManager>(CommandHandlerManager).toSelf();
 
 // Alerter

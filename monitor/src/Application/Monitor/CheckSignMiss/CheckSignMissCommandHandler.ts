@@ -8,6 +8,7 @@ import CheckSignCommandState from "./CheckSignCommandState";
 import BlockchainClient from "../../../Domain/Blockchain/BlockchainClient";
 import BlockchainClientFactory from "../../../Domain/Blockchain/BlockchainClientFactory";
 import Configuration from "../../../Domain/Configuration/Configuration";
+import {ServiceType} from "../../../Domain/Services/ServiceType";
 
 @injectable()
 export default class CheckSignMissCommandHandler implements CommandHandler {
@@ -70,6 +71,6 @@ export default class CheckSignMissCommandHandler implements CommandHandler {
     }
 
     private async getClient(configuration: Configuration): Promise<BlockchainClient> {
-        return this.clientFactory.createRestClient(configuration.chain, configuration.id);
+        return this.clientFactory.createClientFromConfiguration(configuration, ServiceType.REST);
     }
 }

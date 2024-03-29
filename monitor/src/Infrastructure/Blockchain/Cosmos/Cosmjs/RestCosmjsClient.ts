@@ -21,6 +21,15 @@ export class RestCosmjsClient implements CosmjsClient {
   ) {
   }
 
+  async getBlockHeight(): Promise<number> {
+    try {
+      const restUrl = this.address + '/cosmos/base/tendermint/v1beta1/blocks/latest'
+      return (await axios.get(restUrl)).data.block.header.height
+    } catch (error: any) {
+      throw new RecoverableException('Error fetching block height from REST: ' + String(error.message))
+    }
+  }
+
   async isSyncing (): Promise<boolean> {
     try {
       const restUrl = this.address + '/cosmos/base/tendermint/v1beta1/syncing'

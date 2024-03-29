@@ -8,6 +8,7 @@ import SignMissMonitor from "../../src/Domain/Monitor/SignMissMonitor";
 import Monitor from "../../src/Domain/Monitor/Monitor";
 import Service from "../../src/Domain/Services/Service";
 import {ServiceType} from "../../src/Domain/Services/ServiceType";
+import BlockCheckMonitor from "../../src/Domain/Monitor/BlockCheckMonitor";
 
 export const createConfiguration = (monitors?: Monitor[], servers?: Server[]): Configuration => {
     return new Configuration(
@@ -91,5 +92,20 @@ export const createSignMissMonitor = (configuration?: Configuration): SignMissMo
         1,
         60,
         'test'
+    )
+}
+
+export const createBlockCheckMonitor = (configuration?: Configuration): BlockCheckMonitor => {
+    return new BlockCheckMonitor(
+        1,
+        'Test monitor',
+        MonitorType.BLOCK_CHECK,
+        configuration ?? createConfiguration(),
+        1,
+        60,
+        true,
+        createServer(),
+        1,
+        60,
     )
 }

@@ -10,6 +10,14 @@ export default class CosmosBlockchainClient implements BlockchainClient
         private readonly chain: Chain
     ) {}
 
+    async isSyncing(): Promise<boolean> {
+        return await this.client.isSyncing();
+    }
+
+    async getBlockHeight(): Promise<number> {
+        return await this.client.getBlockHeight();
+    }
+
     async fetchMissCounter(validatorAddress: string): Promise<number> {
         const validator = (await this.client.getValidatorInfo(validatorAddress)).validator
 

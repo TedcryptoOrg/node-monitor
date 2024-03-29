@@ -2,7 +2,7 @@ import {
     createDistributionClient,
     createSlashingClient, createStakingClient,
     createTendermintClient
-} from "../../../src/client/queryClientFactory";
+} from "../../../src/Infrastructure/Blockchain/Cosmos/Cosmjs/queryClientFactory";
 import {OSMOSIS_VALCONS_ADDRESS, OSMOSIS_VALOPER_ADDRESS, RPC_CONFIGURATION} from "../../Helper/fixedConfigurations";
 
 jest.retryTimes(3);

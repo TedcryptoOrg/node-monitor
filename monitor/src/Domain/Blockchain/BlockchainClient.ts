@@ -1,3 +1,7 @@
 export default interface BlockchainClient {
-    fetchMissCounter(validatorAddress: string): Promise<number>;
+    isSyncing(): Promise<boolean>
+
+    getBlockHeight(): Promise<number>
+
+    fetchMissCounter(validatorAddress: string): Promise<number>
 }

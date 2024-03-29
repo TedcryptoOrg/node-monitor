@@ -7,6 +7,7 @@ import {inject, injectable} from "inversify";
 import {MonitorCheckerFactory as MonitorCheckerFactoryInterface} from "../../Domain/Monitor/MonitorCheckerFactory";
 import UrlChecker from "./Checkers/UrlChecker";
 import SignMissChecker from "./Checkers/SignMissChecker";
+import BlockChecker from "./Checkers/BlockChecker";
 
 @injectable()
 export default class MonitorCheckerFactory implements MonitorCheckerFactoryInterface {
@@ -37,6 +38,13 @@ export default class MonitorCheckerFactory implements MonitorCheckerFactoryInter
                     monitor,
                     CheckStatus.UNKNOWN
                 )
+            }
+            case MonitorType.BLOCK_CHECK: {
+                return new BlockChecker(
+                    this.commandHandlerManager,
+                    monitor,
+                    CheckStatus.UNKNOWN
+                );
             }
             default:
                 throw new Error(`Unsupported monitor type ${monitor.type}`);

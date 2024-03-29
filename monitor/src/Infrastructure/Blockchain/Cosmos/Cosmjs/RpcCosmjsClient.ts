@@ -1,16 +1,52 @@
-import { type RpcConfiguration } from '../type/rpcConfiguration'
-import { type RpcStatus } from './type/rpc/rpcStatus'
-import { RecoverableException } from '../Domain/RecoverableException'
 import axios from 'axios'
-import { type ClientInterface } from './clientInterface'
+import CosmjsClient from "./CosmjsClient";
+import {SigningInfosResponse} from "./Response/Slashing/SigningInfosResponse";
+import {ValidatorInfoResponse} from "./Response/Staking/ValidatorInfoResponse";
+import {createDateFromSeconds} from "../../../../Application/Shared/dateTools";
+import {createSlashingClient, createStakingClient} from "./queryClientFactory";
 import { type QueryClientImpl as StakingQueryClient } from 'cosmjs-types/cosmos/staking/v1beta1/query'
 import { type QueryClientImpl as SlashingQueryClient } from 'cosmjs-types/cosmos/slashing/v1beta1/query'
-import { createSlashingClient, createStakingClient } from './queryClientFactory'
-import { type SigningInfosResponse } from '../Infrastructure/Blockchain/Cosmos/Cosmjs/Response/Slashing/SigningInfosResponse'
-import { type ValidatorInfoResponse } from '../Infrastructure/Blockchain/Cosmos/Cosmjs/Response/Staking/ValidatorInfoResponse'
-import { createDateFromSeconds } from '../Application/Shared/dateTools'
 
-export class RpcClient implements ClientInterface {
+type RpcStatus = {
+  node_info: {
+    protocol_version: {
+      p2p: string
+      block: string
+      app: string
+    },
+    id: string
+    listen_addr: string
+    network: string
+    version: string
+    channels: string
+    moniker: string
+    other: {
+      tx_index: string
+      rpc_address: string
+    }
+  },
+  sync_info: {
+    latest_block_hash: string
+    latest_app_hash: string
+    latest_block_height: string
+    latest_block_time: string
+    earliest_block_hash: string
+    earliest_app_hash: string
+    earliest_block_height: string
+    earliest_block_time: string
+    catching_up: boolean
+  }
+  validator_info: {
+    address: string
+    pub_key: {
+      type: string
+      value: string
+    }
+    voting_power: string
+  }
+}
+
+export class RpcCosmjsClient implements CosmjsClient {
   private readonly clients: Record<string, any> = {}
 
   private readonly boundedStatusCodeToText: Record<string | number, string> = {
@@ -22,7 +58,7 @@ export class RpcClient implements ClientInterface {
   }
 
   constructor (
-    private readonly rpcConfiguration: RpcConfiguration
+    private readonly address: string
   ) {
   }
 
@@ -30,7 +66,7 @@ export class RpcClient implements ClientInterface {
     try {
       return (await this.getStatus()).sync_info.catching_up
     } catch (error: any) {
-      throw new RecoverableException('Error fetching syncing status from RPC: ' + String(error.message))
+      throw new Error('Error fetching syncing status from RPC: ' + String(error.message))
     }
   }
 
@@ -105,26 +141,26 @@ export class RpcClient implements ClientInterface {
     }
   }
 
-  async getBlockHeight (): Promise<string> {
+  async getBlockHeight (): Promise<number> {
     try {
-      return (await this.getStatus()).sync_info.latest_block_height
+      return Number((await this.getStatus()).sync_info.latest_block_height)
     } catch (error: any) {
-      throw new RecoverableException('Error fetching block height from RPC: ' + String(error.message))
+      throw new Error('Error fetching block height from RPC: ' + String(error.message))
     }
   }
 
   async getStatus (): Promise<RpcStatus> {
     try {
-      const rpcUrl = this.rpcConfiguration.address + '/status'
+      const rpcUrl = this.address + '/status'
       return (await axios.get(rpcUrl)).data.result
     } catch (error: any) {
-      throw new RecoverableException('Error fetching status from RPC: ' + String(error.message))
+      throw new Error('Error fetching status from RPC: ' + String(error.message))
     }
   }
 
   private async getSlashingClient (): Promise<SlashingQueryClient> {
     if (this.clients.slashing === undefined) {
-      this.clients.slashing = await createSlashingClient(this.rpcConfiguration.address)
+      this.clients.slashing = await createSlashingClient(this.address)
     }
 
     return this.clients.slashing
@@ -132,7 +168,7 @@ export class RpcClient implements ClientInterface {
 
   private async getStakingClient (): Promise<StakingQueryClient> {
     if (this.clients.staking === undefined) {
-      this.clients.staking = await createStakingClient(this.rpcConfiguration.address)
+      this.clients.staking = await createStakingClient(this.address)
     }
 
     return this.clients.staking

@@ -1,27 +1,27 @@
 import Command from "../../../Domain/Command/Command";
 import {AbstractChecker} from "./AbstractChecker";
-import CheckSignMissCommand from "../CheckSignMiss/CheckSignMissCommand";
-import SignMissMonitor from "../../../Domain/Monitor/SignMissMonitor";
 import CheckResult from "../CheckResult";
 import CheckSignCommandState from "../CheckSignMiss/CheckSignCommandState";
 import CheckBlockCommandState from "../CheckBlock/CheckBlockCommandState";
+import CheckBlockCommand from "../CheckBlock/CheckBlockCommand";
+import BlockCheckMonitor from "../../../Domain/Monitor/BlockCheckMonitor";
 
-export default class SignMissChecker extends AbstractChecker {
+export default class BlockChecker extends AbstractChecker {
     private lastCommandState: CheckSignCommandState|CheckBlockCommandState|undefined
 
     getCommand(): Command {
-        if (!(this.monitor instanceof SignMissMonitor)) {
+        if (!(this.monitor instanceof BlockCheckMonitor)) {
             throw new Error('Invalid monitor type')
         }
         if (this.lastCommandState !== undefined
-            && !(this.lastCommandState instanceof CheckSignCommandState)) {
+            && !(this.lastCommandState instanceof CheckBlockCommandState)) {
             throw new Error('Invalid last state type')
         }
 
-        return new CheckSignMissCommand(
+        return new CheckBlockCommand(
             this.monitor.getFullName(),
             this.monitor.configuration,
-            this.monitor.valoperAddress,
+            this.monitor.server,
             this.monitor.missTolerance,
             this.monitor.missToleranceIntervalSeconds,
             this.lastCommandState
