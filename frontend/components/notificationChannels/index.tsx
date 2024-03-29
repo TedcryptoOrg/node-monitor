@@ -32,11 +32,6 @@ const ConfigNotificationChannels = ({ id }: { id: number }) => {
     id && getNotificationChannels(id);
   }, [id]);
 
-  console.log(
-    '🚀 ~ ConfigNotificationChannels ~ notificationChannels:',
-    notificationChannels,
-  );
-
   return (
     <>
       <Title order={4}>Configuration Notification Channels</Title>
@@ -63,7 +58,6 @@ const ConfigNotificationChannels = ({ id }: { id: number }) => {
       <Select
         label='Your favorite library'
         placeholder='Pick value'
-        // data gets its data notificationData.notification_channel array, the array schema is [value, label] where value is the array[i].id and the lavel is array[i].name
         data={notificationChannels || []}
       />
       <Button variant='gradient' onClick={() => {}}>

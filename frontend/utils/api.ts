@@ -46,6 +46,7 @@ async function apiCall<T>(options: FetchOptions): Promise<void> {
 
     if (endpointUrl) {
       const response = await fetch(endpointUrl + (path ? path : ''), {
+        mode: 'cors',
         method,
         headers: {
           'Content-Type': 'application/json', // add more headers here if needed
