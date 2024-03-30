@@ -1,5 +1,5 @@
 export class NoRecoverableException extends Error {
-  constructor (message: any) {
+  constructor (message: string|undefined) {
     super(message)
     this.name = 'NoRecoverableException'
   }
