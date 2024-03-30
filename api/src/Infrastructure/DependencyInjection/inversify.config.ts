@@ -6,7 +6,7 @@ import {PrismaClient} from '@prisma/client';
 import AuditRepository from '../../Domain/Audit/AuditRepository';
 import OrmAuditRepository from '../Orm/Audit/OrmAuditRepository';
 import FindLatestCommandHandler from '../../Application/Query/Audit/FindLatest/FindLatestCommandHandler';
-import EventDispatcher from '../../Application/Event/EventDispatcher/EventDispatcher';
+import EventDispatcher from '../../Application/Event/EventDispatcher';
 import ConfigurationRepository from '../../Domain/Configuration/ConfigurationRepository';
 import OrmConfigurationRepository from '../Orm/Configuration/OrmConfigurationRepository';
 import UpsertConfigurationCommandHandler from '../../Application/Write/Configuration/UpsertConfiguration/UpsertConfigurationCommandHandler';

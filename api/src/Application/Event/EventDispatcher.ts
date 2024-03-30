@@ -1,8 +1,8 @@
-import EventHandler from "../../../Domain/Event/EventHandler";
+import EventHandler from "../../Domain/Event/EventHandler";
 import {injectable, multiInject} from "inversify";
-import Event from "../../../Domain/Event/Event";
-import {TYPES} from "../../../Domain/DependencyInjection/types";
-import {EventDispatcher as EventDispatcherInterface} from "../../../Domain/Event/EventDispatcher";
+import Event from "../../Domain/Event/Event";
+import {TYPES} from "../../Domain/DependencyInjection/types";
+import {EventDispatcher as EventDispatcherInterface} from "../../Domain/Event/EventDispatcher";
 
 @injectable()
 export default class EventDispatcher implements EventDispatcherInterface {
