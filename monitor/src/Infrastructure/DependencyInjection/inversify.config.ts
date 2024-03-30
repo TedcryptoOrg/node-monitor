@@ -20,8 +20,6 @@ import MonitorManager from "../../Application/Monitor/MonitorManager";
 import MonitorCheckerFactory from "../../Application/Monitor/MonitorCheckerFactory";
 import {MonitorCheckerFactory as MonitorCheckerFactoryInterface} from "../../Domain/Monitor/MonitorCheckerFactory";
 import CheckUrlCommandHandler from "../../Application/Monitor/CheckUrl/CheckUrlCommandHandler";
-import CosmosBlockchainClient from "../Blockchain/Cosmos/CosmosBlockchainClient";
-import BlockchainClient from "../../Domain/Blockchain/BlockchainClient";
 import BlockchainClientFactory from "../../Domain/Blockchain/BlockchainClientFactory";
 import CosmosBlockchainClientFactory from "../Blockchain/Cosmos/CosmosBlockchainClientFactory";
 import CheckSignMissCommandHandler from "../../Application/Monitor/CheckSignMiss/CheckSignMissCommandHandler";
