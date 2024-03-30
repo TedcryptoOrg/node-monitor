@@ -36,7 +36,7 @@ const UpsertNotificationChannelModal: React.FC<UpsertNotificationChannelModalPro
     useEffect(() => {
         setName(notificationChannel ? notificationChannel.name : '');
         setType(notificationChannel ? notificationChannel.type : null);
-        setConfigurationObject(notificationChannel ? notificationChannel.configuration_object : {});
+        setConfigurationObject(notificationChannel ? JSON.parse(notificationChannel.configuration_object) : {});
         setIsEnabled(notificationChannel ? notificationChannel.is_enabled : true);
     }, [notificationChannel]);
 

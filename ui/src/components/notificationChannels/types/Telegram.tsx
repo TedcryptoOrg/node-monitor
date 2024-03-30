@@ -37,11 +37,11 @@ const Telegram: React.FC<TelegramProps> = (
             <TextField
                 label="Topic ID"
                 variant="outlined"
-                helperText={"You can get your topic ID by sending /my_id to @get_id_bot"}
+                helperText={"You can get your topic ID by copying a message link and extracting the topic_id parameter. For example, in the link https://t.me/c/123/456, the topic_id is 456."}
                 fullWidth
                 margin="normal"
                 value={configurationObject.topic_id ?? ''}
-                onChange={(event) => setConfigurationObject({...configurationObject, chat_id: event.target.value})}
+                onChange={(event) => setConfigurationObject({...configurationObject, topic_id: event.target.value})}
             />
         </>
     )
