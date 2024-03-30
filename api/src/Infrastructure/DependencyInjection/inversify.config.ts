@@ -6,7 +6,7 @@ import {PrismaClient} from '@prisma/client';
 import AuditRepository from '../../Domain/Audit/AuditRepository';
 import OrmAuditRepository from '../Orm/Audit/OrmAuditRepository';
 import FindLatestCommandHandler from '../../Application/Query/Audit/FindLatest/FindLatestCommandHandler';
-import EventDispatcher from '../../Application/Event/EventDispatcher/EventDispatcher';
+import EventDispatcher from '../../Application/Event/EventDispatcher';
 import ConfigurationRepository from '../../Domain/Configuration/ConfigurationRepository';
 import OrmConfigurationRepository from '../Orm/Configuration/OrmConfigurationRepository';
 import UpsertConfigurationCommandHandler from '../../Application/Write/Configuration/UpsertConfiguration/UpsertConfigurationCommandHandler';
@@ -52,6 +52,9 @@ import ServerMetricsExplorerClient from "../Server/ServerMetricsExplorerClient";
 import GetMetricsCommandHandler from "../../Application/Query/Server/GetMetrics/GetMetricsCommandHandler";
 import GetNotificationChannelCommandHandler
     from "../../Application/Query/NotificationChannel/GetNotificationChannel/GetNotificationChannelCommandHandler";
+import {EventDispatcher as EventDispatcherInterface} from "../../Domain/Event/EventDispatcher";
+import EventHandler from "../../Domain/Event/EventHandler";
+import MonitorStatusChangedHandler from "../../Application/Event/NotificationChannel/MonitorStatusChangedHandler";
 
 const myContainer = new Container();
 
@@ -97,7 +100,8 @@ myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(GetNotificationChannel
 myContainer.bind<CommandHandlerManager>(CommandHandlerManager).toSelf();
 
 // Events
-myContainer.bind<EventDispatcher>(EventDispatcher).toSelf();
+myContainer.bind<EventHandler>(TYPES.EventHandler).to(MonitorStatusChangedHandler);
+myContainer.bind<EventDispatcherInterface>(TYPES.EventDispatcher).to(EventDispatcher);
 
 // Factories
 myContainer.bind(NotificationClientFactory).toSelf();

@@ -9,11 +9,14 @@ import UrlChecker from "./Checkers/UrlChecker";
 import SignMissChecker from "./Checkers/SignMissChecker";
 import BlockChecker from "./Checkers/BlockChecker";
 import OracleSignMissChecker from "./Checkers/OracleSignMissChecker";
+import {TYPES} from "../../Domain/DependencyInjection/types";
+import {EventDispatcher} from "../../Domain/Event/EventDispatcher";
 
 @injectable()
 export default class MonitorCheckerFactory implements MonitorCheckerFactoryInterface {
     constructor(
         @inject(CommandHandlerManager) private readonly commandHandlerManager: CommandHandlerManager,
+        @inject(TYPES.EventDispatcher) private readonly eventDispatcher: EventDispatcher,
     ) {
     }
 
@@ -22,6 +25,7 @@ export default class MonitorCheckerFactory implements MonitorCheckerFactoryInter
             case MonitorType.DISK_SPACE_CHECK: {
                 return new DiskSpaceChecker(
                     this.commandHandlerManager,
+                    this.eventDispatcher,
                     monitor,
                     CheckStatus.UNKNOWN
                 );
@@ -29,6 +33,7 @@ export default class MonitorCheckerFactory implements MonitorCheckerFactoryInter
             case MonitorType.URL_CHECK: {
                 return new UrlChecker(
                     this.commandHandlerManager,
+                    this.eventDispatcher,
                     monitor,
                     CheckStatus.UNKNOWN
                 )
@@ -36,6 +41,7 @@ export default class MonitorCheckerFactory implements MonitorCheckerFactoryInter
             case MonitorType.SIGN_MISS_CHECK: {
                 return new SignMissChecker(
                     this.commandHandlerManager,
+                    this.eventDispatcher,
                     monitor,
                     CheckStatus.UNKNOWN
                 )
@@ -43,6 +49,7 @@ export default class MonitorCheckerFactory implements MonitorCheckerFactoryInter
             case MonitorType.BLOCK_CHECK: {
                 return new BlockChecker(
                     this.commandHandlerManager,
+                    this.eventDispatcher,
                     monitor,
                     CheckStatus.UNKNOWN
                 );
@@ -50,6 +57,7 @@ export default class MonitorCheckerFactory implements MonitorCheckerFactoryInter
             case MonitorType.PRICE_FEEDER_MISS_COUNT: {
                 return new OracleSignMissChecker(
                     this.commandHandlerManager,
+                    this.eventDispatcher,
                     monitor,
                     CheckStatus.UNKNOWN
                 )

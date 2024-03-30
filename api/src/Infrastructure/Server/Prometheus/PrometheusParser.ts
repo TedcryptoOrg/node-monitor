@@ -9,7 +9,10 @@ export class PrometheusParser {
 
     async parse(address: string): Promise<PrometheusMetricBag> {
         const response = await axios.get(address, {
-            httpsAgent: new https.Agent({ rejectUnauthorized: false })
+            httpsAgent: new https.Agent({
+                rejectUnauthorized: false,
+                checkServerIdentity: () => undefined
+            })
         })
 
         return new PrometheusMetricBag(parsePrometheusTextFormat(response.data))

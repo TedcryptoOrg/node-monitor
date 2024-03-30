@@ -5,10 +5,13 @@ import {CheckStatus} from "../../../Domain/Checker/CheckStatusEnum";
 import CheckResult from "../CheckResult";
 import {sleep} from "../../Shared/sleep";
 import Command from "../../../Domain/Command/Command";
+import CheckStatusChanged from "../CheckStatusChanged";
+import {EventDispatcher} from "../../../Domain/Event/EventDispatcher";
 
 export abstract class AbstractChecker implements Checker {
     constructor(
         protected commandHandler: CommandHandler,
+        protected eventDispatcher: EventDispatcher,
         protected monitor: Monitor,
         protected status: CheckStatus = CheckStatus.UNKNOWN,
         protected stopSignal: boolean = false
@@ -47,10 +50,10 @@ export abstract class AbstractChecker implements Checker {
         do {
             const result: CheckResult = await this.commandHandler.handle(this.getCommand());
 
-            console.log(`${this.monitor.getFullName()}[Status: ${result.status.toString()}] ${result.message}`);
+            //console.log(`${this.monitor.getFullName()}[Status: ${result.status.toString()}] ${result.message}`);
 
             if (this.status !== result.status) {
-                //await this.eventDispatcher.dispatch(new CheckStatusChanged(this.monitor, this.state.status, result));
+                await this.eventDispatcher.dispatch(new CheckStatusChanged(this.monitor, this.status, result));
             }
 
             this.status = result.status;
@@ -58,7 +61,7 @@ export abstract class AbstractChecker implements Checker {
             await this.postCheck(result)
 
             if (!this.stopSignal) {
-                console.log(`${this.monitor.getFullName()} Sleeping for ${this.monitor.checkIntervalSeconds} seconds`)
+                //console.log(`${this.monitor.getFullName()} Sleeping for ${this.monitor.checkIntervalSeconds} seconds`)
 
                 await sleep(1000 * this.monitor.checkIntervalSeconds);
             }

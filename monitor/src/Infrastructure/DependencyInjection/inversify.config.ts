@@ -20,8 +20,6 @@ import MonitorManager from "../../Application/Monitor/MonitorManager";
 import MonitorCheckerFactory from "../../Application/Monitor/MonitorCheckerFactory";
 import {MonitorCheckerFactory as MonitorCheckerFactoryInterface} from "../../Domain/Monitor/MonitorCheckerFactory";
 import CheckUrlCommandHandler from "../../Application/Monitor/CheckUrl/CheckUrlCommandHandler";
-import CosmosBlockchainClient from "../Blockchain/Cosmos/CosmosBlockchainClient";
-import BlockchainClient from "../../Domain/Blockchain/BlockchainClient";
 import BlockchainClientFactory from "../../Domain/Blockchain/BlockchainClientFactory";
 import CosmosBlockchainClientFactory from "../Blockchain/Cosmos/CosmosBlockchainClientFactory";
 import CheckSignMissCommandHandler from "../../Application/Monitor/CheckSignMiss/CheckSignMissCommandHandler";
@@ -31,6 +29,7 @@ import CheckOracleSignMissCommandHandler
 import Telegram from "../Alerter/Channels/Telegram";
 import {HttpClient} from "../../Domain/Http/HttpClient";
 import AxiosHttpClient from "../Http/AxiosHttpClient";
+import CheckStatusChangedHandler from "../../Application/Event/Monitor/CheckStatusChangedHandler";
 
 const myContainer = new Container();
 
@@ -64,6 +63,7 @@ myContainer.bind<BlockchainClientFactory>(TYPES.BlockchainClientFactory).to(Cosm
 
 // Events
 myContainer.bind<EventHandler>(TYPES.EventHandler).to(RunCheckFailedHandler);
+myContainer.bind<EventHandler>(TYPES.EventHandler).to(CheckStatusChangedHandler);
 myContainer.bind(EventDispatcher).toSelf();
 myContainer.bind<EventDispatcherInterface>(TYPES.EventDispatcher).to(EventDispatcher);
 

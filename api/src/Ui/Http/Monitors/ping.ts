@@ -3,7 +3,7 @@ import PingMonitorCommand from "../../../Application/Write/Monitor/PingMonitor/P
 
 export const ping = async (req: any, resp: any) => {
     const requiredFields = ["status"];
-    const missingFields = requiredFields.filter((field: string) => !req.body[field]);
+    const missingFields = requiredFields.filter((field: string) => !(field in req.body));
     if (missingFields.length) {
         return resp.status(400).send({
             message: `Missing required fields: ${missingFields.join(", ")}`

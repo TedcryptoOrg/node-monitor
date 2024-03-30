@@ -4,6 +4,7 @@ import CheckResult from "../CheckResult";
 import CheckSignCommandState from "../CheckSignMiss/CheckSignCommandState";
 import CheckOracleSignMissCommand from "../CheckOracleSignMiss/CheckOracleSignMissCommand";
 import OracleSignMissMonitor from "../../../Domain/Monitor/OracleSignMissMonitor";
+import CheckOracleSignCommandState from "../CheckOracleSignMiss/CheckOracleSignCommandState";
 
 export default class OracleSignMissChecker extends AbstractChecker {
     private lastCommandState: CheckSignCommandState|undefined
@@ -24,7 +25,7 @@ export default class OracleSignMissChecker extends AbstractChecker {
     }
 
     protected async postCheck(result: CheckResult): Promise<void> {
-        if (!(result.state instanceof CheckSignCommandState)) {
+        if (!(result.state instanceof CheckOracleSignCommandState)) {
             throw new Error('Invalid last command state')
         }
 

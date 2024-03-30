@@ -21,6 +21,7 @@ describe('create configurations controller', () => {
             .send({
                 name: 'test',
                 chain: 'test',
+                is_enabled: true
             })
             .expect(202)
 
