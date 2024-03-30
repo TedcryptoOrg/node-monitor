@@ -6,8 +6,7 @@ import {NotificationChannelType} from "../../../Domain/NotificationChannel/Notif
 
 export const test: RequestHandler = async (req: Request, resp: Response) => {
     const requiredFields = ["name", "type", "configuration_object", "is_enabled"];
-    const missingFields = requiredFields.filter((field) => !req.body[field]);
-
+    const missingFields = requiredFields.filter((field) => !(field in req.body));
     if (missingFields.length > 0) {
         resp.status(400).send({
             message: `${missingFields.join(", ")} can not be empty!`
@@ -24,7 +23,7 @@ export const test: RequestHandler = async (req: Request, resp: Response) => {
         new TestNotificationChannelCommand(new NotificationChannel(
             req.body.name,
             req.body.type as NotificationChannelType,
-            configurationObject,
+            JSON.parse(configurationObject),
             true
         )),
         resp,
