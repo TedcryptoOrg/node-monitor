@@ -31,6 +31,7 @@ import CheckOracleSignMissCommandHandler
 import Telegram from "../Alerter/Channels/Telegram";
 import {HttpClient} from "../../Domain/Http/HttpClient";
 import AxiosHttpClient from "../Http/AxiosHttpClient";
+import CheckStatusChangedHandler from "../../Application/Event/Monitor/CheckStatusChangedHandler";
 
 const myContainer = new Container();
 
@@ -64,6 +65,7 @@ myContainer.bind<BlockchainClientFactory>(TYPES.BlockchainClientFactory).to(Cosm
 
 // Events
 myContainer.bind<EventHandler>(TYPES.EventHandler).to(RunCheckFailedHandler);
+myContainer.bind<EventHandler>(TYPES.EventHandler).to(CheckStatusChangedHandler);
 myContainer.bind(EventDispatcher).toSelf();
 myContainer.bind<EventDispatcherInterface>(TYPES.EventDispatcher).to(EventDispatcher);
 

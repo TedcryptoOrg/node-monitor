@@ -19,7 +19,7 @@ export default class UpsertConfigurationCommandHandler implements CommandHandler
         const configuration = await this.configurationRepository.upsert(new Configuration(
             command.name,
             command.chain,
-            command.is_active,
+            command.is_enabled,
             [],
             [],
             [],

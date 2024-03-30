@@ -64,6 +64,7 @@ export default class CosmosBlockchainClientFactory implements BlockchainClientFa
         if (!this.cachedServers.get(`server-${server.id}-${type}`)) {
             const address = await this.getBestServerForService([server], type)
             if (address === null) {
+                console.error('No service available for server', server)
                 throw new Error('No service available for server')
             }
 

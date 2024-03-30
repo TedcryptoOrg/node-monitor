@@ -35,4 +35,8 @@ export default class TedcryptoApiClient {
     async getConfigurationServers(configurationId: number): Promise<ApiServer[]> {
         return (await axios.get(`${this.baseUrl}/api/configurations/${configurationId}/servers`)).data
     }
+
+    async getServer(serverId: number): Promise<ApiServer> {
+        return (await axios.get(`${this.baseUrl}/api/servers/${serverId}`)).data
+    }
 }

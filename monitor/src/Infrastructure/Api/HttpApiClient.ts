@@ -5,8 +5,9 @@ import Configuration from "../../Domain/Configuration/Configuration";
 import Server from "../../Domain/Server/Server";
 import Monitor from "../../Domain/Monitor/Monitor";
 import {
-    ApiMonitor,
-    NodeExporterDiskSpaceUsageConfiguration, PriceFeederMissCountConfiguration,
+    ApiMonitor, BlockAlertConfiguration,
+    NodeExporterDiskSpaceUsageConfiguration,
+    PriceFeederMissCountConfiguration,
     SignMissCheckConfiguration,
     UrlCheckConfiguration
 } from "./Tedcrypto/Types/ApiMonitor";
@@ -21,6 +22,7 @@ import {ApiService} from "./Tedcrypto/Types/ApiService";
 import Service from "../../Domain/Services/Service";
 import {ServiceType} from "../../Domain/Services/ServiceType";
 import OracleSignMissMonitor from "../../Domain/Monitor/OracleSignMissMonitor";
+import BlockCheckMonitor from "../../Domain/Monitor/BlockCheckMonitor";
 
 @injectable()
 export class HttpApiClient implements ApiClient {
@@ -45,14 +47,18 @@ export class HttpApiClient implements ApiClient {
     async getMonitor(monitorId: number): Promise<Monitor> {
         const apiMonitor = await this.provider.getMonitor(monitorId);
 
-        return this.parseMonitor(this.parseConfiguration(apiMonitor.configuration), apiMonitor);
+        return await this.parseMonitor(this.parseConfiguration(apiMonitor.configuration), apiMonitor);
+    }
+
+    async getServer(serverId: number): Promise<Server> {
+        return this.parseServer(await this.provider.getServer(serverId));
     }
 
     async getServerMetrics(serverId: number): Promise<ServerMetricsResponse> {
         return await this.provider.getServerMetrics(serverId);
     }
 
-    async pingMonitor(id: any, payload: {last_error: string|null; status: boolean}): Promise<void> {
+    async pingMonitor(id: number, payload: {last_error: string|null; status: boolean}): Promise<void> {
         await this.provider.pingMonitor(id, payload);
     }
 
@@ -71,10 +77,10 @@ export class HttpApiClient implements ApiClient {
         )
     }
 
-    private parseMonitor(configuration: Configuration, monitor: ApiMonitor): Monitor {
+    private async parseMonitor(configuration: Configuration, monitor: ApiMonitor): Promise<Monitor> {
         switch (monitor.type) {
             case ApiMonitorTypeEnum.NODE_EXPORTER_DISK_SPACE: {
-                if (monitor.server === undefined) {
+                if (monitor.server === undefined || monitor.server.id === undefined) {
                     throw Error(`[Configuration: ${configuration.name}(${configuration.id})] Monitor ${monitor.name} has no server associated with it`)
                 }
                 const monitorConfig = JSON.parse(monitor.configuration_object) as NodeExporterDiskSpaceUsageConfiguration;
@@ -84,7 +90,7 @@ export class HttpApiClient implements ApiClient {
                     configuration,
                     monitor.name,
                     MonitorType.DISK_SPACE_CHECK,
-                    this.parseServer(monitor.server),
+                    await this.getServer(monitor.server.id),
                     monitorConfig.threshold,
                     monitorConfig.alert_sleep_duration_minutes,
                     monitorConfig.check_interval_seconds,
@@ -134,6 +140,25 @@ export class HttpApiClient implements ApiClient {
                     monitorConfig.miss_tolerance_period_seconds,
                     monitorConfig.valoper_address
                 )
+            } case ApiMonitorTypeEnum.BLOCK_CHECK: {
+                if (monitor.server === undefined || monitor.server.id === undefined) {
+                    throw Error(`[Configuration: ${configuration.name}(${configuration.id})] Monitor ${monitor.name} has no server associated with it`)
+                }
+
+                const monitorConfig = JSON.parse(monitor.configuration_object) as BlockAlertConfiguration
+
+                return new BlockCheckMonitor(
+                    Number(monitor.id),
+                    monitor.name,
+                    MonitorType.BLOCK_CHECK,
+                    configuration,
+                    monitorConfig.alert_sleep_duration_minutes,
+                    monitorConfig.sleep_duration_seconds,
+                    monitor.is_enabled,
+                    await this.getServer(monitor.server.id),
+                    monitorConfig.miss_tolerance,
+                    monitorConfig.miss_tolerance_period_seconds,
+                )
             } default:
                 throw new Error(`Unsupported monitor type: ${monitor.type}`)
         }
@@ -159,8 +184,11 @@ export class HttpApiClient implements ApiClient {
     }
 
     private async getConfigurationMonitors(configuration: Configuration): Promise<Monitor[]> {
-        return (await this.provider.getConfigurationMonitors(configuration.id)).map((monitor: ApiMonitor) => {
-            return this.parseMonitor(configuration, monitor)
-        });
+        const returnMonitor = [];
+        for (const monitor of await this.provider.getConfigurationMonitors(configuration.id)) {
+            returnMonitor.push(await this.parseMonitor(configuration, monitor));
+        }
+
+        return returnMonitor;
     }
 }
