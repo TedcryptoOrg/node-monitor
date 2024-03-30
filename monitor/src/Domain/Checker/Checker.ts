@@ -1,3 +1,14 @@
-export interface Checker {
-    start: () => Promise<void>
+import Monitor from "../Monitor/Monitor";
+import {CheckStatus} from "./CheckStatusEnum";
+
+export default interface Checker {
+    start(): void;
+
+    stop(): void;
+
+    updateMonitor(monitor: Monitor): void;
+
+    check(): Promise<void>;
+
+    getStatus(): CheckStatus;
 }

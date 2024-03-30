@@ -1,82 +1,46 @@
-import NotificationChannelManager from "./services/NotificationChannelManager";
+import Configuration from "./Domain/Configuration/Configuration";
 
 require('dotenv').config({ path: '.env', override: false })
 
-import {ApiConfiguration} from "./type/api/ApiConfiguration";
-import { NodeMonitor } from './monitor/nodeMonitor'
-import {ChainDirectory} from "@tedcryptoorg/cosmos-directory";
-import {ConfigurationManager} from "./services/configurationManager";
-import {ApiMonitor} from "./type/api/ApiMonitor";
-import {ServersManager} from "./services/serversManager";
-import {ApiService} from "./type/api/ApiService";
-const axios = require('axios').default;
-
-async function setupHealthCheckPing(): Promise<void> {
-  if (process.env.HEALTH_CHECK_URL === undefined) {
-    console.warn('Health check url not set. Skipping health check ping setup.')
-    return;
-  }
-
-  setInterval(async () => {
-    try {
-      await axios.get(`${process.env.HEALTHCHECK_URL}/ping`);
-    } catch (error) {
-      console.error('Health check ping failed', error);
-    }
-  }, parseInt(process.env.HEALTHCHECK_INTERVAL_MS ?? '60000'));
-}
-
-async function startNodeMonitor (configuration: ApiConfiguration, monitors: ApiMonitor[], services: ApiService[]): Promise<void> {
-  console.log(
-    `Starting ${configuration.name}. \n\n` +
-    `Monitors: \n -${monitors.map(monitor => monitor.name).join('\n -')}\n\n`+
-    `Services: \n -${services.map(service => service.name).join('\n -')}`)
-
-  try {
-    const chain = (await new ChainDirectory().getChainData(configuration.chain)).chain;
-
-    await new NodeMonitor(
-        configuration,
-        chain,
-        monitors,
-        services,
-        await NotificationChannelManager.getConfigurationNotificationChannels(configuration)
-    ).start()
-  } catch (error) {
-    const message = `🚨 ${configuration.name} Node monitor failed!\n${error}`
-    console.error(message)
-  }
-}
+import {myContainer} from "./Infrastructure/DependencyInjection/inversify.config";
+import {TYPES} from "./Domain/DependencyInjection/types";
+import ApiClient from "./Domain/ApiClient";
+import MonitorManager from "./Application/Monitor/MonitorManager";
 
 async function main (): Promise<void> {
-  const configurationManager = new ConfigurationManager();
-  const serversManager = new ServersManager();
+  console.log('Booting up monitor...')
 
-  const configurations = await configurationManager.getAllConfigurations();
+  const monitorManager = myContainer.get(MonitorManager)
+  let configurations: Configuration[] = []
+  try {
+    configurations = await myContainer.get<ApiClient>(TYPES.ApiClient).getConfigurations();
+  } catch (error) {
+    console.error('Failed to get configurations:', error)
+    process.exit(1)
+  }
+
   if (configurations.length === 0) {
     throw new Error('No configurations found!');
   }
   for (const configuration of configurations) {
-    if (!configuration.is_enabled) {
+    if (!configuration.isEnabled) {
         console.warn(`❌️[${configuration.name}] Configuration is disabled. Skipping...`)
         continue
     }
 
     console.log(`Loaded configuration: ${configuration.name}`)
-    const monitors = await configurationManager.getMonitors(configuration.id);
-    if (monitors.length === 0) {
+    if (configuration.monitors.length === 0) {
       console.warn(`No monitors found for configuration: ${configuration.name}`)
       continue
     }
-    const servers = await configurationManager.getServers(configuration.id);
-    const services: ApiService[] = [];
-    for (const server of servers) {
-      services.push(...await serversManager.getServices(server));
-    }
 
-    startNodeMonitor(configuration, monitors, services);
-    setupHealthCheckPing();
+    for (const monitor of configuration.monitors) {
+      console.log(`${monitor.getFullName()} loaded`)
+      monitorManager.pushMonitor(monitor)
+    }
   }
+
+  monitorManager.run()
 }
 
 main().catch((error) => {
