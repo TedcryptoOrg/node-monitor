@@ -4,7 +4,7 @@ import DatabaseUtil from "../../../../Helper/DatabaseUtil";
 import {myContainer} from "../../../../../src/Infrastructure/DependencyInjection/inversify.config";
 import {TYPES} from "../../../../../src/Domain/DependencyInjection/types";
 import { PrismaClient } from "@prisma/client";
-import {createConfiguration, createServer} from "../../../../Helper/StaticFixtures";
+import {createServer} from "../../../../Helper/StaticFixtures";
 import {ServiceType} from "../../../../../src/Domain/Service/ServiceType";
 
 describe('services - upsert controller', () => {

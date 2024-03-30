@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useCallback, useEffect} from 'react';
 import {BrowserRouter as Router, Route, Routes} from 'react-router-dom';
 import { Drawer, List } from '@mui/material';
 import { Box } from '@mui/system';
@@ -11,12 +11,53 @@ import ConfigurationOverview from './components/configurations/ConfigurationOver
 import ServerOverview from "./components/servers/ServerOverview";
 import AuditComponent from "./components/AuditComponent";
 import NotificationChannelsComponent from "./components/notificationChannels/NotificationChannelsComponent";
+import {useApi} from "./context/ApiProvider";
+import {useUserStore} from "./stores/useUserStore";
+import {enqueueSnackbar} from "notistack";
+import LoginComponent from "./components/Security/LoginComponent";
+import CompaniesComponent from "./components/Company/CompaniesComponent";
+import CompanyOverview from "./components/Company/CompanyOverview";
+import UpsertCompany from "./components/Company/UpsertCompany";
+import UserComponent from "./components/User/UserComponent";
+import UserOverview from "./components/User/UserOverview";
+import UpsertUser from "./components/User/UpsertUser";
+import {LogoutComponent} from "./components/Security/LogoutComponent";
 
 function App() {
+    const api = useApi();
+    const { user, setUser, accessToken, setAccessToken } = useUserStore();
+
+    const fetchMe = useCallback(() => {
+        api?.get('/users/me')
+            .then((response) => {
+                if (response.ok && response.body) {
+                    setUser(response.body);
+                    return
+                }
+
+                throw new Error('Failed to fetch user!')
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                enqueueSnackbar('Failed to fetch user!', {variant: 'error'});
+                setUser(undefined);
+                setAccessToken(null);
+            });
+    }, [accessToken]);
+
+    useEffect(() => {
+        if (accessToken) {
+            fetchMe();
+        } else {
+            setUser(undefined);
+        }
+    }, [fetchMe, accessToken]);
+
     return (
+        <>
         <Router>
             <Box sx={{ display: 'flex' }}>
-                <Drawer
+                {accessToken && <Drawer
                     variant="permanent"
                     sx={{
                         width: 240,
@@ -29,24 +70,38 @@ function App() {
                 >
                     <List>
                         {navbarItems.map((item, index) => (
-                            <item.component key={item.name} name={item.name} icon={item.icon} path={item.path} />
+                            user && item.security(user) && <item.component key={item.name} name={item.name} icon={item.icon} path={item.path} />
                         ))}
                     </List>
-                </Drawer>
+                </Drawer>}
                 <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
                     <Routes>
-                        <Route path="/" element={<DashboardComponent />} />
-                        <Route path="/configurations" element={<ConfigurationsComponent />} />
-                        <Route path="/configurations/:id" element={<ConfigurationOverview />} />
-                        <Route path="/network-status" element={<NetworkStatus />} />
-                        <Route path="/servers" element={<ServersComponent />} />
-                        <Route path="/servers/:id" element={<ServerOverview />} />
-                        <Route path="/audit" element={<AuditComponent />} />
-                        <Route path="/notification-channels" element={<NotificationChannelsComponent />} />
+                        {user ? (<>
+                            <Route path="/" element={<DashboardComponent />} />
+                            <Route path="/configurations" element={<ConfigurationsComponent />} />
+                            <Route path="/configurations/:id" element={<ConfigurationOverview />} />
+                            <Route path="/network-status" element={<NetworkStatus />} />
+                            <Route path="/servers" element={<ServersComponent />} />
+                            <Route path="/servers/:id" element={<ServerOverview />} />
+                            <Route path="/audit" element={<AuditComponent />} />
+                            <Route path="/notification-channels" element={<NotificationChannelsComponent />} />
+                            <Route path="/companies" element={<CompaniesComponent />} />
+                            <Route path="/companies/:id" element={<CompanyOverview />} />
+                            <Route path="/companies/:id/edit" element={<UpsertCompany />} />
+                            <Route path="/companies/add" element={<UpsertCompany />} />
+                            <Route path="/users" element={<UserComponent />} />
+                            <Route path="/users/:id" element={<UserOverview />} />
+                            <Route path="/users/:id/edit" element={<UpsertUser />} />
+                            <Route path="/users/add" element={<UpsertUser />} />
+                            <Route path="/logout" element={<LogoutComponent />} />
+                        </>) : (
+                            <Route path="/*" element={<LoginComponent />} />
+                        )}
                     </Routes>
                 </Box>
             </Box>
         </Router>
+    </>
     );
 }
 

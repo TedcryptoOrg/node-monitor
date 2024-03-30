@@ -15,6 +15,10 @@ import ConfigurationNotificationRepository from "../../src/Domain/Configuration/
 import Service from "../../src/Domain/Service/Service";
 import ServiceRepository from "../../src/Domain/Service/ServiceRepository";
 import {ServiceType} from "../../src/Domain/Service/ServiceType";
+import User from "../../src/Domain/User/User";
+import UserRepository from "../../src/Domain/User/UserRepository";
+import Company from "../../src/Domain/User/Company";
+import CompanyRepository from "../../src/Domain/User/CompanyRepository";
 
 export const createConfiguration = async (): Promise<Configuration> => {
     return myContainer.get<ConfigurationRepository>(TYPES.ConfigurationRepository).upsert(
@@ -92,4 +96,31 @@ export const createMonitor = async(
             lastError ?? null
         )
     )
+}
+
+export const createCompany = async (name?: string): Promise<Company> => {
+    return await myContainer.get<CompanyRepository>(TYPES.CompanyRepository)
+        .upsert(new Company(
+            name ?? 'test akash',
+            true,
+            [],
+        ));
+}
+
+export const createUser = async (
+    company?: Company,
+    isAdmin?: boolean,
+    isSuperAdmin?: boolean,
+    username?: string
+): Promise<User> => {
+    return myContainer.get<UserRepository>(TYPES.UserRepository)
+        .upsert(new User(
+            username ?? 'test@example.com',
+            true,
+            isAdmin ?? true,
+            isSuperAdmin ?? true,
+            company ?? await createCompany(),
+            'password',
+            'password'
+        ));
 }
