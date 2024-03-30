@@ -7,9 +7,7 @@ export const refresh: RequestHandler = async (req: Request, resp: Response) => {
     const commandHandler = myContainer.get(CommandHandlerManager);
 
     try {
-        const result = await commandHandler.handle(new RefreshTokenCommand(
-            req.body.refreshToken
-        ));
+        const result = await commandHandler.handle(new RefreshTokenCommand(req.body.refreshToken));
 
         resp.status(200).send({
             accessToken: result.accessToken,
