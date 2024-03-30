@@ -7,6 +7,9 @@ import serverRouter from "./Routes/serverRouter";
 import serviceRouter from "./Routes/serviceRouter";
 import monitorRouter from "./Routes/monitorRouter";
 import notificationChannelsRouter from "./Routes/notificationChannelsRouter";
+import CompanyRouter from "./Routes/CompanyRouter";
+import UserRouter from "./Routes/UserRouter";
+import LoginRouter from "./Routes/LoginRouter";
 
 dotenv.config();
 
@@ -30,6 +33,9 @@ app.use('/api/servers', serverRouter);
 app.use('/api/services', serviceRouter);
 app.use('/api/monitors', monitorRouter);
 app.use('/api/notification-channels', notificationChannelsRouter);
+app.use('/api/companies', CompanyRouter);
+app.use('/api/users', UserRouter);
+app.use('/api/login', LoginRouter);
 
 app.use((req: Request, res: Response, next: NextFunction) => {
     res.status(404).json({message: "Not found"});

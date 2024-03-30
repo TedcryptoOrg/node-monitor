@@ -105,3 +105,25 @@ model services {
 
   @@index([server_id], map: "fk_services_server_id")
 }
+
+model user {
+  id             Int      @id @default(autoincrement())
+  username       String   @unique
+  password       String
+  is_active      Boolean  @default(true)
+  is_admin       Boolean  @default(false)
+  is_super_admin Boolean  @default(false)
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
+  company_id     Int?
+  company        company? @relation(fields: [company_id], references: [id])
+}
+
+model company {
+  id                   Int                    @id @default(autoincrement())
+  name                 String
+  is_active            Boolean                @default(true)
+  created_at           DateTime               @default(now())
+  updated_at           DateTime               @updatedAt
+  users                user[]
+}
