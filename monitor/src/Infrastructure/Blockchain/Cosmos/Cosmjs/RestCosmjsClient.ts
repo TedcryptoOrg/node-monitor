@@ -104,9 +104,9 @@ export class RestCosmjsClient implements CosmjsClient {
   private getOracleMissCounterEndpoint(chain: string, valoperAddress: string): string {
     switch (chain) {
         case 'kujira':
-          return '/oracle/validators/%valoper%/miss'.replace('%valoper%', valoperAddress)
+          return this.address+'/oracle/validators/%valoper%/miss'.replace('%valoper%', valoperAddress)
         case 'ojo':
-          return '/ojo/oracle/v1/validators/%valoper%/miss'.replace('%valoper%', valoperAddress)
+          return this.address+'/ojo/oracle/v1/validators/%valoper%/miss'.replace('%valoper%', valoperAddress)
         default:
           throw new Error('Unknown chain: ' + chain)
       }

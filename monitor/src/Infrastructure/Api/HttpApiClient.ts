@@ -36,7 +36,7 @@ export class HttpApiClient implements ApiClient {
 
         const configurations = []
         for (const apiConfiguration of apiConfigurations) {
-            const configuration = this.parseConfiguration(apiConfiguration)
+            const configuration = await this.parseConfiguration(apiConfiguration)
 
             configurations.push(configuration.withMonitors(await this.getConfigurationMonitors(configuration)))
         }
@@ -47,7 +47,7 @@ export class HttpApiClient implements ApiClient {
     async getMonitor(monitorId: number): Promise<Monitor> {
         const apiMonitor = await this.provider.getMonitor(monitorId);
 
-        return await this.parseMonitor(this.parseConfiguration(apiMonitor.configuration), apiMonitor);
+        return await this.parseMonitor(await this.parseConfiguration(apiMonitor.configuration), apiMonitor);
     }
 
     async getServer(serverId: number): Promise<Server> {
@@ -63,16 +63,16 @@ export class HttpApiClient implements ApiClient {
     }
 
     async getConfigurationServers(configurationId:number): Promise<Server[]> {
-        return (await this.provider.getConfigurationServers(configurationId)).map(this.parseServer);
+        return (await this.provider.getConfigurationServers(configurationId)).map(this.parseServer.bind(this));
     }
 
-    private parseConfiguration(apiConfiguration: ApiConfiguration): Configuration {
+    private async parseConfiguration(apiConfiguration: ApiConfiguration): Promise<Configuration> {
         return new Configuration(
             apiConfiguration.id,
             apiConfiguration.name,
             apiConfiguration.chain,
             [],
-            apiConfiguration.servers ? apiConfiguration.servers.map(this.parseServer) : [],
+            await this.getConfigurationServers(apiConfiguration.id),
             apiConfiguration.is_enabled
         )
     }
@@ -165,11 +165,15 @@ export class HttpApiClient implements ApiClient {
     }
 
     private parseServer(server: ApiServer): Server {
+        if (server.services === undefined) {
+            throw new Error('Server has no services')
+        }
+
         return new Server(
             Number(server.id),
             server.name,
             server.address,
-            server.services?.map((service: ApiService) => this.parseService(service)) ?? []
+            server.services.map(this.parseService.bind(this)),
         )
     }
 
