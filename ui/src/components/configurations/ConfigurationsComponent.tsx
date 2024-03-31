@@ -14,10 +14,8 @@ import UpsertConfigurationModal from "./UpsertConfigurationModal";
 import BooleanIcon from "../shared/BooleanIcon";
 import ConfigurationLink from "./ConfigurationLink";
 import MonitorsStatus from "../monitors/MonitorsStatus";
-import {enqueueSnackbar} from "notistack";
-import {useApi} from "../../context/ApiProvider";
-
 import { enqueueSnackbar } from "notistack";
+import { useApi } from "../../context/ApiProvider";
 
 const ConfigurationsComponent: React.FC = () => {
   const api = useApi();
