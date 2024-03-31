@@ -19,12 +19,14 @@ import UpsertServerModal from "./UpsertServerModal";
 import ConfigurationLink from "../configurations/ConfigurationLink";
 import MonitorsList from "../monitors/MonitorsList";
 import {enqueueSnackbar} from "notistack";
+import {useApi} from "../../context/ApiProvider";
 
 type RouteParams = {
     [key: string]: string;
 };
 
 const ServerOverview: React.FC = () => {
+    const api = useApi();
     const { id } = useParams<RouteParams>() as { id: string };
     const [server, setServer] = useState<ApiServer>({} as ApiServer);
     const [services, setServices] = useState<ApiService[]>([]);
@@ -33,14 +35,25 @@ const ServerOverview: React.FC = () => {
     const firstRender = React.useRef(true);
 
     const fetchServices = useCallback(() => {
-        fetch(`${process.env.REACT_APP_API_HOST}/api/servers/${id}/services`)
-            .then(response => response.json())
-            .then(data => setServices(data));
+        api?.get(`/servers/${id}/services`)
+            .then(response => {
+                if (!response.ok) {
+                    throw Error('Failed to fetch')
+                }
+
+                setServices(response.body ?? [])
+            })
     }, [id]);
 
     const fetchData = useCallback(() => {
-        fetch(`${process.env.REACT_APP_API_HOST}/api/servers/${id}`)
-            .then(response => response.json())
+        api?.get(`/servers/${id}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw Error('Failed to fetch server data')
+                }
+
+                return response.body
+            })
             .then(data => setServer(data))
             .catch((error) => enqueueSnackbar(`Failed to fetch server data: ${error}`, {variant: 'error'}))
     }, [id]);
@@ -74,14 +87,13 @@ const ServerOverview: React.FC = () => {
     };
 
     const handleRemoveService = (id: number) => {
-        fetch(`${process.env.REACT_APP_API_HOST}/api/services/${id}`, {
-            method: 'DELETE',
-        }).then(() => {
-            enqueueSnackbar('Service removed.', {variant: 'success'})
-            fetchServices()
-        }).catch((error) => {
-            enqueueSnackbar(`Failed to remove service: ${error}`, {variant: 'error'});
-        });
+        api?.delete(`/services/${id}`)
+            .then(() => {
+                enqueueSnackbar('Service removed.', {variant: 'success'})
+                fetchServices()
+            }).catch((error) => {
+                enqueueSnackbar(`Failed to remove service: ${error}`, {variant: 'error'});
+            });
     };
 
     // Server

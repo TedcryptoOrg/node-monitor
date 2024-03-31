@@ -1,24 +1,28 @@
 import React, {useEffect, useState} from "react";
 import { Autocomplete, TextField } from '@mui/material';
 import {User} from "../../types/User";
+import {useApi} from "../../context/ApiProvider";
 
 interface UsersAutocompleteProps {
     user: User|null,
     setUser: (user: User) => void
 }
 
-const UsersAutocomplete: React.FC<UsersAutocompleteProps> = (
-    {
-        user,
-        setUser
-    }) => {
+const UsersAutocomplete: React.FC<UsersAutocompleteProps> = ({user, setUser}) => {
+    const api = useApi();
     const [users, setUsers] = useState<User[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         setLoading(true)
-        fetch(`${process.env.REACT_APP_API_HOST}/api/users`)
-            .then(response => response.json())
+        api?.get(`/users`)
+            .then((response) => {
+                if (!response.ok) {
+                    throw Error('Failed to fetch')
+                }
+
+                return response.body
+            })
             .then(data => {
                 setUsers(data.results);
                 setLoading(false);

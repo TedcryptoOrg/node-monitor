@@ -15,16 +15,14 @@ import {ApiConfiguration} from "../../types/ApiConfiguration";
 import {ApiConfigurationNotificationChannel} from "../../types/ApiConfigurationNotificationChannel";
 import {eventEmitter} from "../../services/Events/EventEmitter";
 import {EventsEnum} from "../../services/Events/EventsEnum";
+import {useApi} from "../../context/ApiProvider";
 
 export interface NotificationChannelsListProps {
     configuration: ApiConfiguration
 }
 
-const ConfigurationNotificationChannelsList: React.FC<NotificationChannelsListProps> = (
-    {
-        configuration,
-    }
-) => {
+const ConfigurationNotificationChannelsList: React.FC<NotificationChannelsListProps> = ({configuration}) => {
+    const api = useApi();
     const [notificationChannels, setNotificationChannels] = useState<ApiConfigurationNotificationChannel[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const isFirstRender = useRef(true);
@@ -35,8 +33,14 @@ const ConfigurationNotificationChannelsList: React.FC<NotificationChannelsListPr
 
     const fetchData = useCallback(() => {
         setIsLoading(true)
-        fetch(`${process.env.REACT_APP_API_HOST}/api/configurations/${configuration.id}/notification-channels`)
-            .then(response => response.json())
+        api?.get(`/configurations/${configuration.id}/notification-channels`)
+            .then(response => {
+                if (!response.ok) {
+                    throw Error('Failed to fetch')
+                }
+
+                return response.body
+            })
             .then(data => setNotificationChannels(data))
             .catch((error) => {
                 console.error('Error:', error);
@@ -54,9 +58,7 @@ const ConfigurationNotificationChannelsList: React.FC<NotificationChannelsListPr
     }, [fetchData]);
 
     const handleRemove = (id: number) => {
-        fetch(`${process.env.REACT_APP_API_HOST}/api/configurations/${configuration.id}/notification-channels/${id}`, {
-            method: 'DELETE',
-        }).then(() => {
+        api?.delete(`/configurations/${configuration.id}/notification-channels/${id}`).then(() => {
             fetchData()
             enqueueSnackbar(`Notification channel removed successfully`, {variant: 'success'})
         }).catch((error) => {

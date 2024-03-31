@@ -5,6 +5,7 @@ import ConfigurationLink from "./configurations/ConfigurationLink";
 import ServerLink from "./servers/ServerLink";
 import {DataGrid, GridCellParams, GridColDef} from "@mui/x-data-grid";
 import {Box} from "@mui/system";
+import {useApi} from "../context/ApiProvider";
 
 interface Metric {
     configuration: ApiConfiguration,
@@ -19,6 +20,7 @@ interface Metric {
 }
 
 const NetworkStatus: React.FC = () => {
+    const api = useApi()
     const [metrics, setMetrics] = useState<Metric[]>([]);
     const firstRender = React.useRef(true);
 
@@ -81,8 +83,14 @@ const NetworkStatus: React.FC = () => {
 
     useEffect(() => {
         if (firstRender.current) {
-            fetch(`${process.env.REACT_APP_API_HOST}/api/configurations`)
-                .then(response => response.json())
+            api?.get(`/configurations`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw Error('Failed to fetch')
+                    }
+
+                    return response.body
+                })
                 .then((data: ApiConfiguration[]) => {
                     for (const configuration of data) {
                         if (!configuration.servers) {
@@ -90,8 +98,14 @@ const NetworkStatus: React.FC = () => {
                         }
 
                         for (const server of configuration.servers) {
-                            fetch(`${process.env.REACT_APP_API_HOST}/api/servers/${server.id}/metrics`)
-                                .then(response => response.json())
+                            api?.get(`/servers/${server.id}/metrics`)
+                                .then(response => {
+                                    if (!response.ok) {
+                                        throw Error('Failed to fetch')
+                                    }
+
+                                    return response.body
+                                })
                                 .then((data: any) => {
                                     setMetrics(metrics => [...metrics, {
                                         configuration: configuration,

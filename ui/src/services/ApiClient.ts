@@ -45,10 +45,17 @@ export default class ApiClient {
             };
         }
 
+        let body = null;
+        try {
+            body = await response.json();
+        } catch (error) {
+            // Ignore
+        }
+
         return {
             ok: response.ok,
             status: response.status,
-            body: response.status !== 204 ? await response.json() : null
+            body: body
         };
     }
 

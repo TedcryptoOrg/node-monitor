@@ -15,8 +15,10 @@ import BooleanIcon from "../shared/BooleanIcon";
 import ConfigurationLink from "./ConfigurationLink";
 import MonitorsStatus from "../monitors/MonitorsStatus";
 import {enqueueSnackbar} from "notistack";
+import {useApi} from "../../context/ApiProvider";
 
 const ConfigurationsComponent: React.FC = () => {
+    const api = useApi();
     const [isLoading, setIsLoading] = useState(true);
     const [openModal, setOpenModal] = useState(false);
     const [configurationsData, setConfigurationsData] = useState([]);
@@ -25,12 +27,13 @@ const ConfigurationsComponent: React.FC = () => {
 
     const fetchData = useCallback(() => {
         setIsLoading(true)
-        fetch(`${process.env.REACT_APP_API_HOST}/api/configurations`)
+        api?.get(`/configurations`)
             .then(response => {
                 if (!response.ok) {
                     enqueueSnackbar('Failed to fetch configuration data!', {variant: 'error'})
                 }
-                return response.json();
+
+                return response.body;
             })
             .then(data => setConfigurationsData(data))
             .catch((error) => {
@@ -68,14 +71,13 @@ const ConfigurationsComponent: React.FC = () => {
     };
 
     const handleRemove = (id: number) => {
-        fetch(`${process.env.REACT_APP_API_HOST}/api/configurations/${id}`, {
-            method: 'DELETE',
-        }).then(() => {
-            fetchData()
-            enqueueSnackbar('Configuration removed successfully!', {variant: 'success'})
-        }).catch((error) => {
-            console.error('Error:', error)
-        });
+        api?.delete(`/configurations/${id}`)
+            .then(() => {
+                fetchData()
+                enqueueSnackbar('Configuration removed successfully!', {variant: 'success'})
+            }).catch((error) => {
+                console.error('Error:', error)
+            });
     };
 
     return (

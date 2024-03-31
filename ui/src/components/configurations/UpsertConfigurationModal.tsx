@@ -13,6 +13,7 @@ import {ApiConfiguration} from "../../types/ApiConfiguration";
 import Switch from '@mui/material/Switch';
 import Chains from "../Chains";
 import {useSnackbar} from "notistack";
+import {useApi} from "../../context/ApiProvider";
 
 interface ConfigurationModalProps {
     open: boolean,
@@ -27,6 +28,7 @@ const UpsertConfigurationModal: React.FC<ConfigurationModalProps> = (
         configuration,
         handleClose
     }) => {
+    const api = useApi();
     const [name, setName] = useState(configuration ? configuration.name : '');
     const [chain, setChain] = useState(configuration ? configuration.chain : '');
     const [isEnabled, setIsEnabled] = useState(configuration ? configuration.is_enabled : true);
@@ -69,32 +71,25 @@ const UpsertConfigurationModal: React.FC<ConfigurationModalProps> = (
         console.log('Form submitted', configurationInput)
 
         const url = configuration
-            ? `${process.env.REACT_APP_API_HOST}/api/configurations/${configuration.id}`
-            : `${process.env.REACT_APP_API_HOST}/api/configurations`;
-        const method = configuration ? 'PUT' : 'POST';
+            ? `/configurations/${configuration.id}`
+            : `/configurations`;
 
-        fetch(url, {
-            method: method,
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(configurationInput),
-        })
+        api?.[configuration ? 'put' : 'post'](url, configurationInput)
             .then(response => {
                 if (!response.ok) {
-                    enqueueSnackbar('Failed to add monitor!', {variant: 'error'});
+                    enqueueSnackbar('Failed to add Configuration!', {variant: 'error'});
                     return;
                 }
 
-                return response.json()
+                return response.body
             })
             .then(data => {
                 fetchData();
-                enqueueSnackbar('Monitor added!', {variant: 'success'});
+                enqueueSnackbar('Configuration added!', {variant: 'success'});
                 console.log('Success:', data);
             })
             .catch((error) => {
-                enqueueSnackbar('Failed to add monitor!', {variant: 'error'});
+                enqueueSnackbar('Failed to add Configuration!', {variant: 'error'});
                 console.error('Error:', error);
             });
 

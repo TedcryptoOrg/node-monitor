@@ -4,12 +4,14 @@ import {TextField, Button, Container, Box, Typography, Grid, FormControlLabel, C
 import {enqueueSnackbar} from "notistack";
 import axios, {AxiosError} from "axios";
 import {Company, CompanyInput} from "../../types/Company";
+import {useApi} from "../../context/ApiProvider";
 
 type RouteParams = {
     [key: number]: string | undefined;
 };
 
 const UpsertCompany: React.FC = () => {
+    const api = useApi();
     const { id } = useParams<RouteParams>() as { id?: number };
     const [name, setName] = useState('');
     const [isActive, setIsActive] = useState(true);
@@ -17,8 +19,14 @@ const UpsertCompany: React.FC = () => {
 
     const fetchData = useCallback(() => {
         if (id) {
-            fetch(`${process.env.REACT_APP_API_HOST}/api/companies/${id}`)
-                .then(response => response.json())
+            api?.get(`/companies/${id}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw Error('Failed to fetch')
+                    }
+
+                    return response.body
+                })
                 .then(data => {
                     setName(data.name);
                     setIsActive(data.is_active);
@@ -41,14 +49,11 @@ const UpsertCompany: React.FC = () => {
             is_active: isActive,
         };
 
-        const method = id ? 'put' : 'post';
-        const url = id
-            ? `${process.env.REACT_APP_API_HOST}/api/companies/${id}`
-            : `${process.env.REACT_APP_API_HOST}/api/companies`;
-        (axios[method] as any)(url, company)
-            .then((data: Company) => {
-                enqueueSnackbar('Successfully updated!', {variant: 'success'})
-                navigate('/companies/' + (data.id ?? id ?? ''))
+        const url = id ? `/companies/${id}` : `/companies`;
+        api?.[id ? 'put' : 'post'](url, company)
+            .then(response => {
+                enqueueSnackbar(`Successfully ${id ? 'updated' : 'created'}!`, {variant: 'success'})
+                navigate('/companies/' + (response.body?.id ?? id ?? ''))
             })
             .catch((error: AxiosError) => {
                 console.error('Error:', error);

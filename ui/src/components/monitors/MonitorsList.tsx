@@ -17,6 +17,7 @@ import UpsertMonitorModal from "./UpsertMonitorModal";
 import {ApiConfiguration} from "../../types/ApiConfiguration";
 import {ApiServer} from "../../types/ApiServer";
 import {enqueueSnackbar} from "notistack";
+import {useApi} from "../../context/ApiProvider";
 
 interface MonitorsListProps {
     configuration: ApiConfiguration,
@@ -24,6 +25,7 @@ interface MonitorsListProps {
 }
 
 const MonitorsList: React.FC<MonitorsListProps> = ({configuration, server}) => {
+    const api = useApi();
     const [openMonitorModal, setModalOpen] = useState(false);
     const [editMonitor, setEditMonitor] = useState<ApiMonitor|null>(null);
     const [monitors, setMonitors] = useState<ApiMonitor[]>([]);
@@ -33,11 +35,17 @@ const MonitorsList: React.FC<MonitorsListProps> = ({configuration, server}) => {
         setIsLoading(true)
 
         const url = server
-            ? `${process.env.REACT_APP_API_HOST}/api/servers/${server.id}/monitors`
-            : `${process.env.REACT_APP_API_HOST}/api/configurations/${configuration.id}/monitors`
+            ? `/servers/${server.id}/monitors`
+            : `/configurations/${configuration.id}/monitors`
 
-        fetch(url)
-            .then(response => response.json())
+        api?.get(url)
+            .then(response => {
+                if (!response.ok) {
+                    throw Error('Failed to fetch')
+                }
+
+                return response.body
+            })
             .then(data => setMonitors(data))
             .catch((error) => {
                 console.error('Error:', error);
@@ -71,15 +79,14 @@ const MonitorsList: React.FC<MonitorsListProps> = ({configuration, server}) => {
     };
 
     const handleRemoveMonitor = (id: number) => {
-        fetch(`${process.env.REACT_APP_API_HOST}/api/monitors/${id}`, {
-            method: 'DELETE',
-        }).then(() => {
-            fetchData()
-            enqueueSnackbar('Monitor removed successfully!', {variant: 'success'});
-        }).catch((error) => {
-            console.error('Error:', error)
-            enqueueSnackbar('Failed to remove monitor!', {variant: 'error'});
-        });
+        api?.delete(`/monitors/${id}`)
+            .then(() => {
+                fetchData()
+                enqueueSnackbar('Monitor removed successfully!', {variant: 'success'});
+            }).catch((error) => {
+                console.error('Error:', error)
+                enqueueSnackbar('Failed to remove monitor!', {variant: 'error'});
+            });
     };
 
     return (
