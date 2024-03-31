@@ -15,22 +15,24 @@ import {enqueueSnackbar} from "notistack";
 import {User} from "../../types/User";
 import CompanyLink from "../Company/CompanyLink";
 import UserLink from "./UserLink";
+import {useApi} from "../../context/ApiProvider";
 
 const UserComponent: React.FC = () => {
+    const api = useApi();
     const [isLoading, setIsLoading] = useState(true);
     const [usersData, setUsersData] = useState<User[]>([]);
     const firstRender = React.useRef(true);
 
     const fetchData = useCallback(() => {
         setIsLoading(true)
-        fetch(`${process.env.REACT_APP_API_HOST}/api/users`)
+        api?.get(`/users`)
             .then(response => {
                 if (!response.ok) {
-                    enqueueSnackbar('Failed to fetch users data!', {variant: 'error'})
+                    throw Error('Failed to fetch')
                 }
-                return response.json();
+
+                setUsersData(response.body.results ?? [])
             })
-            .then(data => setUsersData(data.results ?? []))
             .catch((error) => {
                 console.error('Error:', error);
                 enqueueSnackbar('Failed to fetch users data!', {variant: 'error'})
@@ -47,9 +49,7 @@ const UserComponent: React.FC = () => {
     }, [fetchData]);
 
     const handleDelete = (user: User) => () => {
-        fetch(`${process.env.REACT_APP_API_HOST}/api/users/${user.id}`, {
-            method: 'DELETE'
-        })
+        api?.delete(`/users/${user.id}`)
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Failed to delete')

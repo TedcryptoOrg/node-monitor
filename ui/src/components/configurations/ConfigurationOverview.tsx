@@ -27,12 +27,14 @@ import MonitorsList from "../monitors/MonitorsList";
 import { enqueueSnackbar } from "notistack";
 import AssociateNotificationChannel from "./AssociateNotificationChannel";
 import ConfigurationNotificationChannelsList from "./ConfigurationNotificationChannelsList";
+import {useApi} from "../../context/ApiProvider";
 
 type RouteParams = {
   [key: number]: string;
 };
 
 const ConfigurationOverview: React.FC = () => {
+  const api = useApi();
   const { id } = useParams<RouteParams>() as { id: number };
   const [isLoadingConfiguration, setLoadingConfiguration] = useState(true);
   const [configuration, setConfiguration] = useState<ApiConfiguration | null>(
@@ -44,33 +46,43 @@ const ConfigurationOverview: React.FC = () => {
 
   const fetchServers = useCallback(() => {
     setLoadingServers(true);
-    fetch(`${process.env.REACT_APP_API_HOST}/api/configurations/${id}/servers`)
-      .then((response) => response.json())
-      .then((data) => setServers(data))
-      .catch((error) => {
-        console.error("Error:", error);
-        enqueueSnackbar("Failed to fetch server data!", { variant: "error" });
-        setServers([]);
+    api?.get(`/configurations/${id}/servers`)
+      .then(response => {
+        if (!response.ok) {
+            throw Error('Failed to fetch')
+        }
+        return response.body
       })
-      .finally(() => setLoadingServers(false));
+      .then(data => setServers(data))
+      .catch((error) => {
+        console.error('Error:', error);
+        enqueueSnackbar('Failed to fetch server data!', {variant: 'error'});
+        setServers([])
+      })
+      .finally(() => setLoadingServers(false))
   }, [id]);
 
   const fetchData = useCallback(() => {
     setLoadingConfiguration(true);
-    fetch(`${process.env.REACT_APP_API_HOST}/api/configurations/${id}`)
-      .then((response) => response.json())
+    api?.get(`/configurations/${id}`)
+      .then(response => {
+        if (!response.ok) {
+            throw Error('Failed to fetch')
+        }
+
+        return response.body
+      })      
       .then((data) => {
         console.log("🚀 ~ fetchData ~ data:", data);
         return setConfiguration(data);
       })
       .catch((error) => {
-        console.error("Error:", error);
-        enqueueSnackbar("Failed to fetch configuration data!", {
-          variant: "error",
-        });
-        setConfiguration(null);
+        console.error('Error:', error);
+        enqueueSnackbar('Failed to fetch configuration data!', {variant: 'error'});
+        setConfiguration(null)
       })
-      .finally(() => setLoadingConfiguration(false));
+      .finally(() => setLoadingConfiguration(false))
+    ;
   }, [id]);
 
   useEffect(() => {
@@ -108,16 +120,13 @@ const ConfigurationOverview: React.FC = () => {
   };
 
   const handleRemoveServer = (id: number) => {
-    fetch(`${process.env.REACT_APP_API_HOST}/api/servers/${id}`, {
-      method: "DELETE",
-    })
-      .then(() => {
-        fetchServers();
-        enqueueSnackbar("Server removed successfully!", { variant: "success" });
-      })
-      .catch((error) => {
-        console.error("Error:", error);
-        enqueueSnackbar("Failed to remove server!", { variant: "error" });
+    api?.delete(`/servers/${id}`)
+      .then((response) => {
+        fetchServers()
+        enqueueSnackbar('Server removed successfully!', {variant: 'success'});
+      }).catch((error) => {
+        console.error('Error:', error)
+        enqueueSnackbar('Failed to remove server!', {variant: 'error'});
       });
   };
 

@@ -14,6 +14,7 @@ import {NotificationChannelTypeEnum} from "./NotificationChannelType";
 import {enqueueSnackbar} from "notistack";
 import Telegram from "./types/Telegram";
 import {TelegramBotConfiguration} from "./types/TelegramBotConfiguration";
+import {useApi} from "../../context/ApiProvider";
 
 interface UpsertNotificationChannelModalProps {
     open: boolean,
@@ -28,6 +29,7 @@ const UpsertNotificationChannelModal: React.FC<UpsertNotificationChannelModalPro
         notificationChannel,
         handleClose
     }) => {
+    const api =     useApi();
     const [name, setName] = useState(notificationChannel ? notificationChannel.name : '');
     const [type, setType] = useState<NotificationChannelTypeEnum|null>(notificationChannel ? notificationChannel.type : null);
     const [configurationObject, setConfigurationObject] = useState(notificationChannel ? notificationChannel.configuration_object : {});
@@ -79,13 +81,7 @@ const UpsertNotificationChannelModal: React.FC<UpsertNotificationChannelModalPro
             is_enabled: isEnabled,
         };
 
-        fetch(`${process.env.REACT_APP_API_HOST}/api/notification-channels/test`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(notificationChannelInput),
-        })
+        api?.post(`/notification-channels/test`, notificationChannelInput)
             .then(response => {
                 if (!response.ok) {
                     enqueueSnackbar('Failed to test notification channel!', {variant:'error'});
@@ -114,17 +110,10 @@ const UpsertNotificationChannelModal: React.FC<UpsertNotificationChannelModalPro
         };
 
         const url = notificationChannel
-            ? `${process.env.REACT_APP_API_HOST}/api/notification-channels/${notificationChannel.id}`
-            : `${process.env.REACT_APP_API_HOST}/api/notification-channels`;
-        const method = notificationChannel ? 'PUT' : 'POST';
+            ? `/notification-channels/${notificationChannel.id}`
+            : `/notification-channels`;
 
-        fetch(url, {
-            method: method,
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(notificationChannelInput),
-        })
+        api?.[notificationChannel ? 'put' : 'post'](url, notificationChannelInput)
             .then(response => {
                 if (!response.ok) {
                     enqueueSnackbar('Failed to add notification channel!', {variant:'error'});

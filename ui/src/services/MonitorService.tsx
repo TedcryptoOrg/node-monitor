@@ -1,16 +1,11 @@
 import {ApiMonitorInput} from "../types/ApiMonitor";
+import ApiClient from "./ApiClient";
 
 class MonitorService {
-    async upsertMonitor(monitor: ApiMonitorInput): Promise<boolean> {
-        const url = `${process.env.REACT_APP_API_HOST}/api/monitors${monitor.id ? `/${monitor.id}` : ''}`;
+    async upsertMonitor(api: ApiClient, monitor: ApiMonitorInput): Promise<boolean> {
+        const url = `/monitors${monitor.id ? `/${monitor.id}` : ''}`;
 
-        return fetch(url, {
-            method: monitor.id ? 'PUT' : 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(monitor),
-        })
+        return api?.[monitor.id ? 'put' : 'post'](url, monitor)
             .then(response => response.ok)
             .catch((error) => {
                 console.error(error);

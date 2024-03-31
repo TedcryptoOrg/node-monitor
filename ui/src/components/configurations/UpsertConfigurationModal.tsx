@@ -13,6 +13,7 @@ import { ApiConfiguration } from "../../types/ApiConfiguration";
 import Switch from "@mui/material/Switch";
 import Chains from "../Chains";
 import { useSnackbar } from "notistack";
+import { useApi } from "../../context/ApiProvider";
 
 interface ConfigurationModalProps {
   open: boolean;
@@ -20,12 +21,14 @@ interface ConfigurationModalProps {
   configuration: ApiConfiguration | null;
   handleClose: any;
 }
+
 const UpsertConfigurationModal: React.FC<ConfigurationModalProps> = ({
   open,
   fetchData,
   configuration,
   handleClose,
 }) => {
+  const api = useApi();
   const [name, setName] = useState(configuration?.name);
   const [chain, setChain] = useState(configuration?.chain);
   const [isEnabled, setIsEnabled] = useState(configuration?.is_enabled);
@@ -60,33 +63,26 @@ const UpsertConfigurationModal: React.FC<ConfigurationModalProps> = ({
     console.log("Form submitted", configurationInput);
 
     const url = configuration
-      ? `${process.env.REACT_APP_API_HOST}/api/configurations/${configuration.id}`
-      : `${process.env.REACT_APP_API_HOST}/api/configurations`;
-    const method = configuration ? "PUT" : "POST";
+      ? `/configurations/${configuration.id}`
+      : `/configurations`;
 
-    fetch(url, {
-      method: method,
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(configurationInput),
-    })
-      .then((response) => {
-        if (!response.ok) {
-          enqueueSnackbar("Failed to add monitor!", { variant: "error" });
-          return;
-        }
+    api?.[configuration ? 'put' : 'post'](url, configurationInput)
+      .then(response => {
+          if (!response.ok) {
+              enqueueSnackbar('Failed to add Configuration!', {variant: 'error'});
+              return;
+          }
 
-        return response.json();
+          return response.body
       })
-      .then((data) => {
-        fetchData();
-        enqueueSnackbar("Monitor added!", { variant: "success" });
-        console.log("Success:", data);
+      .then(data => {
+          fetchData();
+          enqueueSnackbar('Configuration added!', {variant: 'success'});
+          console.log('Success:', data);
       })
       .catch((error) => {
-        enqueueSnackbar("Failed to add monitor!", { variant: "error" });
-        console.error("Error:", error);
+          enqueueSnackbar('Failed to add Configuration!', {variant: 'error'});
+          console.error('Error:', error);
       });
 
     customHandleClose();

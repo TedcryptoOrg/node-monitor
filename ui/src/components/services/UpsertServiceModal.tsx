@@ -21,6 +21,7 @@ import Switch from "@mui/material/Switch";
 import monitorService from "../../services/MonitorService";
 import {NodeExporterDiskSpaceUsageConfiguration, UrlCheckConfiguration} from "../../types/ApiMonitor";
 import {MonitorTypeEnum} from "../../types/MonitorTypeEnum";
+import {useApi} from "../../context/ApiProvider";
 
 interface UpsertServiceModalProps {
     open: boolean;
@@ -38,6 +39,7 @@ const UpsertServiceModal: React.FC<UpsertServiceModalProps> = (
         handleClose,
         server
     }) => {
+    const api = useApi();
     const [name, setName] = useState(editService ? editService.name : '');
     const [address, setAddress] = useState(editService ? editService.address : '');
     const [isEnabled, setIsEnabled] = useState(editService ? editService.is_enabled : false);
@@ -102,25 +104,14 @@ const UpsertServiceModal: React.FC<UpsertServiceModalProps> = (
             server_id: server.id ?? 0,
         };
 
-        const url = editService
-            ? `${process.env.REACT_APP_API_HOST}/api/services/${editService.id}`
-            : `${process.env.REACT_APP_API_HOST}/api/services`;
-        const method = editService ? 'PUT' : 'POST';
-
-        fetch(url, {
-            method: method,
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(service),
-        })
+        api?.[editService ? 'put' : 'post'](editService ? `/services/${editService.id}` : `/services`, service)
             .then(response => {
                 if (response.ok) {
                     fetchData();
                 }
                 if (createMonitor) {
                     const promises = [];
-                    promises.push(monitorService.upsertMonitor({
+                    promises.push(monitorService.upsertMonitor(api, {
                         name: service.name,
                         is_enabled: service.is_enabled,
                         configuration_id: server.configuration.id,
@@ -132,7 +123,7 @@ const UpsertServiceModal: React.FC<UpsertServiceModalProps> = (
                         } as UrlCheckConfiguration)
                     }))
                     if (type === ServiceTypeEnum.NODE_EXPORTER) {
-                        promises.push(monitorService.upsertMonitor({
+                        promises.push(monitorService.upsertMonitor(api, {
                             name: service.name,
                             is_enabled: service.is_enabled,
                             configuration_id: server.configuration.id,

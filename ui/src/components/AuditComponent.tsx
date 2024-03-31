@@ -4,16 +4,24 @@ import {ApiAudit} from "../types/ApiAudit";
 import {Link} from "react-router-dom";
 import ConfigurationLink from "./configurations/ConfigurationLink";
 import ServerLink from "./servers/ServerLink";
+import {useApi} from "../context/ApiProvider";
 
 const AuditComponent: React.FC = () => {
+    const api = useApi();
     const [audits, setAudits] = useState<ApiAudit[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const firstRender = React.useRef(true);
 
     useEffect(() => {
         if (firstRender.current) {
-            fetch(`${process.env.REACT_APP_API_HOST}/api/audit/latest`)
-                .then(response => response.json())
+            api?.get(`/audit/latest`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw Error('Failed to fetch')
+                    }
+
+                    return response.body;
+                })
                 .then(data => setAudits(data))
                 .catch((error) => {
                     console.error('Error:', error);

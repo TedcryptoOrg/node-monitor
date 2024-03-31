@@ -29,6 +29,7 @@ import SignMissCheckConfig from "./types/SignMissCheckConfig";
 import PriceFeederMissCountConfig from './types/PriceFeederMissCountConfig';
 import {ApiServer} from "../../types/ApiServer";
 import {enqueueSnackbar} from "notistack";
+import {useApi} from "../../context/ApiProvider";
 
 interface UpsertMonitorModalProps {
     open: boolean;
@@ -46,6 +47,7 @@ const UpsertMonitorModal: React.FC<UpsertMonitorModalProps> = (
         handleClose,
         configuration
     }) => {
+    const api = useApi();
     const [name, setName] = useState(editMonitor ? editMonitor.name : '');
     const [isEnabled, setIsEnabled] = useState(editMonitor ? editMonitor.is_enabled : true);
     const [type, setType] = useState(editMonitor ? editMonitor.type : MonitorTypeEnum.URL_CHECK);
@@ -57,8 +59,14 @@ const UpsertMonitorModal: React.FC<UpsertMonitorModalProps> = (
 
     useEffect(() => {
         if (configuration) {
-            fetch(`${process.env.REACT_APP_API_HOST}/api/configurations/${configuration.id}/servers`)
-                .then(response => response.json())
+            api?.get(`/configurations/${configuration.id}/servers`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw Error('Failed to fetch')
+                    }
+
+                    return response.body
+                })
                 .then((data: ApiServer[]) => {
                     setServers(data);
                 });
@@ -116,17 +124,11 @@ const UpsertMonitorModal: React.FC<UpsertMonitorModalProps> = (
         };
 
         const url = editMonitor
-            ? `${process.env.REACT_APP_API_HOST}/api/monitors/${editMonitor.id}`
-            : `${process.env.REACT_APP_API_HOST}/api/monitors`;
+            ? `/monitors/${editMonitor.id}`
+            : `/monitors`;
         const method = editMonitor ? 'PUT' : 'POST';
 
-        fetch(url, {
-            method: method,
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(monitor),
-        })
+        api?.[editMonitor ? 'put' : 'post'](url, monitor)
             .then(response => {
                 if (response.ok) {
                     enqueueSnackbar(`${editMonitor ? 'Edited' : 'Added'} monitor.`, {variant: 'success'});

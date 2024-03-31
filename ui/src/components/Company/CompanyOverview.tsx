@@ -7,12 +7,14 @@ import {useParams} from 'react-router-dom';
 import BooleanIcon from "../shared/BooleanIcon";
 import {enqueueSnackbar} from "notistack";
 import {Company} from "../../types/Company";
+import {useApi} from "../../context/ApiProvider";
 
 type RouteParams = {
     [key: number]: string;
 };
 
 const DistributeChainOverview: React.FC = () => {
+    const api = useApi();
     const { id } = useParams<RouteParams>() as { id: number };
     const [isLoading, setLoading] = useState(true);
     const [company, setCompany] = useState<Company | null>(null);
@@ -20,8 +22,14 @@ const DistributeChainOverview: React.FC = () => {
 
     const fetchData = useCallback(() => {
         setLoading(true)
-        fetch(`${process.env.REACT_APP_API_HOST}/api/companies/${id}`)
-            .then(response => response.json())
+        api?.get(`/companies/${id}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw Error('Failed to fetch')
+                }
+
+                return response.body
+            })
             .then(data => setCompany(data))
             .catch((error) => {
                 console.error('Error:', error);

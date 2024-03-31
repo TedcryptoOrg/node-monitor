@@ -14,20 +14,23 @@ import BooleanIcon from "../shared/BooleanIcon";
 import {enqueueSnackbar} from "notistack";
 import {Company} from "../../types/Company";
 import CompanyLink from "./CompanyLink";
+import {useApi} from "../../context/ApiProvider";
 
 const CompaniesComponent: React.FC = () => {
+    const api = useApi()
     const [isLoading, setIsLoading] = useState(true);
     const [companiesData, setCompaniesData] = useState([]);
     const firstRender = React.useRef(true);
 
     const fetchData = useCallback(() => {
         setIsLoading(true)
-        fetch(`${process.env.REACT_APP_API_HOST}/api/companies`)
+        api?.get(`/companies`)
             .then(response => {
                 if (!response.ok) {
                     enqueueSnackbar('Failed to fetch companies data!', {variant: 'error'})
                 }
-                return response.json();
+
+                return response.body;
             })
             .then(data => setCompaniesData(data.results ?? []))
             .catch((error) => {
@@ -46,9 +49,7 @@ const CompaniesComponent: React.FC = () => {
     }, [fetchData]);
 
     const handleDelete = (company: Company) => () => {
-        fetch(`${process.env.REACT_APP_API_HOST}/api/companies/${company.id}`, {
-            method: 'DELETE'
-        })
+        api?.delete(`/companies/${company.id}`)
             .then(response => {
                 if (!response.ok) {
                     throw new Error('Failed to delete')

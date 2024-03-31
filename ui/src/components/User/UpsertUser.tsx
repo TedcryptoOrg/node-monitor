@@ -2,16 +2,17 @@ import React, {useCallback, useEffect, useState} from 'react';
 import {useNavigate, useParams} from 'react-router-dom';
 import {TextField, Button, Container, Box, Typography, Grid, FormControlLabel, Checkbox} from '@mui/material';
 import {enqueueSnackbar} from "notistack";
-import axios, {AxiosError} from "axios";
 import {UserInput} from "../../types/User";
 import {Company} from "../../types/Company";
 import CompanyAutocomplete from "../Company/CompanyAutocomplete";
+import {useApi} from "../../context/ApiProvider";
 
 type RouteParams = {
     [key: number]: string | undefined;
 };
 
 const UpsertUser: React.FC = () => {
+    const api = useApi();
     const { id } = useParams<RouteParams>() as { id?: number };
     const [username, setUsername] = useState('');
     const [rawPassword, setRawPassword] = useState('');
@@ -23,9 +24,12 @@ const UpsertUser: React.FC = () => {
 
     const fetchData = useCallback(() => {
         if (id) {
-            fetch(`${process.env.REACT_APP_API_HOST}/api/users/${id}`)
-                .then(response => response.json())
-                .then(data => {
+            api?.get(`/users/${id}`)
+                .then(response => {
+                    if (!response.ok || !response.body) {
+                        throw new Error('Failed to fetch user!')
+                    }
+                    const data = response.body;
                     setUsername(data.username)
                     setIsActive(data.is_active)
                     setIsAdmin(data.is_admin)
@@ -63,28 +67,19 @@ const UpsertUser: React.FC = () => {
             ...(rawPassword && { raw_password: rawPassword })
         };
 
-        const method = id ? 'put' : 'post';
-        const url = id
-            ? `${process.env.REACT_APP_API_HOST}/api/users/${id}`
-            : `${process.env.REACT_APP_API_HOST}/api/users`;
-        (axios[method] as any)(url, userInput)
-            .then((data: Company) => {
-                enqueueSnackbar('Successfully updated!', {variant: 'success'})
-                navigate('/users/' + (data.id ?? id ?? ''))
-            })
-            .catch((error: AxiosError) => {
-                console.error('Error:', error);
-
-                const data: any = error.response?.data;
-                if (data) {
-                    const errorMessage = data.message || data.error || data;
-                    enqueueSnackbar(`Failed! Error: ${errorMessage}`, {variant: 'error'})
-
-                    return
+        api?.[id ? 'put' : 'post'](id ? `/users/${id}` : `/users`, userInput)
+            .then(response => {
+                if (!response.ok) {
+                    const errorMessage = response.body.message || response.body.error || response.body;
+                    throw new Error(`Failed to ${id ? 'update' : 'create'}` + (errorMessage ? ': ' + errorMessage : ''))
                 }
 
+                enqueueSnackbar(`Successfully ${id ? 'update' : 'create'}!`, {variant: 'success'})
+                navigate('/users/')
+            })
+            .catch((error: any) => {
                 enqueueSnackbar(`Failed! Error: ${error}`, {variant: 'error'})
-            });
+            })
     };
 
     return (

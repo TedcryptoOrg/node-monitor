@@ -8,12 +8,14 @@ import BooleanIcon from "../shared/BooleanIcon";
 import {enqueueSnackbar} from "notistack";
 import {User} from "../../types/User";
 import CompanyLink from "../Company/CompanyLink";
+import {useApi} from "../../context/ApiProvider";
 
 type RouteParams = {
     [key: number]: string;
 };
 
 const UserOverview: React.FC = () => {
+    const api = useApi();
     const { id } = useParams<RouteParams>() as { id: number };
     const [isLoading, setLoading] = useState(true);
     const [user, setUser] = useState<User | null>(null);
@@ -21,8 +23,14 @@ const UserOverview: React.FC = () => {
 
     const fetchData = useCallback(() => {
         setLoading(true)
-        fetch(`${process.env.REACT_APP_API_HOST}/api/users/${id}`)
-            .then(response => response.json())
+        api?.get(`/users/${id}`)
+            .then(response => {
+                if (!response.ok || !response.body) {
+                    throw new Error('Failed to fetch user!')
+                }
+
+                return response.body
+            })
             .then(data => setUser(data))
             .catch((error) => {
                 console.error('Error:', error);
@@ -44,7 +52,7 @@ const UserOverview: React.FC = () => {
         <>
             <Grid container spacing={1}>
                 <Grid xs={12}>
-                    <Typography variant="h5">Distribute chain Overview</Typography>
+                    <Typography variant="h5">User Overview</Typography>
                 </Grid>
                 <Grid xs={12} md={12}>
                     {isLoading ? <LinearProgress /> : (user && (

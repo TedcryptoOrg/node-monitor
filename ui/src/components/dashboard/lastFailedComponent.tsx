@@ -2,16 +2,24 @@ import { LinearProgress } from "@mui/material";
 import React, {useEffect, useState} from "react";
 import {ApiMonitor} from "../../types/ApiMonitor";
 import MonitorsTable from "./MonitorsTable";
+import {useApi} from "../../context/ApiProvider";
 
 const LastFailedComponent: React.FC = () => {
+    const api = useApi()
     const [lastFailed, setLastFailed] = useState<ApiMonitor[]>([])
     const [isLoading, setIsLoading] = useState(true);
     const firstRender = React.useRef(true);
 
     useEffect(() => {
         if (firstRender.current) {
-            fetch(`${process.env.REACT_APP_API_HOST}/api/monitors/failed`)
-                .then(response => response.json())
+            api?.get(`/monitors/failed`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw Error('Failed to fetch')
+                    }
+
+                    return response.body
+                })
                 .then(data => setLastFailed(data))
                 .catch((error) => {
                     console.error('Error:', error);
