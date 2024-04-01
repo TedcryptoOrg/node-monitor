@@ -10,5 +10,7 @@ export default interface Checker {
 
     check(): Promise<void>;
 
+    setStatus(status: CheckStatus): void;
+
     getStatus(): CheckStatus;
 }

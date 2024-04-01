@@ -100,7 +100,10 @@ export default class OrmMonitorRepository implements MonitorRepository {
         const monitors = await this.ormClient.monitors.findMany({
             where: {
                 status: false,
-                is_enabled: true
+                is_enabled: true,
+                configuration: {
+                    is_enabled: true
+                }
             },
             include: {
                 configuration: true,
@@ -123,6 +126,9 @@ export default class OrmMonitorRepository implements MonitorRepository {
                 is_enabled: true,
                 last_error: {
                     not: null
+                },
+                configuration: {
+                    is_enabled: true
                 }
             },
             include: {
