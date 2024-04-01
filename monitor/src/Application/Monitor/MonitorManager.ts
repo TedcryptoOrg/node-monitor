@@ -125,6 +125,8 @@ export default class MonitorManager {
         try {
             await this.checkers[monitor.id].check()
         } catch (error: any) {
+            this.checkers[monitor.id].setStatus(CheckStatus.ERROR)
+
             await this.eventDispatcher.dispatch(new RunCheckFailed(monitor, attempt, error))
 
             console.error(error)

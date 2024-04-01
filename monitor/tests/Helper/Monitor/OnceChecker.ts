@@ -5,6 +5,7 @@ import Monitor from "../../../src/Domain/Monitor/Monitor";
 export default class OnceChecker implements Checker {
     private events: string[] = [];
     private checkerException: Error|null = null;
+    private status: CheckStatus = CheckStatus.UNKNOWN;
 
     setCheckerException(error: Error) {
         this.checkerException = error
@@ -14,8 +15,12 @@ export default class OnceChecker implements Checker {
         return this.events;
     }
 
+    setStatus(status: CheckStatus): void {
+        this.status = status;
+    }
+
     getStatus(): CheckStatus {
-        return CheckStatus.UNKNOWN;
+        return this.status;
     }
 
     hasEvent(event: string): boolean {

@@ -36,6 +36,10 @@ export abstract class AbstractChecker implements Checker {
         this.monitor = monitor;
     }
 
+    setStatus(status: CheckStatus): void {
+        this.status = status;
+    }
+
     getStatus(): CheckStatus {
         return this.status;
     }
