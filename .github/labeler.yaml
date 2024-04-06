@@ -1,30 +1,30 @@
 # General
 
 "Documentation":
-  - changed-files:
-    - any-glob-to-any-file:
-      - "**/docs/**"
-      - "**/README.md"
+- changed-files:
+  - any-glob-to-any-file:
+    - "**/docs/**"
+    - "**/README.md"
 
 "Workflows":
-  - changed-files:
-      - any-glob-to-any-file:
-          - ".github/workflows/**"
+- changed-files:
+    - any-glob-to-any-file:
+        - ".github/workflows/**"
 
 # Libraries
 
 "API":
-  - changed-files:
-      - any-glob-to-any-file:
-          - "api/**"
+- changed-files:
+    - any-glob-to-any-file:
+        - "api/**"
 
 "UI":
-  - changed-files:
-      - any-glob-to-any-file:
-          - "ui/**"
+- changed-files:
+    - any-glob-to-any-file:
+        - "ui/**"
 
 "Monitor":
-  - changed-files:
-      - any-glob-to-any-file:
-          - "monitor/**"
+- changed-files:
+    - any-glob-to-any-file:
+        - "monitor/**"
 
