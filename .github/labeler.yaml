@@ -2,7 +2,9 @@
 
 Documentation:
   - changed-files:
-      - any-glob-to-any-file: "**/docs/**", "*.md", "**/*.md"
+      - any-glob-to-any-file:
+        - "**/docs/**"
+        - "**/*.md"
 
 Workflows:
   - changed-files:
