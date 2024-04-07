@@ -1,8 +1,8 @@
-name: "Frontend: Deploy"
+name: "Frontend: Deploy (Old)"
 
 on:
   workflow_run:
-    workflows: ["Frontend: Build"]
+    workflows: ["Frontend: Build (Old)"]
     types:
       - completed
 
