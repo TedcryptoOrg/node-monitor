@@ -50,8 +50,9 @@ jobs:
         if: github.event_name == 'pull_request'
         id: sha
         run: |
-          echo "SHA: ${{ github.sha }}"
-          echo "::set-output name=sha::${{ github.sha }}"
+          PR_HEAD_SHA="${{ github.event.pull_request.head.sha }}"
+          echo "SHA: $PR_HEAD_SHA"
+          echo "::set-output name=sha::$PR_HEAD_SHA"
 
       - name: Log in to Docker Hub
         uses: docker/login-action@5f4866a30a54f16a52d2ecb4a3898e9e424939cf
