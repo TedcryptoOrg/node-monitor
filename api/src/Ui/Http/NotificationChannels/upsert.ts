@@ -4,7 +4,7 @@ import UpsertNotificationChannelCommand from "../../../Application/Write/Notific
 
 export const upsert: RequestHandler = async (req: Request, resp: Response) => {
     const requiredFields = ["name", "type", "configuration_object", "is_enabled"];
-    const missingFields = requiredFields.filter((field) => !req.body[field]);
+    const missingFields = requiredFields.filter((field) => !(field in req.body));
 
     if (missingFields.length > 0) {
         resp.status(400).send({

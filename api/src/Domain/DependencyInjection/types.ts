@@ -2,6 +2,7 @@ export const TYPES = {
     // Generics
     CommandHandler: Symbol.for('CommandHandler'),
     EventHandler: Symbol.for('EventHandler'),
+    EventDispatcher: Symbol.for('EventDispatcher'),
 
     // Security
     SecurityProvider: Symbol.for('SecurityProvider'),
@@ -22,4 +23,6 @@ export const TYPES = {
     ServiceRepository: Symbol.for('ServiceRepository'),
     NotificationChannelRepository: Symbol.for('NotificationChannelRepository'),
     ConfigurationNotificationRepository: Symbol.for('ConfigurationNotificationRepository'),
+    CompanyRepository: Symbol.for('CompanyRepository'),
+    UserRepository: Symbol.for('UserRepository'),
 }

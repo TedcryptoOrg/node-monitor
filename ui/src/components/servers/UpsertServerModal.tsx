@@ -12,6 +12,7 @@ import {
 import {ApiServer, ApiServerInput} from "../../types/ApiServer";
 import Switch from '@mui/material/Switch';
 import {enqueueSnackbar} from "notistack";
+import {useApi} from "../../context/ApiProvider";
 
 interface UpsertServerModalProps {
     open: boolean,
@@ -29,6 +30,8 @@ const UpsertServerModal: React.FC<UpsertServerModalProps> = (
         handleClose,
         configurationId
     }) => {
+    const api = useApi();
+
     const [name, setName] = useState(editServer ? editServer.name : '');
     const [isEnabled, setIsEnabled] = useState(editServer ? editServer.is_enabled : true);
     const [address, setAddress] = useState(editServer ? editServer.address : '');
@@ -60,18 +63,7 @@ const UpsertServerModal: React.FC<UpsertServerModalProps> = (
             configuration_id: configurationId
         };
 
-        const url = editServer
-            ? `${process.env.REACT_APP_API_HOST}/api/servers/${editServer.id}`
-            : `${process.env.REACT_APP_API_HOST}/api/servers`
-        const method = editServer ? 'PUT' : 'POST';
-
-        fetch(url, {
-            method: method,
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(server),
-        })
+        api?.[editServer ? 'put' : 'post'](editServer ? `/servers/${editServer.id}` : `/servers`, server)
             .then(response => {
                 if (!response.ok) {
                     enqueueSnackbar(`Failed to ${editServer ? 'edit' : 'add'} server.`, {variant: 'error'});

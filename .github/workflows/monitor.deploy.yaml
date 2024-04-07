@@ -1,0 +1,40 @@
+name: "Monitor: Deploy"
+
+on:
+  workflow_run:
+    workflows: ["Monitor: Build"]
+    types:
+      - completed
+
+jobs:
+  deploy:
+    name: "Deploy Image"
+    runs-on: ubuntu-latest
+    if: >
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.head_branch == 'main'
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy Image to CapRrover
+        uses: caprover/deploy-from-github@v1.1.2
+        with:
+          server: "${{ secrets.CAPROVER_SERVER }}"
+          app: "${{ secrets.CAPROVER_MONITOR_APP }}"
+          token: "${{ secrets.CAPROVER_MONITOR_TOKEN }}"
+          image: "joshlopes/tedcrypto-node-monitor-monitor:latest"
+
+      - name: 'Send message'
+        uses: ./.github/actions/send-telegram-message
+        with:
+          bot_token: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          chat_id: ${{ secrets.TELEGRAM_CHAT_ID }}
+          thread_id: ${{ secrets.TELEGRAM_THREAD_ID }}
+          message: |
+            Node Monitor Frontend deployed successfully!
+            ${{ github.actor }}: ${{ github.event.commits[0].message }}
+            
+            **Changes**: https://github.com/${{ github.repository }}/commit/${{github.sha}}
+            **Deployment**: ${{ secrets.CAPROVER_SERVER }}/#/apps/details/${{ secrets.CAPROVER_FRONTEND_APP }}

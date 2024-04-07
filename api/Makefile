@@ -70,9 +70,20 @@ install:
 npm-command:
 	$(DOCKER_NODE_COMPOSE_RUN) npm $(COMMAND)
 
+## [App] Create Initial Admin user
+create-user:
+	$(DOCKER_COMPOSE_EXEC) node-app npx ts-node bin/console create-user admin true true true admin
+
+## [Tests] Run tests
+test:
+	if [ -z "$(NAME)" ]; then \
+		read -p "Enter jest test regex: " NAME; \
+    fi; \
+	$(DOCKER_COMPOSE_EXEC) node-app npx jest --detectOpenHandles $$NAME
+
 ## [Tests] Run tests
 tests:
-	$(DOCKER_NODE_COMPOSE_RUN) npm test --detectOpenHandles
+	$(DOCKER_COMPOSE_EXEC) node-app npm test --detectOpenHandles
 
 .PHONY: db-diff db.diff db-create-migration db.create_migration
 ## [Database] Create migration with name (NAME=name-migration make db-create-migration)
@@ -85,7 +96,7 @@ db-diff db.diff db.create_migration db-create-migration:
 
 ## [Database] Run migrations
 db-migrate:
-	$(SEQUELIZE_RUN) npx sequelize-cli db:migrate --url $(DB_DSN)
+	$(DOCKER_COMPOSE_EXEC) node-app npx prisma migrate dev
 
 ## [Database] Undo last migration
 db-migrate-undo:

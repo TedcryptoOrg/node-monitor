@@ -1,20 +1,30 @@
 # General
 
-"Documentation":
-  - "**/docs/**"
-  - "**/README.md"
+Documentation:
+  - changed-files:
+      - any-glob-to-any-file:
+        - "**/docs/**"
+        - "**/*.md"
 
-"Workflows":
-  - ".github/workflows/**"
+Workflows:
+  - changed-files:
+    - any-glob-to-any-file: ".github/workflows/**"
 
 # Libraries
 
-"API":
-  - "api/**"
+API:
+  - changed-files:
+    - any-glob-to-any-file: "api/**"
 
-"UI":
-  - "ui/**"
+UI:
+  - changed-files:
+    - any-glob-to-any-file: "ui/**"
 
-"Monitor":
-  - "monitor/**"
+Frontend:
+  - changed-files:
+      - any-glob-to-any-file: "frontend/**"
+
+Monitor:
+  - changed-files:
+    - any-glob-to-any-file: "monitor/**"
 

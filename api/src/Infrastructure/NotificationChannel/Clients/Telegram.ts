@@ -13,7 +13,7 @@ export default class Telegram implements NotificationChannelClient {
     private constructor(
         private readonly botToken: string,
         private readonly chatId: string,
-        private readonly topicId?: string
+        private readonly topicId?: number
     ) {
         this.bot = new Telegraf(this.botToken);
     }
@@ -22,11 +22,13 @@ export default class Telegram implements NotificationChannelClient {
         return new Telegram(
             telegramBot.bot_token,
             telegramBot.chat_id,
-            telegramBot.topic_id ?? undefined
+            telegramBot.topic_id ? Number(telegramBot.topic_id) : undefined
         )
     }
 
     public async send(message: string): Promise<void> {
-        await this.bot.telegram.sendMessage(this.chatId, message);
+        await this.bot.telegram.sendMessage(this.chatId, message, {
+            ...(this.topicId ? {message_thread_id: this.topicId} : {})
+        });
     }
 }

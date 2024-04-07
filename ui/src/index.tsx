@@ -4,6 +4,7 @@ import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import { SnackbarProvider } from 'notistack';
+import ApiProvider from "./context/ApiProvider";
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
@@ -12,7 +13,9 @@ const root = ReactDOM.createRoot(
 root.render(
   <React.StrictMode>
     <SnackbarProvider maxSnack={3}>
-        <App />
+        <ApiProvider>
+            <App />
+        </ApiProvider>
     </SnackbarProvider>
   </React.StrictMode>
 );

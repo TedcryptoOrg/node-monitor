@@ -2,14 +2,20 @@ import {injectable} from "inversify";
 import parsePrometheusTextFormat from "./prometheusUtils";
 import axios from "axios";
 import PrometheusMetricBag from "./PrometheusMetricBag";
+import * as https from "https";
 
 @injectable()
 export class PrometheusParser {
 
     async parse(address: string): Promise<PrometheusMetricBag> {
-        const metrics = (await axios.get(address)).data
+        const response = await axios.get(address, {
+            httpsAgent: new https.Agent({
+                rejectUnauthorized: false,
+                checkServerIdentity: () => undefined
+            })
+        })
 
-        return new PrometheusMetricBag(parsePrometheusTextFormat(metrics))
+        return new PrometheusMetricBag(parsePrometheusTextFormat(response.data))
     }
 
 }

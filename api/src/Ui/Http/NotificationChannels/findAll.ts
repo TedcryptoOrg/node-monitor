@@ -8,9 +8,9 @@ export const findAll = async (req: any, resp: any) => {
         new FindAllNotificationChannelsCommand(convertBoolean(req.query.only_active) ?? undefined),
         resp,
         (notificationChannels: NotificationChannel[]) => {
-            resp.status(200).send(notificationChannels.map((notificationChannel) => {
-                return notificationChannel.toArray()
-            }))
+            resp.status(200).send(
+                notificationChannels.map(notificationChannel => notificationChannel.toArray())
+            )
         }
     )
 }

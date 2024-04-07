@@ -6,7 +6,7 @@ import {PrismaClient} from '@prisma/client';
 import AuditRepository from '../../Domain/Audit/AuditRepository';
 import OrmAuditRepository from '../Orm/Audit/OrmAuditRepository';
 import FindLatestCommandHandler from '../../Application/Query/Audit/FindLatest/FindLatestCommandHandler';
-import EventDispatcher from '../../Application/Event/EventDispatcher/EventDispatcher';
+import EventDispatcher from '../../Application/Event/EventDispatcher';
 import ConfigurationRepository from '../../Domain/Configuration/ConfigurationRepository';
 import OrmConfigurationRepository from '../Orm/Configuration/OrmConfigurationRepository';
 import UpsertConfigurationCommandHandler from '../../Application/Write/Configuration/UpsertConfiguration/UpsertConfigurationCommandHandler';
@@ -52,6 +52,28 @@ import ServerMetricsExplorerClient from "../Server/ServerMetricsExplorerClient";
 import GetMetricsCommandHandler from "../../Application/Query/Server/GetMetrics/GetMetricsCommandHandler";
 import GetNotificationChannelCommandHandler
     from "../../Application/Query/NotificationChannel/GetNotificationChannel/GetNotificationChannelCommandHandler";
+import {EventDispatcher as EventDispatcherInterface} from "../../Domain/Event/EventDispatcher";
+import EventHandler from "../../Domain/Event/EventHandler";
+import MonitorStatusChangedHandler from "../../Application/Event/NotificationChannel/MonitorStatusChangedHandler";
+import UserRepository from "../../Domain/User/UserRepository";
+import OrmUserRepository from "../Orm/User/Prisma/OrmUserRepository";
+import CompanyRepository from "../../Domain/User/CompanyRepository";
+import OrmCompanyRepository from "../Orm/User/Prisma/OrmCompanyRepository";
+import SecurityProvider from "../../Domain/Security/SecurityProvider";
+import {PasswordEncoder} from "../../Domain/Security/PasswordEncoder";
+import JwtProvider from "../Security/Jwt/JwtProvider";
+import ArgonPasswordEncoder from "../Security/Argon/ArgonPasswordEncoder";
+import CreateUser from "../../Ui/Console/CreateUser";
+import GetUserCommandHandler from "../../Application/Query/User/GetUser/GetUserCommandHandler";
+import GetCompanyCommandHandler from "../../Application/Query/Company/GetCompany/GetCompanyCommandHandler";
+import DeleteUserCommandHandler from "../../Application/Write/User/DeleteUser/DeleteUserCommandHandler";
+import DeleteCompanyCommandHandler from "../../Application/Write/Companies/DeleteCompany/DeleteCompanyCommandHandler";
+import UpsertUserCommandHandler from "../../Application/Write/User/UpsertUser/UpsertUserCommandHandler";
+import UpsertCompanyCommandHandler from "../../Application/Write/Companies/UpsertCompany/UpsertCompanyCommandHandler";
+import ListAllUsersCommandHandler from "../../Application/Query/User/ListAllUser/ListAllUsersCommandHandler";
+import ListAllCompaniesCommandHandler
+    from "../../Application/Query/Company/ListAllCompanies/ListAllCompaniesCommandHandler";
+import LoginCommandHandler from "../../Application/Query/Login/LoginCommandHandler";
 
 const myContainer = new Container();
 
@@ -64,6 +86,8 @@ myContainer.bind<MonitorRepository>(TYPES.MonitorRepository).to(OrmMonitorReposi
 myContainer.bind<NotificationChannelRepository>(TYPES.NotificationChannelRepository).to(OrmNotificationChannelRepository);
 myContainer.bind<ConfigurationNotificationRepository>(TYPES.ConfigurationNotificationRepository).to(OrmConfigurationNotificationRepository);
 myContainer.bind<ServiceRepository>(TYPES.ServiceRepository).to(OrmServiceRepository);
+myContainer.bind<UserRepository>(TYPES.UserRepository).to(OrmUserRepository);
+myContainer.bind<CompanyRepository>(TYPES.CompanyRepository).to(OrmCompanyRepository);
 
 // Command handlers
 myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(FindLatestCommandHandler);
@@ -94,16 +118,28 @@ myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(UpsertServiceCommandHa
 myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(FindAllServicesCommandHandler);
 myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(GetMetricsCommandHandler);
 myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(GetNotificationChannelCommandHandler);
+myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(GetUserCommandHandler);
+myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(GetCompanyCommandHandler);
+myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(DeleteUserCommandHandler);
+myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(DeleteCompanyCommandHandler);
+myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(UpsertUserCommandHandler);
+myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(UpsertCompanyCommandHandler);
+myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(ListAllUsersCommandHandler);
+myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(ListAllCompaniesCommandHandler);
+myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(LoginCommandHandler);
 myContainer.bind<CommandHandlerManager>(CommandHandlerManager).toSelf();
 
 // Events
-myContainer.bind<EventDispatcher>(EventDispatcher).toSelf();
+myContainer.bind<EventHandler>(TYPES.EventHandler).to(MonitorStatusChangedHandler);
+myContainer.bind<EventDispatcherInterface>(TYPES.EventDispatcher).to(EventDispatcher);
 
 // Factories
 myContainer.bind(NotificationClientFactory).toSelf();
 myContainer.bind<NotificationChannelClientFactory>(TYPES.NotificationChannelClientFactory).to(NotificationClientFactory);
 
 // Security
+myContainer.bind<SecurityProvider>(TYPES.SecurityProvider).to(JwtProvider);
+myContainer.bind<PasswordEncoder>(TYPES.PasswordEncoder).to(ArgonPasswordEncoder);
 
 // Services
 myContainer.bind(PrometheusParser).toSelf();
@@ -111,5 +147,6 @@ myContainer.bind(ServerMetricsExplorerClient).toSelf();
 myContainer.bind<ServerMetricsExporter>(TYPES.ServerMetricsExporter).to(ServerMetricsExplorerClient);
 
 // Console Command
+myContainer.bind<CreateUser>(CreateUser).toSelf();
 
 export { myContainer };

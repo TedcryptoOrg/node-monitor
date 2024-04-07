@@ -8,20 +8,28 @@ import {enqueueSnackbar} from "notistack";
 import {ApiConfigurationNotificationChannelInput} from "../../types/ApiConfigurationNotificationChannel";
 import {eventEmitter} from "../../services/Events/EventEmitter";
 import {EventsEnum} from "../../services/Events/EventsEnum";
+import {useApi} from "../../context/ApiProvider";
 
 interface AssociateNotificationChannelProps {
     configuration: ApiConfiguration;
 }
 
 const AssociateNotificationChannel: React.FC<AssociateNotificationChannelProps> = ({ configuration }) => {
+    const api = useApi();
     const [notificationChannels, setNotificationChannels] = useState<ApiNotificationChannel[]>([]);
     const [selectedChannel, setSelectedChannel] = useState<ApiNotificationChannel | null>(null);
     const firstRender = React.useRef(true);
 
     useEffect(() => {
         if (firstRender.current) {
-            fetch(`${process.env.REACT_APP_API_HOST}/api/notification-channels`)
-                .then(response => response.json())
+            api?.get(`/notification-channels`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw Error('Failed to fetch')
+                    }
+
+                    return response.body
+                })
                 .then(data => setNotificationChannels(data));
             firstRender.current = false;
         }
@@ -36,22 +44,14 @@ const AssociateNotificationChannel: React.FC<AssociateNotificationChannelProps> 
             configuration_id: configuration.id,
             notification_channel_id: selectedChannel.id,
         }
-        fetch(`${process.env.REACT_APP_API_HOST}/api/configurations/${configuration.id}/notification-channels`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(configurationNotificationChannel),
-        })
+        api?.post(`/configurations/${configuration.id}/notification-channels`, configurationNotificationChannel)
             .then(async (response) => {
                 if (!response.ok) {
-                    const data = await response.json()
-                    throw new Error(data.message ?? response.statusText)
+                    throw Error('Failed to associate notification channel')
                 }
 
-                return response
+                return response.body
             })
-            .then(response => response.json())
             .then(data => {
                 setSelectedChannel(null);
                 eventEmitter.emit(EventsEnum.NOTIFICATION_CHANNEL_ASSOCIATED);

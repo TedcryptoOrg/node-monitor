@@ -27,7 +27,7 @@ export default class UpsertMonitorCommandHandler implements CommandHandler {
             command.name,
             command.type,
             command.isEnabled,
-            command.configurationObject,
+            JSON.parse(command.configurationObject),
             command.id,
             configuration ?? undefined,
             server ?? undefined,
