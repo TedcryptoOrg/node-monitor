@@ -18,7 +18,7 @@ type WebSocketMessage = {
 
 @injectable()
 export default class MonitorManager {
-    private maxAttempts: number = 5
+    private maxAttempts: number|undefined = undefined
     private monitorsByConfiguration: Map<number, number[]> = new Map<number, number[]>()
     private monitors: { [key: string]: Monitor } = {}
     private checkers: { [key: string]: Checker } = {}
@@ -109,7 +109,7 @@ export default class MonitorManager {
     }
 
     private async runCheck(monitor: Monitor, attempt: number = 1): Promise<void> {
-        if (this.maxAttempts < attempt) {
+        if (this.maxAttempts && this.maxAttempts < attempt) {
             console.error(`Max attempts reached for ${monitor.getFullName()}. Skipping check.`)
             return;
         }
