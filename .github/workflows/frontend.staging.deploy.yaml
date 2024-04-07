@@ -41,3 +41,11 @@ jobs:
           app: "${{ secrets.CAPROVER_FRONTEND_STAGING_APP }}"
           token: "${{ secrets.CAPROVER_FRONTEND_STAGING_TOKEN }}"
           image: "joshlopes/tedcrypto-node-monitor-frontend-v2:pr-${{ fromJson(steps.get-sha.outputs.data).head.sha }}"
+
+      - name: Comment on PR
+        uses: peter-evans/create-or-update-comment@v1
+        with:
+          issue-number: ${{ steps.pr.outputs.number }}
+          body: |
+            :rocket: Your changes have been deployed to the staging environment!
+          token: ${{ secrets.GITHUB_TOKEN }}
