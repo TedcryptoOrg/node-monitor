@@ -15,7 +15,10 @@ export default class RunCheckFailedHandler implements EventHandler {
     async handle(event: RunCheckFailed): Promise<void> {
         await this.apiClient.pingMonitor(
             event.monitor.id,
-            {last_error: `Attempt ${event.attempt} ${event.error.message}`, status: false}
+            {
+                last_error: `Attempt ${event.attempt} ${event.error.message}`,
+                status: event.attempt <= 5
+            }
         )
     }
 
