@@ -29,12 +29,27 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Check Docker Image Existence
+        id: check-image
+        run: |
+          IMAGE_NAME="joshlopes/tedcrypto-node-monitor-frontend-v2:pr-${{ fromJson(steps.get-sha.outputs.data).head.sha }}"
+          EXISTS=$(docker manifest inspect $IMAGE_NAME > /dev/null 2>&1 && echo "yes" || echo "no")
+          if [ "$EXISTS" == "no" ]; then
+            echo "::error::Docker image does not exist. Deployment aborted."
+            exit 1
+          fi
+          echo "::set-output name=exists::$EXISTS"
+        env:
+          DOCKER_CLI_EXPERIMENTAL: enabled
+
       - name: Deploy Image to Staging Server
+        if: steps.check-image.outputs.exists == 'yes'
         run: |
           IMAGE_TAG="joshlopes/tedcrypto-node-monitor-frontend-v2:pr-${{ fromJson(steps.get-sha.outputs.data).head.sha }}"
           echo "Deploying Image: $IMAGE_TAG"
 
       - name: Deploy Image to CapRrover
+        if: steps.check-image.outputs.exists == 'yes'
         uses: caprover/deploy-from-github@v1.1.2
         with:
           server: "${{ secrets.CAPROVER_SERVER }}"
@@ -43,9 +58,20 @@ jobs:
           image: "joshlopes/tedcrypto-node-monitor-frontend-v2:pr-${{ fromJson(steps.get-sha.outputs.data).head.sha }}"
 
       - name: Comment on PR
+        if: steps.check-image.outputs.exists == 'yes'
         uses: peter-evans/create-or-update-comment@v1
         with:
           issue-number: ${{ steps.pr.outputs.number }}
           body: |
             :rocket: Your changes have been deployed to the staging environment!
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+
+      - name: Comment if image doesnt exist
+        if: steps.check-image.outputs.exists == 'no'
+        uses: peter-evans/create-or-update-comment@v1
+        with:
+          issue-number: ${{ steps.pr.outputs.number }}
+          body: |
+            :x: Docker image does not exist. Deployment aborted.
           token: ${{ secrets.GITHUB_TOKEN }}
