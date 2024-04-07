@@ -1,0 +1,43 @@
+name: "Frontend: Deploy on PR Comment"
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  deploy-on-comment:
+    if: github.event.issue.pull_request && contains(github.event.comment.body, '/deploy')
+    runs-on: ubuntu-latest
+    name: Deploy Image on PR Comment
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Extract Pull Request Number
+        id: pr
+        run: |
+          PR_NUMBER=$(echo "${{ github.event.issue.url }}" | rev | cut -d'/' -f1 | rev)
+          echo "PR Number: $PR_NUMBER"
+          echo "::set-output name=number::$PR_NUMBER"
+
+      - name: Get SHA from PR
+        id: get-sha
+        uses: octokit/request-action@v2.x
+        with:
+          route: GET /repos/${{ github.repository }}/pulls/${{ steps.pr.outputs.number }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Deploy Image to Staging Server
+        run: |
+          IMAGE_TAG="joshlopes/tedcrypto-node-monitor-frontend-v2:pr-${{ fromJson(steps.get-sha.outputs.data).head.sha }}"
+          echo "Deploying Image: $IMAGE_TAG"
+
+      - name: Deploy Image to CapRrover
+        uses: caprover/deploy-from-github@v1.1.2
+        with:
+          server: "${{ secrets.CAPROVER_SERVER }}"
+          app: "${{ secrets.CAPROVER_FRONTEND_STAGING_APP }}"
+          token: "${{ secrets.CAPROVER_FRONTEND_STAGING_TOKEN }}"
+          image: "joshlopes/tedcrypto-node-monitor-frontend-v2:pr-${{ fromJson(steps.get-sha.outputs.data).head.sha }}"

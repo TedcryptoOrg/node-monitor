@@ -22,9 +22,9 @@ jobs:
         uses: caprover/deploy-from-github@v1.1.2
         with:
           server: "${{ secrets.CAPROVER_SERVER }}"
-          app: "${{ secrets.CAPROVER_FRONTEND_APP_V2 }}"
-          token: "${{ secrets.CAPROVER_FRONTEND_TOKEN_V2 }}"
-          image: "joshlopes/tedcrypto-node-monitor-frontend-v2:latest"
+          app: "${{ secrets.CAPROVER_FRONTEND_APP }}"
+          token: "${{ secrets.CAPROVER_FRONTEND_TOKEN }}"
+          image: "joshlopes/tedcrypto-node-monitor-frontend:latest"
 
       - name: 'Send message'
         uses: ./.github/actions/send-telegram-message
@@ -33,7 +33,7 @@ jobs:
           chat_id: ${{ secrets.TELEGRAM_CHAT_ID }}
           thread_id: ${{ secrets.TELEGRAM_THREAD_ID }}
           message: |
-            Node Monitor Frontend V2 deployed successfully!
+            Node Monitor Frontend deployed successfully!
             ${{ github.actor }}: ${{ github.event.commits[0].message }}
             
             **Changes**: https://github.com/${{ github.repository }}/commit/${{github.sha}}
