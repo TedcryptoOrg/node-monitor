@@ -26,6 +26,7 @@ const ChainsAutocomplete: React.FC<ChainsAutocompleteProps> = ({
   return (
     <Autocomplete
       defaultValue={chain}
+      value={chain}
       options={chains.map((chain) => chain.name)}
       loading={loading}
       selectOnFocus={true}

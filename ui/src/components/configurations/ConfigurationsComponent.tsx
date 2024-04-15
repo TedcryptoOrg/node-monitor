@@ -41,7 +41,7 @@ const ConfigurationsComponent: React.FC = () => {
           setConfigurationsData([])
       })
       .finally(() => setIsLoading(false));
-  }, []);
+  }, [api]);
 
   const handleModalOpen = () => {
     setOpenModal(true);
