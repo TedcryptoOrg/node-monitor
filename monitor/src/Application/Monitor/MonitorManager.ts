@@ -12,13 +12,13 @@ import MonitorCheckerFactory from "./MonitorCheckerFactory";
 import {CheckStatus} from "../../Domain/Checker/CheckStatusEnum";
 
 type WebSocketMessage = {
-    event: "monitor_updated"|"monitor_disabled"|"monitor_enabled",
+    event: "monitor_updated" | "monitor_disabled" | "monitor_enabled",
     id: number
 }
 
 @injectable()
 export default class MonitorManager {
-    private maxAttempts: number|undefined = undefined
+    private maxAttempts: number | undefined = undefined
     private monitorsByConfiguration: Map<number, number[]> = new Map<number, number[]>()
     private monitors: { [key: string]: Monitor } = {}
     private checkers: { [key: string]: Checker } = {}
@@ -121,10 +121,18 @@ export default class MonitorManager {
             console.error(`${monitor.getFullName()} is disabled. Skipping check.`)
             return
         }
-
+        let timeoutId = undefined;
         try {
+            if (attempt > 1) {
+                timeoutId = setTimeout(() => {
+                    console.log(`After ${attempt} fails, counter has been reset to 0.`)
+                    attempt = 0;
+                }, 60000)
+            }
+
             await this.checkers[monitor.id].check()
         } catch (error: any) {
+            clearTimeout(timeoutId)
             this.checkers[monitor.id].setStatus(CheckStatus.ERROR)
 
             await this.eventDispatcher.dispatch(new RunCheckFailed(monitor, attempt, error))
