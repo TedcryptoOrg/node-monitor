@@ -88,6 +88,12 @@ const UpsertConfigurationModal: React.FC<ConfigurationModalProps> = ({
     customHandleClose();
   };
 
+  useEffect(() => {
+    setName(configuration?.name);
+    setChain(configuration?.chain);
+    setIsEnabled(configuration?.is_enabled);
+  }, [configuration]);
+
   return (
     <>
       <Dialog open={open} onClose={customHandleClose}>
@@ -114,13 +120,12 @@ const UpsertConfigurationModal: React.FC<ConfigurationModalProps> = ({
               />
             </DialogContentText>
             <DialogContentText>
-              {chain && (
+
                 <Chains
-                  chain={chain}
+                  chain={chain || ""}
                   setChain={setChain}
-                  //defaultValue={chain.name}
                 />
-              )}
+
             </DialogContentText>
             <FormControlLabel
               label="Is Enabled"

@@ -1,22 +1,22 @@
-name: "Api: Build"
+name: "Frontend: Build (Old)"
 
 defaults:
   run:
-    working-directory: "api"
+    working-directory: "ui"
 
 on:
   workflow_dispatch: ~
   pull_request:
     paths:
-      - ".github/workflows/api.build-image.yaml"
-      - "api/**"
+      - ".github/workflows/frontend.old.build-image.yaml"
+      - "ui/**"
   push:
     paths:
-      - ".github/workflows/api.build-image.yaml"
-      - ".github/workflows/api.deploy.yaml"
-      - "api/**"
+      - ".github/workflows/frontend.old.build-image.yaml"
+      - ".github/workflows/frontend.old.deploy.yaml"
+      - "ui/**"
     tags:
-      - 'api-v*'
+      - 'frontend-v*'
     branches:
       - "main"
 
@@ -32,13 +32,13 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Extract Tag Name or SHA for Main Branch
-        if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/api-v')
+        if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/frontend-v')
         id: tag
         run: |
           FULL_TAG="${{ github.ref }}"
-          # Replace slashes with hyphens and remove 'refs/tags/api-' prefix
+          # Replace slashes with hyphens and remove 'refs/tags/frontend-' prefix
           SANITIZED_TAG="${FULL_TAG/refs\/heads\//}"
-          SANITIZED_TAG="${SANITIZED_TAG/refs\/tags\/api-/}"
+          SANITIZED_TAG="${SANITIZED_TAG/refs\/tags\/frontend-/}"
           SANITIZED_TAG="${SANITIZED_TAG/\//-}"
           if [ -z "$SANITIZED_TAG" ] || [ "$SANITIZED_TAG" == "main" ]; then
             SANITIZED_TAG="latest"
@@ -63,18 +63,19 @@ jobs:
         id: meta
         uses: docker/metadata-action@1294d94f8ee362ab42b6da04c35f4cd03a0e6af7
         with:
-          images: joshlopes/tedcrypto-node-monitor-api
+          images: joshlopes/tedcrypto-node-monitor-frontend
 
       - name: Build and push Docker image
         uses: docker/build-push-action@f8bc7f46003ef0cf98b715743d86c2f1ccd01436
         with:
-          context: ./api
-          file: ./api/docker/node/Dockerfile
-          target: prod
+          context: ./ui
+          build-args: |
+            "REACT_APP_API_HOST=${{ secrets.REACT_APP_API_HOST }}"
+          file: ./ui/docker/Dockerfile
           push: true
           provenance: false
           load: false
           tags: |
-            ${{ (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/api-v')) && format('joshlopes/tedcrypto-node-monitor-api:{0}', steps.tag.outputs.tag) || '' }}
-            ${{ github.event_name == 'pull_request' && format('joshlopes/tedcrypto-node-monitor-api:pr-{0}', steps.sha.outputs.sha) || '' }}
+            ${{ (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/frontend-v')) && format('joshlopes/tedcrypto-node-monitor-frontend:{0}', steps.tag.outputs.tag) || '' }}
+            ${{ github.event_name == 'pull_request' && format('joshlopes/tedcrypto-node-monitor-frontend:pr-{0}', steps.sha.outputs.sha) || '' }}
           labels: ${{ steps.meta.outputs.labels }}

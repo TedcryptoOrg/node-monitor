@@ -20,6 +20,10 @@ UI:
   - changed-files:
     - any-glob-to-any-file: "ui/**"
 
+Frontend:
+  - changed-files:
+      - any-glob-to-any-file: "frontend/**"
+
 Monitor:
   - changed-files:
     - any-glob-to-any-file: "monitor/**"
