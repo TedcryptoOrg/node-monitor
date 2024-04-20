@@ -27,7 +27,13 @@ export default class PingMonitorCommandHandler implements CommandHandler {
             `Monitor ${monitor.name} pinged. Status: ${command.status ? 'OK' : 'KO'}. Last error: ${command.lastError ?? 'none'}`,
         ))
 
-        if (monitor.status !== command.status) {
+        if (
+            monitor.status !== command.status
+            || (
+                (monitor.lastError === null || command.lastError === null)
+                && monitor.lastError !== command.lastError
+            )
+        ) {
             await this.eventDispatcher.dispatch(new MonitorStatusChanged(monitor, command.status, command.lastError));
         }
 
