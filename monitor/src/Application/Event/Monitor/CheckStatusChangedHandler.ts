@@ -18,7 +18,8 @@ export default class CheckStatusChangedHandler implements EventHandler {
             event.monitor.id,
             {
                 last_error: this.getErrorMessage(event),
-                status: this.isWorking(event)
+                status: this.isWorking(event),
+                check_result: event.checkResult.status.toString()
             }
         )
     }

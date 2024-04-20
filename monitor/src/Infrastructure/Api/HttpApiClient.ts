@@ -1,4 +1,4 @@
-import ApiClient, {ServerMetricsResponse} from "../../Domain/ApiClient";
+import ApiClient, {PingPayload, ServerMetricsResponse} from "../../Domain/ApiClient";
 import TedcryptoApiClient from "./Tedcrypto/TedcryptoApiClient";
 import {inject, injectable} from "inversify";
 import Configuration from "../../Domain/Configuration/Configuration";
@@ -58,7 +58,7 @@ export class HttpApiClient implements ApiClient {
         return await this.provider.getServerMetrics(serverId);
     }
 
-    async pingMonitor(id: number, payload: {last_error: string|null; status: boolean}): Promise<void> {
+    async pingMonitor(id: number, payload: PingPayload): Promise<void> {
         await this.provider.pingMonitor(id, payload);
     }
 

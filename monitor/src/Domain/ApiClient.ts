@@ -12,6 +12,12 @@ export interface ServerMetricsResponse {
   totalMemory: number
 }
 
+export interface PingPayload {
+  last_error: string | null
+  status: boolean
+  check_result: string
+}
+
 export default interface ApiClient {
   getConfigurations: () => Promise<Configuration[]>
 
@@ -19,7 +25,7 @@ export default interface ApiClient {
 
   getServerMetrics: (serverId: number) => Promise<ServerMetricsResponse>
 
-  pingMonitor: (id: number, payload: { last_error: string | null, status: boolean }) => Promise<void>
+  pingMonitor: (id: number, payload: PingPayload) => Promise<void>
 
   getConfigurationServers: (configurationId: number) => Promise<Server[]>
 }
