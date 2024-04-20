@@ -51,11 +51,13 @@ export default class MonitorStatusChangedHandler implements EventHandler {
                     : await client.send(`🟠️${title} Recovering... ${event.lastError}`);
             } else if (
                 event.monitor.status === true
-                && event.monitor.erroredAt !== null // only care if we actually errored before
                 && event.monitor.lastError
                 && event.status
                 && null == event.lastError
             ) {
+                if (event.monitor.erroredAt !== null) {
+                    // Do nothing, it never got to be alerted
+                }
                 // from Warning to OKAY
                 await client.send(`🟢️${title} Monitor is back online`);
             } else if (event.monitor.status === true && event.status && event.lastError) {
