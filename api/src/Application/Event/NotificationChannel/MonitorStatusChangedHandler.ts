@@ -43,6 +43,8 @@ export default class MonitorStatusChangedHandler implements EventHandler {
             const client = this.notificationChannelClientFactory.createClient(channel.notificationChannel);
             if (event.monitor.status === true && !event.status && event.lastError) {
                 await client.send(`🔴️${title} ${event.lastError}`);
+            } else if (event.monitor.status === false && event.status && event.lastError) {
+                await client.send(`🟠️${title} Recovering... ${event.lastError}`);
             } else if (event.monitor.status === false && event.status) {
                 await client.send(`🟢️${title} Monitor is back online`);
             }
