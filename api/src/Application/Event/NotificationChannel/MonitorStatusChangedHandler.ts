@@ -42,14 +42,26 @@ export default class MonitorStatusChangedHandler implements EventHandler {
 
             const client = this.notificationChannelClientFactory.createClient(channel.notificationChannel);
             if (event.monitor.status === true && !event.status && event.lastError) {
+                // from OKAY to error
                 await client.send(`🔴️${title} ${event.lastError}`);
             } else if (event.monitor.status === false && event.status) {
+                // from Error to Warning or OKAY
                 event.lastError === null
                     ? await client.send(`🟢️${title} Monitor is back online`)
                     : await client.send(`🟠️${title} Recovering... ${event.lastError}`);
-            } else if (event.monitor.status === true && event.status && null == event.lastError) {
+            } else if (
+                event.monitor.status === true
+                && event.monitor.erroredAt !== null // only care if we actually errored before
+                && event.monitor.lastError
+                && event.status
+                && null == event.lastError
+            ) {
+                // from Warning to OKAY
                 await client.send(`🟢️${title} Monitor is back online`);
+            } else if (event.monitor.status === true && event.status && event.lastError) {
+                // From Okay to Warning
             } else {
+                // Unknown?
                 await client.send(`🔵️${title} Unhandled status change. 
                 Monitor status: ${event.monitor.status},
                 Monitor last error: ${event.monitor.lastError}, 

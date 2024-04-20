@@ -13,6 +13,7 @@ export type MonitorArray = {
     last_check?: Date|null,
     status?: boolean,
     last_error?: string|null,
+    errored_at?: Date|null;
     createdAt?: Date;
     updatedAt?: Date;
 }
@@ -29,6 +30,7 @@ export default class Monitor {
         public lastCheck?: Date|null,
         public status?: boolean,
         public lastError?: string|null,
+        public erroredAt?: Date|null,
         public createdAt?: Date,
         public updatedAt?: Date
     ) {
@@ -46,6 +48,7 @@ export default class Monitor {
             array.last_check,
             array.status,
             array.last_error,
+            array.errored_at,
             array.createdAt,
             array.updatedAt
         )
@@ -63,6 +66,7 @@ export default class Monitor {
             last_check: this.lastCheck,
             status: this.status,
             last_error: this.lastError,
+            errored_at: this.erroredAt,
             createdAt: this.createdAt,
             updatedAt: this.updatedAt
         }

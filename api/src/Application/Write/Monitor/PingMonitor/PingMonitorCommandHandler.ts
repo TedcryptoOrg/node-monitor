@@ -41,6 +41,16 @@ export default class PingMonitorCommandHandler implements CommandHandler {
         monitor.lastError = command.lastError
         monitor.status = command.status
 
+        if (!monitor.erroredAt && !command.status) {
+            // flag as errored for first time
+            monitor.erroredAt = new Date();
+        }
+
+        if (monitor.erroredAt && command.status && command.lastError === null) {
+            // flag as resolved (not even warning since lastError = null)
+            monitor.erroredAt = null
+        }
+
         await this.monitorRepository.upsert(monitor)
     }
 }

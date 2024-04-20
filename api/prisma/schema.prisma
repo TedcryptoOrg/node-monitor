@@ -59,6 +59,7 @@ model monitors {
   last_check           DateTime?      @db.DateTime(0)
   status               Boolean        @default(true)
   last_error           String?        @db.VarChar(255)
+  errored_at           DateTime?      @db.DateTime(0)
   configuration       configurations @relation(fields: [configuration_id], references: [id], onDelete: Cascade, map: "fk_monitor_configuration_id")
   server              servers?       @relation(fields: [server_id], references: [id], onDelete: Restrict, onUpdate: Restrict, map: "monitors_server_id_foreign_idx")
 

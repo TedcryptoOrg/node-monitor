@@ -40,6 +40,7 @@ export default class OrmMonitorRepository implements MonitorRepository {
             last_check: monitor.lastCheck,
             status: monitor.status,
             last_error: monitor.lastError,
+            errored_at: monitor.erroredAt,
             updatedAt: new Date()
         };
         if (monitor.id) {
