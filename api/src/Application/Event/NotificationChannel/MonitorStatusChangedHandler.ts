@@ -55,7 +55,7 @@ export default class MonitorStatusChangedHandler implements EventHandler {
                 && event.status
                 && null == event.lastError
             ) {
-                if (event.monitor.erroredAt !== null) {
+                if (event.monitor.erroredAt === null) {
                     // Do nothing, it never got to be alerted
                     return
                 }
