@@ -57,6 +57,7 @@ export default class MonitorStatusChangedHandler implements EventHandler {
             ) {
                 if (event.monitor.erroredAt !== null) {
                     // Do nothing, it never got to be alerted
+                    return
                 }
                 // from Warning to OKAY
                 await client.send(`🟢️${title} Monitor is back online`);
