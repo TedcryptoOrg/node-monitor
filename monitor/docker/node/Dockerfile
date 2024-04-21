@@ -14,6 +14,8 @@ RUN npm install -g ts-node nodemon
 ENV APP_ENV=dev
 ENV NODE_ENV=development
 
+EXPOSE 8081
+
 COPY docker/node/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
@@ -28,6 +30,8 @@ COPY ../../ .
 
 ENV APP_ENV=test
 ENV NODE_ENV=development
+
+EXPOSE 8081
 
 COPY docker/node/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
@@ -53,6 +57,8 @@ RUN npm ci --omit=dev
 COPY --from=build /app/dist .
 
 RUN npm install -g pm2
+
+EXPOSE 8081
 
 COPY docker/node/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh

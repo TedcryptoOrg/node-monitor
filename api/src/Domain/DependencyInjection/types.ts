@@ -11,6 +11,8 @@ export const TYPES = {
     // Clients
     OrmClient: Symbol.for('OrmClient'),
     ServerMetricsExporter: Symbol.for('ServerMetricsExporter'),
+    MonitorController: Symbol.for('MonitorController'),
+    HttpClient: Symbol.for('HttpClient'),
 
     // Factories
     NotificationChannelClientFactory: Symbol.for('NotificationChannelClientFactory'),

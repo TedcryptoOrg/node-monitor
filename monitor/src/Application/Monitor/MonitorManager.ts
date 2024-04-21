@@ -35,6 +35,11 @@ export default class MonitorManager {
                     const messageJson = JSON.parse(message.toString()) as WebSocketMessage;
                     const monitor = await this.apiClient.getMonitor(messageJson.id);
                     console.debug(`${monitor.getFullName()}[WebServer Socket] Received event ${messageJson.event}`)
+
+                    if (!this.monitors.hasOwnProperty(monitor.id)) {
+                        this.pushMonitor(monitor)
+                    }
+
                     switch (messageJson.event) {
                         case 'monitor_updated':
                             this.updateCheck(monitor);
@@ -60,6 +65,11 @@ export default class MonitorManager {
     }
 
     public pushMonitor(monitor: Monitor): void {
+        if (this.monitors.hasOwnProperty(monitor.id)) {
+            console.warn(`Monitor ${monitor.getFullName()} already exists in the manager.`)
+            return
+        }
+
         if (this.monitorsByConfiguration.has(monitor.configuration.id)) {
             this.monitorsByConfiguration.get(monitor.configuration.id)?.push(monitor.id)
         } else {
@@ -74,6 +84,7 @@ export default class MonitorManager {
     }
 
     public run(): void {
+        console.log('Running checks...');
         Object.values(this.monitors).forEach(async (monitor: Monitor) => {
             this.runCheck(monitor);
         });
@@ -91,7 +102,7 @@ export default class MonitorManager {
     }
 
     public updateCheck(monitor: Monitor): void {
-        this.checkers[monitor.id].updateMonitor(monitor as DiskSpaceCheckMonitor);
+        this.checkers[monitor.id].updateMonitor(monitor as Monitor);
     }
 
     public stopCheck(monitor: Monitor): void {
@@ -100,12 +111,12 @@ export default class MonitorManager {
     }
 
     public startCheck(monitor: Monitor): void {
-        if (this.checkers[monitor.id]) {
-            this.checkers[monitor.id].start();
-            return;
+        if (!this.checkers[monitor.id]) {
+            throw new Error(`Monitor ${monitor.getFullName()} does not exist in the manager. Have you forgot to push it?`);
         }
 
-        this.runCheck(monitor)
+        this.checkers[monitor.id].start();
+        this.runCheck(monitor);
     }
 
     private async runCheck(monitor: Monitor, attempt: number = 1): Promise<void> {
@@ -132,12 +143,13 @@ export default class MonitorManager {
 
             await this.checkers[monitor.id].check()
         } catch (error: any) {
+            console.error(error)
+
             clearTimeout(timeoutId)
             this.checkers[monitor.id].setStatus(CheckStatus.ERROR)
 
             await this.eventDispatcher.dispatch(new RunCheckFailed(monitor, attempt, error))
 
-            console.error(error)
             console.debug(`${monitor.getFullName()}[Attempt: ${attempt}] Retrying in ${(attempt ** 2)} seconds`)
             await sleep(1000 * attempt ** 2)
             await this.runCheck(monitor, attempt + 1)
