@@ -10,7 +10,6 @@ COLOR_INFO    = \033[32m
 COLOR_COMMENT = \033[33m
 
 PROJECT_NAME = 'node-monitor-api'
-NETWORK = 'ted-node-monitor_default'
 
 ## Help
 help:
