@@ -16,7 +16,8 @@ export default class CheckUrlCommandHandler implements CommandHandler {
 
     async handle(command: CheckUrlCommand): Promise<CheckResult> {
         try {
-            await this.httpClient.get(command.url);
+            console.debug('Checking URL:', command.url)
+            await this.httpClient.get(command.url, {timeout: 5000});
         } catch (error: any) {
             const axiosError = error as AxiosError;
             if (axiosError.code === 'ECONNABORTED' || !axiosError.response) {

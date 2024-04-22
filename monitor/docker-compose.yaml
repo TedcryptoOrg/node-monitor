@@ -6,6 +6,10 @@ services:
       context: .
       dockerfile: docker/node/Dockerfile
       target: dev
+    env_file:
+      - docker/.env
+    ports:
+      - ${WEBSOCKET_PORT:-8081}:8081
     restart: always
     volumes:
       - ./:/app

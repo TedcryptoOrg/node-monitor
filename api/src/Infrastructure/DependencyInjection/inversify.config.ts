@@ -74,8 +74,20 @@ import ListAllUsersCommandHandler from "../../Application/Query/User/ListAllUser
 import ListAllCompaniesCommandHandler
     from "../../Application/Query/Company/ListAllCompanies/ListAllCompaniesCommandHandler";
 import LoginCommandHandler from "../../Application/Query/Login/LoginCommandHandler";
+import WsMonitorController from "../Monitor/WsMonitorController";
+import MonitorController from "../../Application/Monitor/MonitorController";
+import MonitorControllerEventHandler from "../../Application/Event/Monitor/MonitorControllerEventHandler";
+import AxiosHttpClient from "../Http/AxiosHttpClient";
+import {HttpClient} from "../../Domain/Http/HttpClient";
+import {PARAMS} from "./params";
 
 const myContainer = new Container();
+
+// Params
+if (process.env.WS_MONITOR_ADDRESS === undefined) {
+    throw new Error('WS_MONITOR_ADDRESS environment variable is required');
+}
+myContainer.bind<string>(PARAMS.wsMonitorAddress).toConstantValue(process.env.WS_MONITOR_ADDRESS)
 
 // Repositories
 myContainer.bind<PrismaClient>(TYPES.OrmClient).toConstantValue(new PrismaClient());
@@ -131,6 +143,7 @@ myContainer.bind<CommandHandlerManager>(CommandHandlerManager).toSelf();
 
 // Events
 myContainer.bind<EventHandler>(TYPES.EventHandler).to(MonitorStatusChangedHandler);
+myContainer.bind<EventHandler>(TYPES.EventHandler).to(MonitorControllerEventHandler);
 myContainer.bind<EventDispatcherInterface>(TYPES.EventDispatcher).to(EventDispatcher);
 
 // Factories
@@ -142,9 +155,11 @@ myContainer.bind<SecurityProvider>(TYPES.SecurityProvider).to(JwtProvider);
 myContainer.bind<PasswordEncoder>(TYPES.PasswordEncoder).to(ArgonPasswordEncoder);
 
 // Services
+myContainer.bind<HttpClient>(TYPES.HttpClient).to(AxiosHttpClient);
 myContainer.bind(PrometheusParser).toSelf();
 myContainer.bind(ServerMetricsExplorerClient).toSelf();
 myContainer.bind<ServerMetricsExporter>(TYPES.ServerMetricsExporter).to(ServerMetricsExplorerClient);
+myContainer.bind<MonitorController>(TYPES.MonitorController).to(WsMonitorController);
 
 // Console Command
 myContainer.bind<CreateUser>(CreateUser).toSelf();

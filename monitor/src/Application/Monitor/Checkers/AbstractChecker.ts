@@ -16,16 +16,19 @@ export abstract class AbstractChecker implements Checker {
         protected status: CheckStatus = CheckStatus.UNKNOWN,
         protected stopSignal: boolean = false
     ) {
+        if (!monitor.isEnabled) {
+            this.stopSignal = true;
+        }
     }
 
     start(): void {
         if (!this.stopSignal) {
-            console.log(`${this.monitor.getFullName()} Already running`)
+            console.debug(`${this.monitor.getFullName()} Already running`)
             return;
         }
 
+        console.debug(`${this.monitor.getFullName()} Starting`)
         this.stopSignal = false;
-        this.check();
     }
 
     stop(): void {
@@ -54,7 +57,7 @@ export abstract class AbstractChecker implements Checker {
         do {
             const result: CheckResult = await this.commandHandler.handle(this.getCommand());
 
-            //console.log(`${this.monitor.getFullName()}[Status: ${result.status.toString()}] ${result.message}`);
+            console.log(`${this.monitor.getFullName()}[Status: ${result.status.toString()}] ${result.message}`);
 
             if (this.status !== result.status) {
                 await this.eventDispatcher.dispatch(new CheckStatusChanged(this.monitor, this.status, result));
@@ -70,5 +73,8 @@ export abstract class AbstractChecker implements Checker {
                 await sleep(1000 * this.monitor.checkIntervalSeconds);
             }
         } while (!this.stopSignal);
+        if (this.stopSignal) {
+            console.debug(`${this.monitor.getFullName()} Stopped as requested`)
+        }
     }
 }

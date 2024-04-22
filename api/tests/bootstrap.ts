@@ -6,6 +6,8 @@ import ServerMetricsExporter from "../src/Domain/Server/ServerMetricsExporter";
 import InMemoryServerMetricsExporter from "./Helper/InMemoryServerMetricsExporter";
 import InMemoryNotificationClientFactory from "./Helper/NotificationChannel/InMemoryNotificationClientFactory";
 import NotificationChannelClientFactory from "../src/Domain/NotificationChannel/Client/NotificationChannelClientFactory";
+import MonitorController from "../src/Application/Monitor/MonitorController";
+import InMemoryMonitorController from "./Helper/InMemoryMonitorController";
 
 dotenv.config({
     path: path.join(__dirname, '/../.env.test'),
@@ -14,3 +16,4 @@ dotenv.config({
 
 myContainer.rebind<ServerMetricsExporter>(TYPES.ServerMetricsExporter).toConstantValue(new InMemoryServerMetricsExporter());
 myContainer.rebind<NotificationChannelClientFactory>(TYPES.NotificationChannelClientFactory).toConstantValue(new InMemoryNotificationClientFactory());
+myContainer.rebind<MonitorController>(TYPES.MonitorController).toConstantValue(new InMemoryMonitorController());

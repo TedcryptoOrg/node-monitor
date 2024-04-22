@@ -18,8 +18,8 @@ export default class AxiosHttpClient implements HttpClient {
         });
     }
 
-    async get(url: string, options?: any): Promise<any> {
-        return (await this.axios.get(url, options)).data;
+    async get(url: string): Promise<any> {
+        return (await this.axios.get(url)).data;
     }
 
     async post(url: string, body: any): Promise<any> {

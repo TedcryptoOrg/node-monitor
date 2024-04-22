@@ -10,7 +10,6 @@ COLOR_INFO    = \033[32m
 COLOR_COMMENT = \033[33m
 
 PROJECT_NAME = 'node-monitor-api'
-NETWORK = 'node-monitor-api_default'
 
 ## Help
 help:
@@ -40,8 +39,6 @@ help:
 DOCKER_COMPOSE = docker compose --project-name $(PROJECT_NAME)
 DOCKER_COMPOSE_EXEC ?= $(DOCKER_COMPOSE) exec
 DOCKER_NODE_COMPOSE_RUN ?= $(DOCKER_COMPOSE) run --rm -it node-app
-SEQUELIZE_IMAGE ?= "calipsaci/sequelize-cli"
-SEQUELIZE_RUN ?= docker run --rm -it --network=$(NETWORK) -v .:/app -w /app $(SEQUELIZE_IMAGE)
 
 ## [Docker] Start containers
 up:
@@ -97,7 +94,3 @@ db-diff db.diff db.create_migration db-create-migration:
 ## [Database] Run migrations
 db-migrate:
 	$(DOCKER_COMPOSE_EXEC) node-app npx prisma migrate dev
-
-## [Database] Undo last migration
-db-migrate-undo:
-	$(DOCKER_NODE_COMPOSE_RUN) npx sequelize-cli db:migrate:undo --url $(DB_DSN)
