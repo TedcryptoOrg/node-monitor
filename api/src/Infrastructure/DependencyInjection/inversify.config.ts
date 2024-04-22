@@ -84,7 +84,10 @@ import {PARAMS} from "./params";
 const myContainer = new Container();
 
 // Params
-myContainer.bind<string>(PARAMS.wsMonitorAddress).toConstantValue(process.env.WS_MONITOR_ADDRESS ?? 'ws://host.docker.internal:8081')
+if (process.env.WS_MONITOR_ADDRESS === undefined) {
+    throw new Error('WS_MONITOR_ADDRESS environment variable is required');
+}
+myContainer.bind<string>(PARAMS.wsMonitorAddress).toConstantValue(process.env.WS_MONITOR_ADDRESS)
 
 // Repositories
 myContainer.bind<PrismaClient>(TYPES.OrmClient).toConstantValue(new PrismaClient());

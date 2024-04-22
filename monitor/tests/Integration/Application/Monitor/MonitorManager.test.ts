@@ -16,10 +16,11 @@ describe('MonitorManager', () => {
     myContainer.rebind(TYPES.MonitorCheckerFactory).toConstantValue(stubMonitorCheckerFactory);
 
     const eventDispatcher = myContainer.get<SpyEventDispatcher>(TYPES.EventDispatcher);
-    const monitorManager = myContainer.get(MonitorManager);
     const apiClient = myContainer.get<InMemoryHttpApiClient>(TYPES.ApiClient);
 
     it('should dispatch event when fails to run', async () => {
+        const monitorManager = myContainer.get(MonitorManager);
+
         const monitor = createTestOnceMonitor()
         const checker = new OnceChecker()
         checker.setCheckerException(new Error('Failed to run'))
@@ -37,6 +38,8 @@ describe('MonitorManager', () => {
     })
 
     it('should run checks and listen for ws commands', async () => {
+        const monitorManager = myContainer.get(MonitorManager);
+
         const monitorCheckFactory = myContainer.get<StubMonitorCheckerFactory>(TYPES.MonitorCheckerFactory)
         const websocketServer = myContainer.get<StubWebSocketServer>(TYPES.WebSocketServer)
         const onceChecker = new OnceChecker()
