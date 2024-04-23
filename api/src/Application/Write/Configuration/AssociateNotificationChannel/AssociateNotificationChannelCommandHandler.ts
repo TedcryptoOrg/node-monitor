@@ -1,38 +1,39 @@
-import {inject, injectable} from "inversify";
-import {TYPES} from "../../../../Domain/DependencyInjection/types";
-import AssociateNotificationChannelCommand from "./AssociateNotificationChannelCommand";
-import CommandHandler from "../../../../Domain/Command/CommandHandler";
-import ConfigurationRepository from "../../../../Domain/Configuration/ConfigurationRepository";
-import NotificationChannelRepository from "../../../../Domain/NotificationChannel/NotificationChannelRepository";
-import ConfigurationNotificationRepository from "../../../../Domain/Configuration/ConfigurationNotificationRepository";
-import ConfigurationNotification from "../../../../Domain/Configuration/ConfigurationNotification";
-import AuditRepository from "../../../../Domain/Audit/AuditRepository";
-import Audit from "../../../../Domain/Audit/Audit";
+import { inject, injectable } from 'inversify'
+import { TYPES } from '../../../../Domain/DependencyInjection/types'
+import AssociateNotificationChannelCommand from './AssociateNotificationChannelCommand'
+import CommandHandler from '../../../../Domain/Command/CommandHandler'
+import ConfigurationRepository from '../../../../Domain/Configuration/ConfigurationRepository'
+import NotificationChannelRepository from '../../../../Domain/NotificationChannel/NotificationChannelRepository'
+import ConfigurationNotificationRepository from '../../../../Domain/Configuration/ConfigurationNotificationRepository'
+import ConfigurationNotification from '../../../../Domain/Configuration/ConfigurationNotification'
+import AuditRepository from '../../../../Domain/Audit/AuditRepository'
+import Audit from '../../../../Domain/Audit/Audit'
 
 @injectable()
-export default class AssociateNotificationChannelCommandHandler implements CommandHandler {
-    constructor(
-        @inject(TYPES.ConfigurationRepository) private configurationRepository: ConfigurationRepository,
-        @inject(TYPES.NotificationChannelRepository) private notificationChannelRepository: NotificationChannelRepository,
-        @inject(TYPES.ConfigurationNotificationRepository) private configurationNotificationRepository: ConfigurationNotificationRepository,
-        @inject(TYPES.AuditRepository) private auditRepository: AuditRepository,
-    ) {
-    }
-    async handle(command: AssociateNotificationChannelCommand): Promise<ConfigurationNotification> {
-        const configuration = await this.configurationRepository.get(command.configurationId)
-        const notificationChannel = await this.notificationChannelRepository.get(command.notificationChannelId)
+export default class AssociateNotificationChannelCommandHandler implements CommandHandler<AssociateNotificationChannelCommand> {
+  constructor (
+    @inject(TYPES.ConfigurationRepository) private readonly configurationRepository: ConfigurationRepository,
+    @inject(TYPES.NotificationChannelRepository) private readonly notificationChannelRepository: NotificationChannelRepository,
+    @inject(TYPES.ConfigurationNotificationRepository) private readonly configurationNotificationRepository: ConfigurationNotificationRepository,
+    @inject(TYPES.AuditRepository) private readonly auditRepository: AuditRepository
+  ) {
+  }
 
-        const configurationNotification = await this.configurationNotificationRepository.upsert(
-            new ConfigurationNotification(configuration, notificationChannel)
-        )
+  async handle (command: AssociateNotificationChannelCommand): Promise<ConfigurationNotification> {
+    const configuration = await this.configurationRepository.get(command.configurationId)
+    const notificationChannel = await this.notificationChannelRepository.get(command.notificationChannelId)
 
-        await this.auditRepository.create(new Audit(
-            configuration,
-            null,
-            null,
-            `Notification channel ${notificationChannel.name} associated to configuration ${configuration.name}`,
-        ))
+    const configurationNotification = await this.configurationNotificationRepository.upsert(
+      new ConfigurationNotification(configuration, notificationChannel)
+    )
 
-        return configurationNotification;
-    }
+    await this.auditRepository.create(new Audit(
+      configuration,
+      null,
+      null,
+            `Notification channel ${notificationChannel.name} associated to configuration ${configuration.name}`
+    ))
+
+    return configurationNotification
+  }
 }

@@ -1,21 +1,21 @@
-import User from "./User";
+import type User from './User'
 
 export default interface UserRepository {
-    /**
+  /**
      * @throws RecordNotFound
      */
-    get(id: number): Promise<User>;
+  get: (id: number) => Promise<User>
 
-    /**
+  /**
      * @throws RecordNotFound
      */
-    getByUsername(username: string): Promise<User>
+  getByUsername: (username: string) => Promise<User>
 
-    findByUsername(username: string): Promise<User|null>
+  findByUsername: (username: string) => Promise<User | null>
 
-    upsert(user: User): Promise<User>;
+  upsert: (user: User) => Promise<User>
 
-    delete(id: number): Promise<void>;
+  delete: (id: number) => Promise<void>
 
-    findAll(): Promise<User[]>;
+  findAll: () => Promise<User[]>
 }

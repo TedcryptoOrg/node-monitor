@@ -1,18 +1,18 @@
-import Server from "./Server";
+import type Server from './Server'
 
-export type FindAllCriteria = {
-    configuration_id?: number
+export interface FindAllCriteria {
+  configuration_id?: number
 }
 
 export default interface ServerRepository {
-    /**
+  /**
      * @throws RecordNotFound
      */
-    get(id: number): Promise<Server>
+  get: (id: number) => Promise<Server>
 
-    upsert(server: Server): Promise<Server>
+  upsert: (server: Server) => Promise<Server>
 
-    delete(id: number): Promise<void>;
+  delete: (id: number) => Promise<void>
 
-    findAll(criteria?: FindAllCriteria): Promise<Server[]>;
+  findAll: (criteria?: FindAllCriteria) => Promise<Server[]>
 }

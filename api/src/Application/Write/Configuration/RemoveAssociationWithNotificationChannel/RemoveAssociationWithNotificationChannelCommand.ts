@@ -1,5 +1,5 @@
 export default class RemoveAssociationWithNotificationChannelCommand {
-    constructor(
-        public readonly id: number,
-    ) {}
+  constructor (
+    public readonly id: number
+  ) {}
 }

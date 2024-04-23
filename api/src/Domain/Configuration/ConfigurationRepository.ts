@@ -1,14 +1,14 @@
-import Configuration from "./Configuration";
+import type Configuration from './Configuration'
 
 export default interface ConfigurationRepository {
-    /**
+  /**
      * @throws RecordNotFound
      */
-    get(id: number): Promise<Configuration>;
+  get: (id: number) => Promise<Configuration>
 
-    findAll(): Promise<Configuration[]>;
+  findAll: () => Promise<Configuration[]>
 
-    upsert(configuration: Configuration): Promise<Configuration>;
+  upsert: (configuration: Configuration) => Promise<Configuration>
 
-    delete(id: number): Promise<void>;
+  delete: (id: number) => Promise<void>
 }

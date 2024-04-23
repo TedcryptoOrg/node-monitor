@@ -1,29 +1,30 @@
-import { RequestHandler, Request, Response } from 'express';
-import {handleCommand} from "../handleCommandUtil";
-import UpsertServiceCommand from "../../../Application/Write/Service/UpsertService/UpsertServiceCommand";
-import Service from "../../../Domain/Service/Service";
-import {ServiceType} from "../../../Domain/Service/ServiceType";
+import { type Request, type Response } from 'express'
+import { handleCommand } from '../handleCommandUtil'
+import UpsertServiceCommand from '../../../Application/Write/Service/UpsertService/UpsertServiceCommand'
+import type Service from '../../../Domain/Service/Service'
+import { type ServiceType } from '../../../Domain/Service/ServiceType'
+import { castToBoolean, castToNumber, castToNumberOrUndefined, castToString } from '../HttpUtil'
 
-export const upsert: RequestHandler = async (req: Request, resp: Response) => {
-    const requiredFields = ["name", "address", "server_id", "type", "is_enabled"];
-    const missingFields = requiredFields.filter((field) => !req.body[field]);
-    if (missingFields.length > 0) {
-        resp.status(400).send({
-            message: `Missing required fields: ${missingFields.join(", ")}`
-        });
-        throw new Error(`Missing required fields: ${missingFields.join(", ")}`);
-    }
+export const upsert = async (req: Request, resp: Response): Promise<void> => {
+  const requiredFields = ['name', 'address', 'server_id', 'type', 'is_enabled']
+  const missingFields = requiredFields.filter((field) => req.body[field] === undefined)
+  if (missingFields.length > 0) {
+    resp.status(400).send({
+      message: `Missing required fields: ${missingFields.join(', ')}`
+    })
+    return
+  }
 
-    await handleCommand(
-        new UpsertServiceCommand(
-            req.body.server_id,
-            req.body.name,
-            req.body.address,
-            req.body.is_enabled,
-            req.body.type as ServiceType,
-            req.params.id ? Number(req.params.id) : undefined
-        ),
-        resp,
-        (service: Service) => resp.status(req.params.id ? 200 : 202).send(service.toArray())
-    )
+  await handleCommand(
+    new UpsertServiceCommand(
+      castToNumber(req.body.server_id),
+      castToString(req.body.name),
+      castToString(req.body.address),
+      castToBoolean(req.body.is_enabled),
+      req.body.type as ServiceType,
+      castToNumberOrUndefined(req.params.id)
+    ),
+    resp,
+    (service: Service) => resp.status(req.params.id !== undefined ? 200 : 202).send(service.toArray())
+  )
 }

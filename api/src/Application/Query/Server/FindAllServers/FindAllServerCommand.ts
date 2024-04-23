@@ -1,8 +1,8 @@
-import Command from "../../../../Domain/Command/Command";
+import type Command from '../../../../Domain/Command/Command'
 
 export default class FindAllServerCommand implements Command {
-    constructor(
-        public readonly configurationId?: number
-    ) {
-    }
+  constructor (
+    public readonly configurationId?: number
+  ) {
+  }
 }

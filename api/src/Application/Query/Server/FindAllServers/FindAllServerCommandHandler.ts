@@ -1,23 +1,22 @@
-import {inject, injectable} from "inversify";
-import CommandHandler from "../../../../Domain/Command/CommandHandler";
-import FindAllServerCommand from "./FindAllServerCommand";
-import {TYPES} from "../../../../Domain/DependencyInjection/types";
-import ServerRepository, {FindAllCriteria} from "../../../../Domain/Server/ServerRepository";
-import Server from "../../../../Domain/Server/Server";
+import { inject, injectable } from 'inversify'
+import CommandHandler from '../../../../Domain/Command/CommandHandler'
+import FindAllServerCommand from './FindAllServerCommand'
+import { TYPES } from '../../../../Domain/DependencyInjection/types'
+import ServerRepository, { FindAllCriteria } from '../../../../Domain/Server/ServerRepository'
+import Server from '../../../../Domain/Server/Server'
 
 @injectable()
-export default class FindAllServerCommandHandler implements CommandHandler {
-    constructor(
-        @inject(TYPES.ServerRepository) private repository: ServerRepository
-    ) {
+export default class FindAllServerCommandHandler implements CommandHandler<FindAllServerCommand> {
+  constructor (
+    @inject(TYPES.ServerRepository) private readonly repository: ServerRepository
+  ) {
+  }
+
+  async handle (command: FindAllServerCommand): Promise<Server[]> {
+    const criteria: FindAllCriteria = {
+      ...(command.configurationId !== undefined && { configuration_id: command.configurationId })
     }
 
-    handle(command: FindAllServerCommand): Promise<Server[]> {
-        const criteria: FindAllCriteria = {
-            ...(command.configurationId && {configuration_id: command.configurationId})
-        }
-
-        return this.repository.findAll(criteria);
-    }
-
+    return await this.repository.findAll(criteria)
+  }
 }

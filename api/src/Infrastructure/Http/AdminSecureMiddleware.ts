@@ -1,15 +1,17 @@
-import {Request, Response} from "express";
-import User from "../../Domain/User/User";
+import { type Request, type Response } from 'express'
+import type User from '../../Domain/User/User'
 
-export const adminSecureMiddleware = async (req: Request, res: Response, next: any) => {
-    if (!res.locals['user']) {
-        return res.status(401).json({ message: 'Unauthorized' });
-    }
+export const adminSecureMiddleware = async (req: Request, res: Response, next: any): Promise<void> => {
+  if (res.locals.user !== undefined) {
+    res.status(401).json({ message: 'Unauthorized' })
+    return
+  }
 
-    const user = res.locals['user'] as User;
-    if (!user.is_admin || !user.is_super_admin) {
-        return res.status(403).json({ message: 'Forbidden' });
-    }
+  const user = res.locals.user as User
+  if (!user.is_admin && !user.is_super_admin) {
+    res.status(403).json({ message: 'Forbidden' })
+    return
+  }
 
-    next();
-};
+  next()
+}

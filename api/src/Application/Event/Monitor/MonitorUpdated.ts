@@ -1,8 +1,8 @@
-import Monitor from "../../../Domain/Monitor/Monitor";
+import type Monitor from '../../../Domain/Monitor/Monitor'
 
 export default class MonitorUpdated {
-    constructor(
-        public readonly monitor: Monitor,
-    ) {
-    }
+  constructor (
+    public readonly monitor: Monitor
+  ) {
+  }
 }

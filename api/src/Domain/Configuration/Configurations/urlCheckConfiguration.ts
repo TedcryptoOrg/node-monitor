@@ -1,4 +1,4 @@
-export type UrlCheckConfiguration = {
-    name: string,
-    address: string,
+export interface UrlCheckConfiguration {
+  name: string
+  address: string
 }

@@ -1,14 +1,14 @@
-import Company from "./Company";
+import type Company from './Company'
 
 export default interface CompanyRepository {
-    /**
+  /**
      * @throws RecordNotFound
      */
-    get(id: number): Promise<Company>;
+  get: (id: number) => Promise<Company>
 
-    upsert(company: Company): Promise<Company>;
+  upsert: (company: Company) => Promise<Company>
 
-    delete(id: number): Promise<void>;
+  delete: (id: number) => Promise<void>
 
-    findAll(): Promise<Company[]>;
+  findAll: () => Promise<Company[]>
 }

@@ -24,6 +24,7 @@ describe('create monitor controller', () => {
             .send({
                 name: 'test monitor',
                 type: MonitorType.BLOCK_CHECK,
+                is_enabled: true,
                 configuration_id: (await createConfiguration()).id,
                 configuration_object: '{}'
             })

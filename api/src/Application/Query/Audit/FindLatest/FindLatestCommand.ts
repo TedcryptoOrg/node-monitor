@@ -1,9 +1,9 @@
-import Command from "../../../../Domain/Command/Command";
+import type Command from '../../../../Domain/Command/Command'
 
 export default class FindLatestCommand implements Command {
-    constructor(
-        public page: number,
-        public numRecords: number,
-        public limit: number
-    ) {}
+  constructor (
+    public page: number,
+    public numRecords: number,
+    public limit: number
+  ) {}
 }
