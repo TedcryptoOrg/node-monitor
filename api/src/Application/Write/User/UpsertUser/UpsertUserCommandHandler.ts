@@ -20,7 +20,9 @@ export default class UpsertUserCommandHandler implements CommandHandler {
         command.isActive,
         command.isAdmin,
         command.isSuperAdmin,
-        command.companyId ? await this.companyRepository.get(command.companyId) : undefined,
+        command.companyId !== undefined
+            ? await this.companyRepository.get(command.companyId)
+            : undefined,
         undefined,
         command.rawPassword,
         command.id

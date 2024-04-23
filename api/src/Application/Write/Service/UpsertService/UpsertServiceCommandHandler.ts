@@ -33,7 +33,7 @@ export default class UpsertServiceCommandHandler implements CommandHandler {
       server.configuration ?? null,
       null,
       null,
-      command.id
+      command.id !== undefined
         ? `Service ${service.name} updated`
         : `Service ${service.name} created`
     ))

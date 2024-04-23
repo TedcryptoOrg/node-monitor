@@ -5,7 +5,6 @@ import { TYPES } from '../../../../Domain/DependencyInjection/types'
 import NotificationChannelRepository from '../../../../Domain/NotificationChannel/NotificationChannelRepository'
 import AuditRepository from '../../../../Domain/Audit/AuditRepository'
 import NotificationChannel from '../../../../Domain/NotificationChannel/NotificationChannel'
-import { NotificationChannelType } from '../../../../Domain/NotificationChannel/NotificationChannelType'
 import Audit from '../../../../Domain/Audit/Audit'
 
 @injectable()

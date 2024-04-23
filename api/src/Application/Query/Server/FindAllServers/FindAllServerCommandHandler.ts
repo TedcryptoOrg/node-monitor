@@ -14,7 +14,7 @@ export default class FindAllServerCommandHandler implements CommandHandler {
 
   async handle (command: FindAllServerCommand): Promise<Server[]> {
     const criteria: FindAllCriteria = {
-      ...(command.configurationId && { configuration_id: command.configurationId })
+      ...(command.configurationId !== undefined && { configuration_id: command.configurationId })
     }
 
     return await this.repository.findAll(criteria)

@@ -30,7 +30,7 @@ export default class UpsertConfigurationCommandHandler implements CommandHandler
       configuration,
       null,
       null,
-      command.id
+      command.id !== undefined
         ? `Configuration ${configuration.name} updated`
         : `Configuration ${configuration.name} created`
     ))

@@ -25,8 +25,12 @@ export default class UpsertMonitorCommandHandler implements CommandHandler {
   }
 
   async handle (command: UpsertMonitorCommand): Promise<Monitor> {
-    const configuration = command.configurationId ? await this.configurationRepository.get(command.configurationId) : null
-    const server = command.serverId ? await this.serverRepository.get(command.serverId) : null
+    const configuration = command.configurationId !== undefined
+        ? await this.configurationRepository.get(command.configurationId)
+        : null
+    const server = command.serverId !== undefined
+        ? await this.serverRepository.get(command.serverId)
+        : null
 
     let previousEnabledStatus
     if (command.id !== undefined) {
