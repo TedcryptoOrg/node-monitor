@@ -9,7 +9,7 @@ import ServerMetricsExporter from '../../../../Domain/Server/ServerMetricsExport
 import { ServerMetrics } from '../../../../Domain/Server/ServerMetrics'
 
 @injectable()
-export default class GetMetricsCommandHandler implements CommandHandler {
+export default class GetMetricsCommandHandler implements CommandHandler<GetMetricsCommand> {
   constructor (
     @inject(TYPES.ServerRepository) private readonly serverRepository: ServerRepository,
     @inject(TYPES.ServerMetricsExporter) private readonly serverMetricsExporter: ServerMetricsExporter

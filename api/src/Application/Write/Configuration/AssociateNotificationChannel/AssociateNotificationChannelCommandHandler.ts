@@ -10,7 +10,7 @@ import AuditRepository from '../../../../Domain/Audit/AuditRepository'
 import Audit from '../../../../Domain/Audit/Audit'
 
 @injectable()
-export default class AssociateNotificationChannelCommandHandler implements CommandHandler {
+export default class AssociateNotificationChannelCommandHandler implements CommandHandler<AssociateNotificationChannelCommand> {
   constructor (
     @inject(TYPES.ConfigurationRepository) private readonly configurationRepository: ConfigurationRepository,
     @inject(TYPES.NotificationChannelRepository) private readonly notificationChannelRepository: NotificationChannelRepository,

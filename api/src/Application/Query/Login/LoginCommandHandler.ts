@@ -10,7 +10,7 @@ import { PasswordEncoder } from '../../../Domain/Security/PasswordEncoder'
 import { TYPES } from '../../../Domain/DependencyInjection/types'
 
 @injectable()
-export default class LoginCommandHandler implements CommandHandler {
+export default class LoginCommandHandler implements CommandHandler<LoginCommand> {
   constructor (
     @inject(TYPES.UserRepository) private readonly userRepository: UserRepository,
     @inject(TYPES.SecurityProvider) private readonly securityProvider: SecurityProvider,

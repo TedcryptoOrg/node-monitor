@@ -7,7 +7,7 @@ import AuditRepository from '../../../../Domain/Audit/AuditRepository'
 import Audit from '../../../../Domain/Audit/Audit'
 
 @injectable()
-export default class DeleteServerCommandHandler implements CommandHandler {
+export default class DeleteServerCommandHandler implements CommandHandler<DeleteServerCommand> {
   constructor (
     @inject(TYPES.ServerRepository) private readonly repository: ServerRepository,
     @inject(TYPES.AuditRepository) private readonly auditRepository: AuditRepository

@@ -6,7 +6,7 @@ import NotificationChannelRepository from '../../../../Domain/NotificationChanne
 import NotificationChannel from '../../../../Domain/NotificationChannel/NotificationChannel'
 
 @injectable()
-export default class FindAllNotificationChannelsCommandHandler implements CommandHandler {
+export default class FindAllNotificationChannelsCommandHandler implements CommandHandler<FindAllNotificationChannelsCommand> {
   constructor (
     @inject(TYPES.NotificationChannelRepository) private readonly repository: NotificationChannelRepository
   ) {

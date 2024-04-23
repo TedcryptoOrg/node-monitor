@@ -6,7 +6,7 @@ import User from '../../../../Domain/User/User'
 import { TYPES } from '../../../../Domain/DependencyInjection/types'
 
 @injectable()
-export default class ListAllUsersCommandHandler implements CommandHandler {
+export default class ListAllUsersCommandHandler implements CommandHandler<ListAllUsersCommand> {
   constructor (
     @inject(TYPES.UserRepository) private readonly repository: UserRepository
   ) {}

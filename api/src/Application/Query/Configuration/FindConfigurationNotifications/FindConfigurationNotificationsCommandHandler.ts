@@ -6,7 +6,7 @@ import FindConfigurationNotificationsCommand from './FindConfigurationNotificati
 import { TYPES } from '../../../../Domain/DependencyInjection/types'
 
 @injectable()
-export default class FindConfigurationNotificationsCommandHandler implements CommandHandler {
+export default class FindConfigurationNotificationsCommandHandler implements CommandHandler<FindConfigurationNotificationsCommand> {
   constructor (
     @inject(TYPES.ConfigurationNotificationRepository) private readonly repository: ConfigurationNotificationRepository
   ) {

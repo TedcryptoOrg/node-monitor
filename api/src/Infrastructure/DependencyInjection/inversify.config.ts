@@ -1,7 +1,6 @@
 import { Container } from 'inversify'
 import CommandHandlerManager from '../CommandHandler/CommandHandlerManager'
 import { TYPES } from '../../Domain/DependencyInjection/types'
-import type CommandHandler from '../../Domain/Command/CommandHandler'
 import { PrismaClient } from '@prisma/client'
 import type AuditRepository from '../../Domain/Audit/AuditRepository'
 import OrmAuditRepository from '../Orm/Audit/OrmAuditRepository'
@@ -53,7 +52,6 @@ import GetMetricsCommandHandler from '../../Application/Query/Server/GetMetrics/
 import GetNotificationChannelCommandHandler
   from '../../Application/Query/NotificationChannel/GetNotificationChannel/GetNotificationChannelCommandHandler'
 import { type EventDispatcher as EventDispatcherInterface } from '../../Domain/Event/EventDispatcher'
-import type EventHandler from '../../Domain/Event/EventHandler'
 import MonitorStatusChangedHandler from '../../Application/Event/NotificationChannel/MonitorStatusChangedHandler'
 import type UserRepository from '../../Domain/User/UserRepository'
 import OrmUserRepository from '../Orm/User/Prisma/OrmUserRepository'
@@ -102,48 +100,48 @@ myContainer.bind<UserRepository>(TYPES.UserRepository).to(OrmUserRepository)
 myContainer.bind<CompanyRepository>(TYPES.CompanyRepository).to(OrmCompanyRepository)
 
 // Command handlers
-myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(FindLatestCommandHandler)
-myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(UpsertConfigurationCommandHandler)
-myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(DeleteConfigurationCommandHandler)
-myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(GetConfigurationCommandHandler)
-myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(FindAllConfigurationsCommandHandler)
-myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(UpsertNotificationChannelCommandHandler)
-myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(DeleteNotificationChannelCommandHandler)
-myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(FindAllNotificationChannelsCommandHandler)
-myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(TestNotificationChannelCommandHandler)
-myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(DeleteServerCommandHandler)
-myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(UpsertServerCommandHandler)
-myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(FindAllServerCommandHandler)
-myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(GetServerCommandHandler)
-myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(GetMonitorCommandHandler)
-myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(FindAllMonitorsCommandHandler)
-myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(DeleteMonitorCommandHandler)
-myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(PingMonitorCommandHandler)
-myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(UpsertMonitorCommandHandler)
-myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(AssociateNotificationChannelCommandHandler)
-myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(RemoveAssociationWithNotificationChannelCommandHandler)
-myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(FindConfigurationNotificationsCommandHandler)
-myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(FindWarningsCommandHandler)
-myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(FindFailedCommandHandler)
-myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(DeleteServiceCommandHandler)
-myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(UpsertServiceCommandHandler)
-myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(FindAllServicesCommandHandler)
-myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(GetMetricsCommandHandler)
-myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(GetNotificationChannelCommandHandler)
-myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(GetUserCommandHandler)
-myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(GetCompanyCommandHandler)
-myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(DeleteUserCommandHandler)
-myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(DeleteCompanyCommandHandler)
-myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(UpsertUserCommandHandler)
-myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(UpsertCompanyCommandHandler)
-myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(ListAllUsersCommandHandler)
-myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(ListAllCompaniesCommandHandler)
-myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(LoginCommandHandler)
+myContainer.bind(TYPES.CommandHandler).to(FindLatestCommandHandler)
+myContainer.bind(TYPES.CommandHandler).to(UpsertConfigurationCommandHandler)
+myContainer.bind(TYPES.CommandHandler).to(DeleteConfigurationCommandHandler)
+myContainer.bind(TYPES.CommandHandler).to(GetConfigurationCommandHandler)
+myContainer.bind(TYPES.CommandHandler).to(FindAllConfigurationsCommandHandler)
+myContainer.bind(TYPES.CommandHandler).to(UpsertNotificationChannelCommandHandler)
+myContainer.bind(TYPES.CommandHandler).to(DeleteNotificationChannelCommandHandler)
+myContainer.bind(TYPES.CommandHandler).to(FindAllNotificationChannelsCommandHandler)
+myContainer.bind(TYPES.CommandHandler).to(TestNotificationChannelCommandHandler)
+myContainer.bind(TYPES.CommandHandler).to(DeleteServerCommandHandler)
+myContainer.bind(TYPES.CommandHandler).to(UpsertServerCommandHandler)
+myContainer.bind(TYPES.CommandHandler).to(FindAllServerCommandHandler)
+myContainer.bind(TYPES.CommandHandler).to(GetServerCommandHandler)
+myContainer.bind(TYPES.CommandHandler).to(GetMonitorCommandHandler)
+myContainer.bind(TYPES.CommandHandler).to(FindAllMonitorsCommandHandler)
+myContainer.bind(TYPES.CommandHandler).to(DeleteMonitorCommandHandler)
+myContainer.bind(TYPES.CommandHandler).to(PingMonitorCommandHandler)
+myContainer.bind(TYPES.CommandHandler).to(UpsertMonitorCommandHandler)
+myContainer.bind(TYPES.CommandHandler).to(AssociateNotificationChannelCommandHandler)
+myContainer.bind(TYPES.CommandHandler).to(RemoveAssociationWithNotificationChannelCommandHandler)
+myContainer.bind(TYPES.CommandHandler).to(FindConfigurationNotificationsCommandHandler)
+myContainer.bind(TYPES.CommandHandler).to(FindWarningsCommandHandler)
+myContainer.bind(TYPES.CommandHandler).to(FindFailedCommandHandler)
+myContainer.bind(TYPES.CommandHandler).to(DeleteServiceCommandHandler)
+myContainer.bind(TYPES.CommandHandler).to(UpsertServiceCommandHandler)
+myContainer.bind(TYPES.CommandHandler).to(FindAllServicesCommandHandler)
+myContainer.bind(TYPES.CommandHandler).to(GetMetricsCommandHandler)
+myContainer.bind(TYPES.CommandHandler).to(GetNotificationChannelCommandHandler)
+myContainer.bind(TYPES.CommandHandler).to(GetUserCommandHandler)
+myContainer.bind(TYPES.CommandHandler).to(GetCompanyCommandHandler)
+myContainer.bind(TYPES.CommandHandler).to(DeleteUserCommandHandler)
+myContainer.bind(TYPES.CommandHandler).to(DeleteCompanyCommandHandler)
+myContainer.bind(TYPES.CommandHandler).to(UpsertUserCommandHandler)
+myContainer.bind(TYPES.CommandHandler).to(UpsertCompanyCommandHandler)
+myContainer.bind(TYPES.CommandHandler).to(ListAllUsersCommandHandler)
+myContainer.bind(TYPES.CommandHandler).to(ListAllCompaniesCommandHandler)
+myContainer.bind(TYPES.CommandHandler).to(LoginCommandHandler)
 myContainer.bind<CommandHandlerManager>(CommandHandlerManager).toSelf()
 
 // Events
-myContainer.bind<EventHandler>(TYPES.EventHandler).to(MonitorStatusChangedHandler)
-myContainer.bind<EventHandler>(TYPES.EventHandler).to(MonitorControllerEventHandler)
+myContainer.bind(TYPES.EventHandler).to(MonitorStatusChangedHandler)
+myContainer.bind(TYPES.EventHandler).to(MonitorControllerEventHandler)
 myContainer.bind<EventDispatcherInterface>(TYPES.EventDispatcher).to(EventDispatcher)
 
 // Factories

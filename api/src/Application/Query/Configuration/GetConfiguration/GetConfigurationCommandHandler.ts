@@ -6,7 +6,7 @@ import ConfigurationRepository from '../../../../Domain/Configuration/Configurat
 import { TYPES } from '../../../../Domain/DependencyInjection/types'
 
 @injectable()
-export default class GetConfigurationCommandHandler implements CommandHandler {
+export default class GetConfigurationCommandHandler implements CommandHandler<GetConfigurationCommand> {
   constructor (
     @inject(TYPES.ConfigurationRepository) private readonly configurationRepository: ConfigurationRepository
   ) {}

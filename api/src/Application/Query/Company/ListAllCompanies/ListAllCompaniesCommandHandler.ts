@@ -6,7 +6,7 @@ import CompanyRepository from '../../../../Domain/User/CompanyRepository'
 import { TYPES } from '../../../../Domain/DependencyInjection/types'
 
 @injectable()
-export default class ListAllCompaniesCommandHandler implements CommandHandler {
+export default class ListAllCompaniesCommandHandler implements CommandHandler<ListAllCompaniesCommand> {
   constructor (
     @inject(TYPES.CompanyRepository) private readonly repository: CompanyRepository
   ) {}

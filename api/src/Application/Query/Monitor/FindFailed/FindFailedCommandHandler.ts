@@ -6,7 +6,7 @@ import FindFailedCommand from './FindFailedCommand'
 import Monitor from '../../../../Domain/Monitor/Monitor'
 
 @injectable()
-export default class FindFailedCommandHandler implements CommandHandler {
+export default class FindFailedCommandHandler implements CommandHandler<FindFailedCommand> {
   constructor (
     @inject(TYPES.MonitorRepository) private readonly monitorRepository: MonitorRepository
   ) {

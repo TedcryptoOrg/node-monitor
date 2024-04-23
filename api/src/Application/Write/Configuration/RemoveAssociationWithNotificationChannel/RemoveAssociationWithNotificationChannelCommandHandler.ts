@@ -5,7 +5,7 @@ import ConfigurationNotificationRepository from '../../../../Domain/Configuratio
 import { TYPES } from '../../../../Domain/DependencyInjection/types'
 
 @injectable()
-export default class RemoveAssociationWithNotificationChannelCommandHandler implements CommandHandler {
+export default class RemoveAssociationWithNotificationChannelCommandHandler implements CommandHandler<RemoveAssociationWithNotificationChannelCommand> {
   constructor (
     @inject(TYPES.ConfigurationNotificationRepository) private readonly configurationNotificationRepository: ConfigurationNotificationRepository
   ) {}

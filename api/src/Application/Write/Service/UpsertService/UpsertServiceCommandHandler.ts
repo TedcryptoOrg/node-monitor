@@ -9,7 +9,7 @@ import Service from '../../../../Domain/Service/Service'
 import ServerRepository from '../../../../Domain/Server/ServerRepository'
 
 @injectable()
-export default class UpsertServiceCommandHandler implements CommandHandler {
+export default class UpsertServiceCommandHandler implements CommandHandler<UpsertServiceCommand> {
   constructor (
     @inject(TYPES.ServiceRepository) private readonly serviceRepository: ServiceRepository,
     @inject(TYPES.ServerRepository) private readonly serverRepository: ServerRepository,

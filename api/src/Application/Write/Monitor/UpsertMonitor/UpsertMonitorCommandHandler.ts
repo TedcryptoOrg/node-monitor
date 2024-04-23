@@ -14,7 +14,7 @@ import MonitorDisabled from '../../../Event/Monitor/MonitorDisabled'
 import MonitorUpdated from '../../../Event/Monitor/MonitorUpdated'
 
 @injectable()
-export default class UpsertMonitorCommandHandler implements CommandHandler {
+export default class UpsertMonitorCommandHandler implements CommandHandler<UpsertMonitorCommand> {
   constructor (
     @inject(TYPES.MonitorRepository) private readonly monitorRepository: MonitorRepository,
     @inject(TYPES.ConfigurationRepository) private readonly configurationRepository: ConfigurationRepository,

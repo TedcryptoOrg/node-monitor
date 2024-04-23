@@ -6,7 +6,7 @@ import ServerRepository, { FindAllCriteria } from '../../../../Domain/Server/Ser
 import Server from '../../../../Domain/Server/Server'
 
 @injectable()
-export default class FindAllServerCommandHandler implements CommandHandler {
+export default class FindAllServerCommandHandler implements CommandHandler<FindAllServerCommand> {
   constructor (
     @inject(TYPES.ServerRepository) private readonly repository: ServerRepository
   ) {

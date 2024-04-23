@@ -7,7 +7,7 @@ import { EventDispatcher as EventDispatcherInterface } from '../../Domain/Event/
 @injectable()
 export default class EventDispatcher implements EventDispatcherInterface {
   constructor (
-    @multiInject(TYPES.EventHandler) private readonly handlers: EventHandler[] = new Array<EventHandler>()
+    @multiInject(TYPES.EventHandler) private readonly handlers: Array<EventHandler<Event>> = new Array<EventHandler<Event>>()
   ) {
   }
 

@@ -8,13 +8,13 @@ import { inject, injectable } from 'inversify'
 import { TYPES } from '../../../Domain/DependencyInjection/types'
 
 @injectable()
-export default class MonitorControllerEventHandler implements EventHandler {
+export default class MonitorControllerEventHandler implements EventHandler<MonitorEnabled | MonitorDisabled | MonitorUpdated> {
   constructor (
     @inject(TYPES.MonitorController) private readonly monitorController: MonitorController
   ) {
   }
 
-  async handle (event: Event): Promise<void> {
+  async handle (event: MonitorEnabled | MonitorDisabled | MonitorUpdated): Promise<void> {
     if (event instanceof MonitorEnabled) {
       if (event.monitor.id === undefined) {
         console.error('Monitor id is undefined')
@@ -29,12 +29,11 @@ export default class MonitorControllerEventHandler implements EventHandler {
       }
 
       this.monitorController.disableMonitor(event.monitor.id)
-    } else if (event instanceof MonitorUpdated) {
+    } else {
       if (event.monitor.id === undefined) {
         console.error('Monitor id is undefined')
         return
       }
-
       this.monitorController.updateMonitor(event.monitor.id)
     }
   }

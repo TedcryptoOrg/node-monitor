@@ -6,7 +6,7 @@ import Service from '../../../../Domain/Service/Service'
 import ServiceRepository, { FindAllCriteria } from '../../../../Domain/Service/ServiceRepository'
 
 @injectable()
-export default class FindAllServicesCommandHandler implements CommandHandler {
+export default class FindAllServicesCommandHandler implements CommandHandler<FindAllServicesCommand> {
   constructor (
     @inject(TYPES.ServiceRepository) private readonly repository: ServiceRepository
   ) {

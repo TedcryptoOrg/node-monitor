@@ -6,7 +6,7 @@ import MonitorRepository from '../../../../Domain/Monitor/MonitorRepository'
 import Monitor from '../../../../Domain/Monitor/Monitor'
 
 @injectable()
-export default class GetMonitorCommandHandler implements CommandHandler {
+export default class GetMonitorCommandHandler implements CommandHandler<GetMonitorCommand> {
   constructor (
     @inject(TYPES.MonitorRepository) private readonly repository: MonitorRepository
   ) {}

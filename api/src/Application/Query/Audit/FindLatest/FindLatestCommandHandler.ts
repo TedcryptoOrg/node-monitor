@@ -5,7 +5,7 @@ import { TYPES } from '../../../../Domain/DependencyInjection/types'
 import AuditRepository from '../../../../Domain/Audit/AuditRepository'
 
 @injectable()
-export default class FindLatestCommandHandler implements CommandHandler {
+export default class FindLatestCommandHandler implements CommandHandler<FindLatestCommand> {
   constructor (
     @inject(TYPES.AuditRepository) private readonly auditRepository: AuditRepository
   ) {}

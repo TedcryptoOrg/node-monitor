@@ -7,7 +7,7 @@ import Token from '../../../Domain/Security/Token'
 import { TYPES } from '../../../Domain/DependencyInjection/types'
 
 @injectable()
-export default class RefreshTokenCommandHandler implements CommandHandler {
+export default class RefreshTokenCommandHandler implements CommandHandler<RefreshTokenCommand> {
   constructor (
     @inject(TYPES.SecurityProvider) private readonly securityProvider: SecurityProvider
   ) {

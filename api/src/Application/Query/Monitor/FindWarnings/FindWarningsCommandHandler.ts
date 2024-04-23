@@ -6,7 +6,7 @@ import FindWarningsCommand from './FindWarningsCommand'
 import Monitor from '../../../../Domain/Monitor/Monitor'
 
 @injectable()
-export default class FindWarningsCommandHandler implements CommandHandler {
+export default class FindWarningsCommandHandler implements CommandHandler<FindWarningsCommand> {
   constructor (
     @inject(TYPES.MonitorRepository) private readonly monitorRepository: MonitorRepository
   ) {

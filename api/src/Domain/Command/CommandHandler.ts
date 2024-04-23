@@ -1,5 +1,3 @@
-import type Command from './Command'
-
-export default interface CommandHandler {
-  handle: (command: Command) => Promise<any>
+export default interface CommandHandler<TCommand> {
+  handle: (command: TCommand) => Promise<any>
 }

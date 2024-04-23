@@ -7,7 +7,7 @@ import Audit from '../../../../Domain/Audit/Audit'
 import NotificationChannelRepository from '../../../../Domain/NotificationChannel/NotificationChannelRepository'
 
 @injectable()
-export default class DeleteNotificationChannelCommandHandler implements CommandHandler {
+export default class DeleteNotificationChannelCommandHandler implements CommandHandler<DeleteNotificationChannelCommand> {
   constructor (
     @inject(TYPES.NotificationChannelRepository) private readonly repository: NotificationChannelRepository,
     @inject(TYPES.AuditRepository) private readonly auditRepository: AuditRepository

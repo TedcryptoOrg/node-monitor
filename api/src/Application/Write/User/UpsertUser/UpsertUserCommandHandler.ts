@@ -7,7 +7,7 @@ import CompanyRepository from '../../../../Domain/User/CompanyRepository'
 import { TYPES } from '../../../../Domain/DependencyInjection/types'
 
 @injectable()
-export default class UpsertUserCommandHandler implements CommandHandler {
+export default class UpsertUserCommandHandler implements CommandHandler<UpsertUserCommand> {
   constructor (
     @inject(TYPES.UserRepository) private readonly repository: UserRepository,
     @inject(TYPES.CompanyRepository) private readonly companyRepository: CompanyRepository

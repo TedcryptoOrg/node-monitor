@@ -8,7 +8,7 @@ import NotificationChannel from '../../../../Domain/NotificationChannel/Notifica
 import Audit from '../../../../Domain/Audit/Audit'
 
 @injectable()
-export default class UpsertNotificationChannelCommandHandler implements CommandHandler {
+export default class UpsertNotificationChannelCommandHandler implements CommandHandler<UpsertNotificationChannelCommand> {
   constructor (
     @inject(TYPES.NotificationChannelRepository) private readonly notificationChannelRepository: NotificationChannelRepository,
     @inject(TYPES.AuditRepository) private readonly auditRepository: AuditRepository

@@ -6,7 +6,7 @@ import ServerRepository from '../../../../Domain/Server/ServerRepository'
 import Server from '../../../../Domain/Server/Server'
 
 @injectable()
-export default class GetServerCommandHandler implements CommandHandler {
+export default class GetServerCommandHandler implements CommandHandler<GetServerCommand> {
   constructor (
     @inject(TYPES.ServerRepository) private readonly repository: ServerRepository
   ) {}

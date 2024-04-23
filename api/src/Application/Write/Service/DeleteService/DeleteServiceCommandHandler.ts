@@ -7,7 +7,7 @@ import Audit from '../../../../Domain/Audit/Audit'
 import ServiceRepository from '../../../../Domain/Service/ServiceRepository'
 
 @injectable()
-export default class DeleteServiceCommandHandler implements CommandHandler {
+export default class DeleteServiceCommandHandler implements CommandHandler<DeleteServiceCommand> {
   constructor (
     @inject(TYPES.ServiceRepository) private readonly repository: ServiceRepository,
     @inject(TYPES.AuditRepository) private readonly auditRepository: AuditRepository

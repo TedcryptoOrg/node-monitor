@@ -8,7 +8,7 @@ import { TYPES } from '../../../Domain/DependencyInjection/types'
 import ConfigurationNotificationRepository from '../../../Domain/Configuration/ConfigurationNotificationRepository'
 
 @injectable()
-export default class MonitorStatusChangedHandler implements EventHandler {
+export default class MonitorStatusChangedHandler implements EventHandler<MonitorStatusChanged> {
   constructor (
     @inject(TYPES.NotificationChannelClientFactory) private readonly notificationChannelClientFactory: NotificationChannelClientFactory,
     @inject(TYPES.ConfigurationNotificationRepository) private readonly configurationNotificationRepository: ConfigurationNotificationRepository

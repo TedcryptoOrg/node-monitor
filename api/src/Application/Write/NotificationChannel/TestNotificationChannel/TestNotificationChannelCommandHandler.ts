@@ -6,7 +6,7 @@ import NotificationChannelClientFactory
   from '../../../../Domain/NotificationChannel/Client/NotificationChannelClientFactory'
 
 @injectable()
-export default class TestNotificationChannelCommandHandler implements CommandHandler {
+export default class TestNotificationChannelCommandHandler implements CommandHandler<TestNotificationChannelCommand> {
   constructor (
     @inject(TYPES.NotificationChannelClientFactory) private readonly notificationClientFactory: NotificationChannelClientFactory
   ) {

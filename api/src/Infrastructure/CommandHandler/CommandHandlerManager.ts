@@ -6,10 +6,10 @@ import { TYPES } from '../../Domain/DependencyInjection/types'
 
 @injectable()
 export default class CommandHandlerManager {
-  private readonly handlersMap: Map<string, CommandHandler>
+  private readonly handlersMap: Map<string, CommandHandler<Command>>
 
   public constructor (
-    @multiInject(TYPES.CommandHandler) handlers: CommandHandler[] = new Array<CommandHandler>()
+    @multiInject(TYPES.CommandHandler) handlers: Array<CommandHandler<Command>> = new Array<CommandHandler<Command>>()
   ) {
     this.handlersMap = new Map()
     handlers.forEach(handler => {

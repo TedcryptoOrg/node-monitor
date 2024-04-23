@@ -9,7 +9,7 @@ import { EventDispatcher } from '../../../../Domain/Event/EventDispatcher'
 import MonitorStatusChanged from '../../../Event/Monitor/MonitorStatusChanged'
 
 @injectable()
-export default class PingMonitorCommandHandler implements CommandHandler {
+export default class PingMonitorCommandHandler implements CommandHandler<PingMonitorCommand> {
   constructor (
     @inject(TYPES.MonitorRepository) private readonly monitorRepository: MonitorRepository,
     @inject(TYPES.AuditRepository) private readonly auditRepository: AuditRepository,
