@@ -1,7 +1,7 @@
 import { inject, injectable } from 'inversify'
 import UserRepository from '../../../../Domain/User/UserRepository'
 import { PrismaClient } from '@prisma/client'
-import User from '../../../../Domain/User/User'
+import User, {UserArray} from '../../../../Domain/User/User'
 import RecordNotFound from '../../../../Domain/RecordNotFound'
 import { PasswordEncoder } from '../../../../Domain/Security/PasswordEncoder'
 import UserAlreadyExists from '../../../../Domain/User/UserAlreadyExists'
@@ -105,6 +105,6 @@ export default class OrmUserRepository implements UserRepository {
       include: { company: true }
     })
 
-    return users.map((user) => User.fromObject(user))
+    return users.map((user: UserArray) => User.fromObject(user))
   }
 }

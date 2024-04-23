@@ -1,6 +1,6 @@
 import { inject, injectable } from 'inversify'
 import { TYPES } from '../../../Domain/DependencyInjection/types'
-import Monitor from '../../../Domain/Monitor/Monitor'
+import Monitor, {MonitorArray} from '../../../Domain/Monitor/Monitor'
 import { PrismaClient } from '@prisma/client'
 import MonitorRepository, { MonitorFindAllProps } from '../../../Domain/Monitor/MonitorRepository'
 import RecordNotFound from '../../../Domain/RecordNotFound'
@@ -94,7 +94,7 @@ export default class OrmMonitorRepository implements MonitorRepository {
       }
     })
 
-    return monitors.map((monitor) => Monitor.fromArray(monitor))
+    return monitors.map((monitor: MonitorArray) => Monitor.fromArray(monitor))
   }
 
   async findFailed (limit: number, offset: number): Promise<Monitor[]> {
@@ -117,7 +117,7 @@ export default class OrmMonitorRepository implements MonitorRepository {
       skip: offset
     })
 
-    return monitors.map((monitor) => Monitor.fromArray(monitor))
+    return monitors.map((monitor: MonitorArray) => Monitor.fromArray(monitor))
   }
 
   async findWarnings (limit: number, offset: number): Promise<Monitor[]> {
@@ -143,6 +143,6 @@ export default class OrmMonitorRepository implements MonitorRepository {
       skip: offset
     })
 
-    return monitors.map((monitor) => Monitor.fromArray(monitor))
+    return monitors.map((monitor: MonitorArray) => Monitor.fromArray(monitor))
   }
 }

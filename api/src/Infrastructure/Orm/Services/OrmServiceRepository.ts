@@ -1,4 +1,4 @@
-import Service from '../../../Domain/Service/Service'
+import Service, {ServiceArray} from '../../../Domain/Service/Service'
 import ServiceRepository, { FindAllCriteria } from '../../../Domain/Service/ServiceRepository'
 import { inject, injectable } from 'inversify'
 import { PrismaClient } from '@prisma/client'
@@ -38,7 +38,7 @@ export default class OrmServiceRepository implements ServiceRepository {
       }
     })
 
-    return data.map((service) => Service.fromArray(service))
+    return data.map((service: ServiceArray) => Service.fromArray(service))
   }
 
   async upsert (service: Service): Promise<Service> {

@@ -2,7 +2,9 @@ import { inject, injectable } from 'inversify'
 import { PrismaClient } from '@prisma/client'
 import { TYPES } from '../../../Domain/DependencyInjection/types'
 import ConfigurationNotificationRepository from '../../../Domain/Configuration/ConfigurationNotificationRepository'
-import ConfigurationNotification from '../../../Domain/Configuration/ConfigurationNotification'
+import ConfigurationNotification, {
+  ConfigurationNotificationArray
+} from '../../../Domain/Configuration/ConfigurationNotification'
 
 @injectable()
 export default class OrmConfigurationNotificationRepository implements ConfigurationNotificationRepository {
@@ -65,6 +67,6 @@ export default class OrmConfigurationNotificationRepository implements Configura
       }
     })
 
-    return objs.map((configurationNotificationChannel) => ConfigurationNotification.fromArray(configurationNotificationChannel))
+    return objs.map((configurationNotificationChannel: ConfigurationNotificationArray) => ConfigurationNotification.fromArray(configurationNotificationChannel))
   }
 }

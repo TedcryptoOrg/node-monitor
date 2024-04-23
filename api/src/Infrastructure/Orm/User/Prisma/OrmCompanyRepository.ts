@@ -2,7 +2,7 @@ import { inject, injectable } from 'inversify'
 import { PrismaClient } from '@prisma/client'
 import RecordNotFound from '../../../../Domain/RecordNotFound'
 import CompanyRepository from '../../../../Domain/User/CompanyRepository'
-import Company from '../../../../Domain/User/Company'
+import Company, {CompanyArray} from '../../../../Domain/User/Company'
 import { TYPES } from '../../../../Domain/DependencyInjection/types'
 
 @injectable()
@@ -15,7 +15,7 @@ export default class OrmCompanyRepository implements CompanyRepository {
   async findAll (): Promise<Company[]> {
     const companies = await this.prismaClient.company.findMany()
 
-    return companies.map(company => Company.fromObject(company))
+    return companies.map((company: CompanyArray) => Company.fromObject(company))
   }
 
   public async get (id: number): Promise<Company> {

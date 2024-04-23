@@ -1,4 +1,4 @@
-import Audit from '../../../Domain/Audit/Audit'
+import Audit, {AuditArray} from '../../../Domain/Audit/Audit'
 import AuditRepository from '../../../Domain/Audit/AuditRepository'
 import { inject, injectable } from 'inversify'
 import { TYPES } from '../../../Domain/DependencyInjection/types'
@@ -33,6 +33,6 @@ export default class OrmAuditRepository implements AuditRepository {
         }
       })
 
-    return data.map((data) => Audit.fromArray(data))
+    return data.map((data: AuditArray) => Audit.fromArray(data))
   }
 }
