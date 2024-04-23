@@ -11,8 +11,6 @@
     "@types/jsonwebtoken": "^9.0.6",
     "@types/supertest": "^6.0.0",
     "@types/ws": "^8.5.10",
-    "@typescript-eslint/eslint-plugin": "^7.0.0",
-    "@typescript-eslint/parser": "^7.0.0",
     "axios-mock-adapter": "^1.21.4",
     "babel-jest": "^29.3.1",
     "eslint": "^8.42.0",
@@ -52,8 +50,8 @@
     "start:watch": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/index.ts",
     "check:type": "tsc --noEmit",
     "test": "npx jest",
-    "lint": "npm run check:type && eslint src/**/*.ts",
-    "lint:fix": "eslint --fix src/**/*.ts",
+    "lint": "npm run check:type && npx eslint src/**/*.ts",
+    "lint:fix": "npx eslint --fix src/**/*.ts",
     "build": "tsc -p .",
     "prisma:generate": "prisma generate"
   }
