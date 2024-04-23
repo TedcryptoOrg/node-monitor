@@ -32,12 +32,9 @@ export default class UpsertMonitorCommandHandler implements CommandHandler<Upser
       ? await this.serverRepository.get(command.serverId)
       : null
 
-    let previousEnabledStatus
+    let previousEnabledStatus: boolean | undefined
     if (command.id !== undefined) {
-      const monitorObject = await this.monitorRepository.get(command.id)
-      if (monitorObject.isEnabled !== command.isEnabled) {
-        previousEnabledStatus = monitorObject.isEnabled
-      }
+      previousEnabledStatus = (await this.monitorRepository.get(command.id)).isEnabled
     }
 
     const monitor = await this.monitorRepository.upsert(new Monitor(
@@ -62,17 +59,13 @@ export default class UpsertMonitorCommandHandler implements CommandHandler<Upser
         : `Monitor ${command.name} created`
     ))
 
-    await this.dispatchMonitorEnabledEvent(previousEnabledStatus, monitor)
-    await this.eventDispatcher.dispatch(new MonitorUpdated(monitor))
-
-    return monitor
-  }
-
-  private async dispatchMonitorEnabledEvent (previousEnabledStatus: boolean | undefined, monitor: Monitor): Promise<void> {
-    if (previousEnabledStatus === undefined || previousEnabledStatus !== monitor.isEnabled) {
+    if (previousEnabledStatus !== monitor.isEnabled) {
       monitor.isEnabled
         ? await this.eventDispatcher.dispatch(new MonitorEnabled(monitor))
         : await this.eventDispatcher.dispatch(new MonitorDisabled(monitor))
     }
+    await this.eventDispatcher.dispatch(new MonitorUpdated(monitor))
+
+    return monitor
   }
 }

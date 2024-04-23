@@ -5,14 +5,13 @@ import {sleep} from "../Shared/sleep";
 import {TYPES} from "../../Domain/DependencyInjection/types";
 import {EventDispatcher} from "../../Domain/Event/EventDispatcher";
 import Checker from "../../Domain/Checker/Checker";
-import DiskSpaceCheckMonitor from "../../Domain/Monitor/DiskSpaceCheckMonitor";
 import ApiClient from "../../Domain/ApiClient";
 import {WebSocketServer} from "../../Domain/Server/WebSocketServer";
 import MonitorCheckerFactory from "./MonitorCheckerFactory";
 import {CheckStatus} from "../../Domain/Checker/CheckStatusEnum";
 
 type WebSocketMessage = {
-    event: "monitor_updated" | "monitor_disabled" | "monitor_enabled",
+    event: "configuration_enabled" | "configuration_disabled" | "monitor_updated" | "monitor_disabled" | "monitor_enabled",
     id: number
 }
 
@@ -33,25 +32,12 @@ export default class MonitorManager {
             ws.on('message', async (message: Buffer) => {
                 try {
                     const messageJson = JSON.parse(message.toString()) as WebSocketMessage;
-                    const monitor = await this.apiClient.getMonitor(messageJson.id);
-                    console.debug(`${monitor.getFullName()}[WebServer Socket] Received event ${messageJson.event}`)
+                    console.debug(`[WebServer Socket] Received event ${messageJson.event}`)
 
-                    if (!this.monitors.hasOwnProperty(monitor.id)) {
-                        this.pushMonitor(monitor)
-                    }
-
-                    switch (messageJson.event) {
-                        case 'monitor_updated':
-                            this.updateCheck(monitor);
-                            break;
-                        case 'monitor_disabled':
-                            this.stopCheck(monitor);
-                            break;
-                        case 'monitor_enabled':
-                            this.startCheck(monitor);
-                            break;
-                        default:
-                            console.error(`Unknown event ${messageJson.event}`)
+                    if (['configuration_disabled', 'configuration_enabled'].includes(messageJson.event)) {
+                        this.handleConfigurationEvent(messageJson.id, messageJson.event as "configuration_enabled" | "configuration_disabled")
+                    } else if (['monitor_updated', 'monitor_disabled', 'monitor_enabled'].includes(messageJson.event)) {
+                        await this.handleMonitorEvent(messageJson.id, messageJson.event as "monitor_updated" | "monitor_disabled" | "monitor_enabled")
                     }
                 } catch (error) {
                     console.error('Failed to parse configuration:', error);
@@ -153,6 +139,42 @@ export default class MonitorManager {
             console.debug(`${monitor.getFullName()}[Attempt: ${attempt}] Retrying in ${(attempt ** 2)} seconds`)
             await sleep(1000 * attempt ** 2)
             await this.runCheck(monitor, attempt + 1)
+        }
+    }
+
+    private handleConfigurationEvent(configurationId: number, event: "configuration_enabled" | "configuration_disabled"): void {
+        if (!this.monitorsByConfiguration.has(configurationId)) {
+            return
+        }
+
+        this.monitorsByConfiguration.get(configurationId)?.forEach(monitorId => {
+            if (event === 'configuration_enabled') {
+                this.startCheck(this.monitors[monitorId])
+            } else {
+                this.stopCheck(this.monitors[monitorId])
+            }
+        })
+    }
+
+    private async handleMonitorEvent(id: number, event: "monitor_updated" | "monitor_disabled" | "monitor_enabled") {
+        const monitor = await this.apiClient.getMonitor(id);
+
+        if (!this.monitors.hasOwnProperty(monitor.id)) {
+            this.pushMonitor(monitor)
+        }
+
+        switch (event) {
+            case 'monitor_updated':
+                this.updateCheck(monitor);
+                break;
+            case 'monitor_disabled':
+                this.stopCheck(monitor);
+                break;
+            case 'monitor_enabled':
+                this.startCheck(monitor);
+                break;
+            default:
+                console.error(`Unknown event ${event}`)
         }
     }
 }

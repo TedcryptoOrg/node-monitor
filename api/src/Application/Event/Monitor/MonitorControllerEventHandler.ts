@@ -15,25 +15,16 @@ export default class MonitorControllerEventHandler implements EventHandler<Monit
   }
 
   async handle (event: MonitorEnabled | MonitorDisabled | MonitorUpdated): Promise<void> {
-    if (event instanceof MonitorEnabled) {
-      if (event.monitor.id === undefined) {
-        console.error('Monitor id is undefined')
-        return
-      }
+    if (event.monitor.id === undefined) {
+      console.error('Monitor id is undefined')
+      return
+    }
 
+    if (event instanceof MonitorEnabled && event.monitor.configuration?.is_enabled === true) {
       this.monitorController.enableMonitor(event.monitor.id)
     } else if (event instanceof MonitorDisabled) {
-      if (event.monitor.id === undefined) {
-        console.error('Monitor id is undefined')
-        return
-      }
-
       this.monitorController.disableMonitor(event.monitor.id)
     } else {
-      if (event.monitor.id === undefined) {
-        console.error('Monitor id is undefined')
-        return
-      }
       this.monitorController.updateMonitor(event.monitor.id)
     }
   }

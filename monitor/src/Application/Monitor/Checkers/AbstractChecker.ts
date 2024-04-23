@@ -22,6 +22,10 @@ export abstract class AbstractChecker implements Checker {
     }
 
     start(): void {
+        if (!this.monitor.isEnabled) {
+            console.debug(`${this.monitor.getFullName()} is disabled`)
+            return;
+        }
         if (!this.stopSignal) {
             console.debug(`${this.monitor.getFullName()} Already running`)
             return;
@@ -36,7 +40,17 @@ export abstract class AbstractChecker implements Checker {
     }
 
     updateMonitor(monitor: Monitor): void {
+        let restart = false;
+        if (this.monitor.isEnabled !== monitor.isEnabled) {
+            restart = true;
+        }
         this.monitor = monitor;
+        this.stopSignal = !monitor.isEnabled;
+        if (restart) {
+            if (monitor.isEnabled) {
+                this.start();
+            }
+        }
     }
 
     setStatus(status: CheckStatus): void {
