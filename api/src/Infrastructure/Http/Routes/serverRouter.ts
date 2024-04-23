@@ -10,40 +10,32 @@ import { type Request, type Response, type NextFunction, Router } from 'express'
 const serverRouter = Router()
 
 serverRouter.post('/', (req: Request, resp: Response, next: NextFunction) => {
-  upsert(req, resp).catch(next)
-  next()
+  upsert(req, resp).then(next).catch(next)
 })
 serverRouter.get('/', (req: Request, resp: Response, next: NextFunction) => {
-  findAll(req, resp).catch(next)
-  next()
+  findAll(req, resp).then(next).catch(next)
 })
 serverRouter.get('/:id', (req: Request, resp: Response, next: NextFunction) => {
-  findById(req, resp).catch(next)
-  next()
+  findById(req, resp).then(next).catch(next)
 })
 serverRouter.put('/:id', (req: Request, resp: Response, next: NextFunction) => {
-  upsert(req, resp).catch(next)
-  next()
+  upsert(req, resp).then(next).catch(next)
 })
 serverRouter.delete('/:id', (req: Request, resp: Response, next: NextFunction) => {
-  deleteServer(req, resp).catch(next)
-  next()
+  deleteServer(req, resp).then(next).catch(next)
 })
 serverRouter.get('/:id/metrics', (req: Request, resp: Response, next: NextFunction) => {
-  getMetrics(req, resp).catch(next)
-  next()
+  getMetrics(req, resp).then(next).catch(next)
 })
 
 // Services
 serverRouter.get('/:id/services', (req: Request, resp: Response, next: NextFunction) => {
-  findServices(req, resp).catch(next)
-  next()
+  findServices(req, resp).then(next).catch(next)
 })
 
 // Monitors
 serverRouter.get('/:id/monitors', (req: Request, resp: Response, next: NextFunction) => {
-  findMonitors(req, resp).catch(next)
-  next()
+  findMonitors(req, resp).then(next).catch(next)
 })
 
 export default serverRouter as Router

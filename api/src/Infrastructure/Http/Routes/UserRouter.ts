@@ -9,31 +9,24 @@ import { authenticateMiddleware } from '../AuthenticateMiddleware'
 const UserRouter = Router()
 
 UserRouter.get('/', (req: Request, resp: Response, next: NextFunction) => {
-  list(req, resp).catch(next)
-  next()
+  list(req, resp).then(next).catch(next)
 })
 UserRouter.get('/me', (req: Request, resp: Response, next: NextFunction) => {
-  authenticateMiddleware(req, resp).catch(next)
-  next()
+  authenticateMiddleware(req, resp).then(next).catch(next)
 }, (req: Request, resp: Response, next: NextFunction) => {
-  me(req, resp).catch(next)
-  next()
+  me(req, resp).then(next).catch(next)
 })
 UserRouter.post('/', (req: Request, resp: Response, next: NextFunction) => {
-  upsert(req, resp).catch(next)
-  next()
+  upsert(req, resp).then(next).catch(next)
 })
 UserRouter.get('/:id', (req: Request, resp: Response, next: NextFunction) => {
-  get(req, resp).catch(next)
-  next()
+  get(req, resp).then(next).catch(next)
 })
 UserRouter.put('/:id', (req: Request, resp: Response, next: NextFunction) => {
-  upsert(req, resp).catch(next)
-  next()
+  upsert(req, resp).then(next).catch(next)
 })
 UserRouter.delete('/:id', (req: Request, resp: Response, next: NextFunction) => {
-  remove(req, resp).catch(next)
-  next()
+  remove(req, resp).then(next).catch(next)
 })
 
 export default UserRouter as Router

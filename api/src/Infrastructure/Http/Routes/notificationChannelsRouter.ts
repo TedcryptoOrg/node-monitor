@@ -8,28 +8,22 @@ import { type Request, type Response, type NextFunction, Router } from 'express'
 const notificationChannelsRouter = Router()
 
 notificationChannelsRouter.post('/', (req: Request, resp: Response, next: NextFunction) => {
-  upsert(req, resp).catch(next)
-  next()
+  upsert(req, resp).then(next).catch(next)
 })
 notificationChannelsRouter.get('/', (req: Request, resp: Response, next: NextFunction) => {
-  findAll(req, resp).catch(next)
-  next()
+  findAll(req, resp).then(next).catch(next)
 })
 notificationChannelsRouter.get('/:id', (req: Request, resp: Response, next: NextFunction) => {
-  getById(req, resp).catch(next)
-  next()
+  getById(req, resp).then(next).catch(next)
 })
 notificationChannelsRouter.put('/:id', (req: Request, resp: Response, next: NextFunction) => {
-  upsert(req, resp).catch(next)
-  next()
+  upsert(req, resp).then(next).catch(next)
 })
 notificationChannelsRouter.delete('/:id', (req: Request, resp: Response, next: NextFunction) => {
-  deleteNotificationChannel(req, resp).catch(next)
-  next()
+  deleteNotificationChannel(req, resp).then(next).catch(next)
 })
 notificationChannelsRouter.post('/test', (req: Request, resp: Response, next: NextFunction) => {
-  test(req, resp).catch(next)
-  next()
+  test(req, resp).then(next).catch(next)
 })
 
 export default notificationChannelsRouter as Router

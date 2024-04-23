@@ -12,46 +12,36 @@ import { type Request, type Response, type NextFunction, Router } from 'express'
 const configurationRouter = Router()
 
 configurationRouter.post('/', (req: Request, resp: Response, next: NextFunction) => {
-  upsert(req, resp).catch(next)
-  next()
+  upsert(req, resp).then(next).catch(next)
 })
 configurationRouter.get('/', (req: Request, resp: Response, next: NextFunction) => {
-  findAll(req, resp).catch(next)
-  next()
+  findAll(req, resp).then(next).catch(next)
 })
 configurationRouter.get('/:id', (req: Request, resp: Response, next: NextFunction) => {
-  findById(req, resp).catch(next)
-  next()
+  findById(req, resp).then(next).catch(next)
 })
 configurationRouter.put('/:id', (req: Request, resp: Response, next: NextFunction) => {
-  upsert(req, resp).catch(next)
-  next()
+  upsert(req, resp).then(next).catch(next)
 })
 configurationRouter.delete('/:id', (req: Request, resp: Response, next: NextFunction) => {
-  deleteConfiguration(req, resp).catch(next)
-  next()
+  deleteConfiguration(req, resp).then(next).catch(next)
 })
 
 configurationRouter.get('/:id/monitors', (req: Request, resp: Response, next: NextFunction) => {
-  findMonitors(req, resp).catch(next)
-  next()
+  findMonitors(req, resp).then(next).catch(next)
 })
 configurationRouter.get('/:id/servers', (req: Request, resp: Response, next: NextFunction) => {
-  findServers(req, resp).catch(next)
-  next()
+  findServers(req, resp).then(next).catch(next)
 })
 
 configurationRouter.get('/:id/notification-channels', (req: Request, resp: Response, next: NextFunction) => {
-  findNotificationChannels(req, resp).catch(next)
-  next()
+  findNotificationChannels(req, resp).then(next).catch(next)
 })
 configurationRouter.post('/:id/notification-channels', (req: Request, resp: Response, next: NextFunction) => {
-  associateNotificationChannel(req, resp).catch(next)
-  next()
+  associateNotificationChannel(req, resp).then(next).catch(next)
 })
 configurationRouter.delete('/:id/notification-channels/:notificationId', (req: Request, resp: Response, next: NextFunction) => {
-  removeAssociationWithNotificationChannel(req, resp).catch(next)
-  next()
+  removeAssociationWithNotificationChannel(req, resp).then(next).catch(next)
 })
 
 export default configurationRouter as Router

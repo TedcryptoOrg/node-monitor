@@ -43,7 +43,7 @@ export function castToString (value: unknown): string {
 }
 
 export function castToStringOrUndefined (value: unknown): string | undefined {
-  if (value === undefined) {
+  if (value === undefined || value === null) {
     return undefined
   }
 

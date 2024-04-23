@@ -13,7 +13,7 @@ import {
 import { type MonitorType } from '../../../Domain/Monitor/MonitorType'
 
 export const upsert = async (req: Request, resp: Response): Promise<void> => {
-  const requiredFields = ['name', 'type', 'configuration_id', 'configuration_object']
+  const requiredFields = ['name', 'type', 'configuration_id', 'configuration_object', 'is_enabled']
   const missingFields = requiredFields.filter((field) => req.body[field] === undefined)
 
   if (missingFields.length > 0) {
@@ -35,7 +35,7 @@ export const upsert = async (req: Request, resp: Response): Promise<void> => {
       castToBoolean(req.body.is_enabled),
       castToNumberOrUndefined(req.body.configuration_id),
       castToString(req.body.configuration_object),
-      castToNumber(req.body.server_id),
+      castToNumberOrUndefined(req.body.server_id),
       req.body.last_check !== undefined
         ? new Date(req.body.last_check as string)
         : undefined,

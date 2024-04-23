@@ -7,24 +7,19 @@ import { type NextFunction, type Request, type Response, Router } from 'express'
 const CompanyRouter = Router()
 
 CompanyRouter.get('/', (req: Request, resp: Response, next: NextFunction) => {
-  list(req, resp).catch(next)
-  next()
+  list(req, resp).then(next).catch(next)
 })
 CompanyRouter.post('/', (req: Request, resp: Response, next: NextFunction) => {
-  upsert(req, resp).catch(next)
-  next()
+  upsert(req, resp).then(next).catch(next)
 })
 CompanyRouter.get('/:id', (req: Request, resp: Response, next: NextFunction) => {
-  get(req, resp).catch(next)
-  next()
+  get(req, resp).then(next).catch(next)
 })
 CompanyRouter.put('/:id', (req: Request, resp: Response, next: NextFunction) => {
-  upsert(req, resp).catch(next)
-  next()
+  upsert(req, resp).then(next).catch(next)
 })
 CompanyRouter.delete('/:id', (req: Request, resp: Response, next: NextFunction) => {
-  remove(req, resp).catch(next)
-  next()
+  remove(req, resp).then(next).catch(next)
 })
 
 export default CompanyRouter as Router
