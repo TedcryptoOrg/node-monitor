@@ -70,6 +70,7 @@ npm-command:
 ## [App] Create Initial Admin user
 create-user:
 	$(DOCKER_COMPOSE_EXEC) node-app npx ts-node bin/console create-user admin true true true admin
+	echo "User: admin Password: admin created."
 
 ## [Tests] Run tests
 test:
