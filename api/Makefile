@@ -95,3 +95,8 @@ db-diff db.diff db.create_migration db-create-migration:
 ## [Database] Run migrations
 db-migrate:
 	$(DOCKER_COMPOSE_EXEC) node-app npx prisma migrate dev
+
+.PHONY: db-test-setup db.test.setup
+## [DATABASE] Reset Database for tests
+db-test-setup db.test.setup:
+	$(DOCKER_COMPOSE_EXEC) node-app npm run test:setup

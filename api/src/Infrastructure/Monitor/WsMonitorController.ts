@@ -36,4 +36,20 @@ export default class WsMonitorController implements MonitorController {
       event: 'monitor_disabled'
     })
   }
+
+  enableConfiguration (configurationId: number): void {
+    console.debug('Enabling configuration', configurationId)
+    this.wsClient.send({
+      id: configurationId,
+      event: 'configuration_enabled'
+    })
+  }
+
+  disableConfiguration (configurationId: number): void {
+    console.debug('Disabling configuration', configurationId)
+    this.wsClient.send({
+      id: configurationId,
+      event: 'configuration_disabled'
+    })
+  }
 }

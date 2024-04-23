@@ -4,6 +4,8 @@ export default class InMemoryMonitorController implements MonitorController {
     private readonly disabledMonitors: Map<number, boolean> = new Map();
     private readonly enabledMonitors: Map<number, boolean> = new Map();
     private readonly updatedMonitors: Map<number, boolean> = new Map();
+    private readonly disabledConfigurations: Map<number, boolean> = new Map();
+    private readonly enabledConfigurations: Map<number, boolean> = new Map();
 
     disableMonitor(monitorId: number): void {
         this.disabledMonitors.set(monitorId, true);
@@ -29,4 +31,19 @@ export default class InMemoryMonitorController implements MonitorController {
         return this.updatedMonitors.has(monitorId);
     }
 
+    enableConfiguration(configurationId: number): void {
+        this.enabledConfigurations.set(configurationId, true);
+    }
+
+    hasConfigurationBeenEnabled(configurationId: number): boolean {
+        return this.enabledConfigurations.has(configurationId);
+    }
+
+    disableConfiguration(configurationId: number): void {
+        this.disabledConfigurations.set(configurationId, true);
+    }
+
+    hasConfigurationBeenDisabled(configurationId: number): boolean {
+        return this.disabledConfigurations.has(configurationId);
+    }
 }

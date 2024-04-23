@@ -3,13 +3,14 @@ import {server} from "../../../../../src/Infrastructure/Http/Server";
 import DatabaseUtil from "../../../../Helper/DatabaseUtil";
 import {myContainer} from "../../../../../src/Infrastructure/DependencyInjection/inversify.config";
 import {TYPES} from "../../../../../src/Domain/DependencyInjection/types";
-import { PrismaClient } from "@prisma/client";
+import {PrismaClient} from "@prisma/client";
+import InMemoryMonitorController from "../../../../Helper/InMemoryMonitorController";
 
 describe('create configurations controller', () => {
-    let prismaClient: PrismaClient
+    const prismaClient: PrismaClient = myContainer.get(TYPES.OrmClient)
+    const monitorController: InMemoryMonitorController = myContainer.get(TYPES.MonitorController)
 
     beforeEach(async () => {
-        prismaClient = myContainer.get(TYPES.OrmClient)
         await DatabaseUtil.truncateAllTables(prismaClient)
     })
 
@@ -26,5 +27,6 @@ describe('create configurations controller', () => {
             .expect(202)
 
         expect((await prismaClient.configurations.findMany()).length).toBe(1)
+        expect(monitorController.hasConfigurationBeenEnabled(1)).toBe(true)
     });
 });
