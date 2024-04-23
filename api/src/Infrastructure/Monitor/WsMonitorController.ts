@@ -13,7 +13,7 @@ export default class WsMonitorController implements MonitorController {
     this.wsClient = new WsWebsocketClient(wsMonitorAddress)
   }
 
-  updateMonitor (monitorId: number) {
+  updateMonitor (monitorId: number): void {
     console.debug('Updating monitor', monitorId)
     this.wsClient.send({
       id: monitorId,

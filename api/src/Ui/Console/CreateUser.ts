@@ -30,7 +30,7 @@ export default class CreateUser implements ConsoleCommand {
         isAdmin,
         isSuperAdmin,
         undefined,
-        rawPassword
+        rawPassword as string
       )
     )
 

@@ -30,8 +30,8 @@ export default class Server {
       server.name,
       server.address,
       server.is_enabled,
-      server.configuration ? Configuration.fromArray(server.configuration) : undefined,
-      server.services ? server.services.map((service) => Service.fromArray(service)) : undefined,
+      server.configuration !== undefined ? Configuration.fromArray(server.configuration) : undefined,
+      server.services !== undefined ? server.services.map((service) => Service.fromArray(service)) : undefined,
       server.id,
       server.createdAt,
       server.updatedAt

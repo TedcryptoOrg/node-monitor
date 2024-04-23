@@ -22,9 +22,9 @@ export default class Audit {
 
   static fromArray (audit: AuditArray): Audit {
     return new Audit(
-      audit.configuration ? Configuration.fromArray(audit.configuration) : null,
-      audit.server ? Server.fromArray(audit.server) : null,
-      audit.monitor ? Monitor.fromArray(audit.monitor) : null,
+      audit.configuration !== undefined && audit.configuration !== null ? Configuration.fromArray(audit.configuration) : null,
+      audit.server !== undefined && audit.server !== null ? Server.fromArray(audit.server) : null,
+      audit.monitor !== undefined && audit.monitor !== null ? Monitor.fromArray(audit.monitor) : null,
       audit.message,
       audit.id,
       audit.created_at

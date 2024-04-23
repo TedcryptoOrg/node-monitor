@@ -31,6 +31,6 @@ export default class GetMetricsCommandHandler implements CommandHandler {
 
     const nodeExporterJson = JSON.parse(JSON.stringify(nodeExporter))
 
-    return await this.serverMetricsExporter.getMetrics(nodeExporterJson.address)
+    return await this.serverMetricsExporter.getMetrics(nodeExporterJson.address as string)
   }
 }

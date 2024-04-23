@@ -35,9 +35,9 @@ export default class OrmServerRepository implements ServerRepository {
       address: server.address,
       is_enabled: server.isEnabled,
       updatedAt: new Date(),
-      ...(server.configuration?.id ? { configuration: { connect: { id: server.configuration.id } } } : {})
+      ...(server.configuration?.id !== undefined ? { configuration: { connect: { id: server.configuration.id } } } : {})
     }
-    if (server.id) {
+    if (server.id !== undefined) {
       return Server.fromArray(await this.ormClient.servers.update({
         where: {
           id: server.id
@@ -85,6 +85,6 @@ export default class OrmServerRepository implements ServerRepository {
       }
     })
 
-    return data.map((server: any) => Server.fromArray(server))
+    return data.map((server) => Server.fromArray(server))
   }
 }

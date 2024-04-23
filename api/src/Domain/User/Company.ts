@@ -24,7 +24,7 @@ export default class Company {
     return new Company(
       object.name,
       object.is_active,
-      object.users ? object.users.map(user => User.fromObject(user)) : [],
+      object.users !== undefined ? object.users.map(user => User.fromObject(user)) : [],
       object.id,
       object.created_at,
       object.updated_at

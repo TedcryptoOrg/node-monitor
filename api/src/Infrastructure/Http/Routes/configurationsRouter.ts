@@ -7,9 +7,9 @@ import { findById } from '../../../Ui/Http/Configurations/findById'
 import { findNotificationChannels } from '../../../Ui/Http/Configurations/findNotificationChannels'
 import { associateNotificationChannel } from '../../../Ui/Http/Configurations/associateNotificationChannel'
 import { removeAssociationWithNotificationChannel } from '../../../Ui/Http/Configurations/removeAssociationWithNotificationChannel'
-import { type Request, type Response, type NextFunction, type Router } from 'express'
+import { type Request, type Response, type NextFunction, Router } from 'express'
 
-const configurationRouter = require('express').Router()
+const configurationRouter = Router()
 
 configurationRouter.post('/', (req: Request, resp: Response, next: NextFunction) => {
   upsert(req, resp).catch(next)

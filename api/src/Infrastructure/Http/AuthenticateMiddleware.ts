@@ -9,7 +9,7 @@ import { TYPES } from '../../Domain/DependencyInjection/types'
 export const authenticateMiddleware = async (req: Request, res: Response): Promise<void> => {
   const securityProvider: SecurityProvider = myContainer.get(TYPES.SecurityProvider)
   const token = req.headers.authorization
-  if (!token) {
+  if (token === undefined) {
     res.status(401).json({ message: 'No token provided' })
     return
   }

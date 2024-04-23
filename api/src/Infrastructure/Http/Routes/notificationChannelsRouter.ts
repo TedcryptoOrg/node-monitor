@@ -3,9 +3,9 @@ import { findAll } from '../../../Ui/Http/NotificationChannels/findAll'
 import { test } from '../../../Ui/Http/NotificationChannels/test'
 import { deleteNotificationChannel } from '../../../Ui/Http/NotificationChannels/delete'
 import { getById } from '../../../Ui/Http/NotificationChannels/getById'
-import { type Request, type Response, type NextFunction, type Router } from 'express'
+import { type Request, type Response, type NextFunction, Router } from 'express'
 
-const notificationChannelsRouter = require('express').Router()
+const notificationChannelsRouter = Router()
 
 notificationChannelsRouter.post('/', (req: Request, resp: Response, next: NextFunction) => {
   upsert(req, resp).catch(next)

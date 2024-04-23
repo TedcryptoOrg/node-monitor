@@ -5,9 +5,9 @@ import { deleteMonitor } from '../../../Ui/Http/Monitors/delete'
 import { findFailed } from '../../../Ui/Http/Monitors/findFailed'
 import { findWarnings } from '../../../Ui/Http/Monitors/findWarnings'
 import { findById } from '../../../Ui/Http/Monitors/findById'
-import { type Request, type Response, type NextFunction, type Router } from 'express'
+import { type Request, type Response, type NextFunction, Router } from 'express'
 
-const monitorRouter = require('express').Router()
+const monitorRouter = Router()
 
 monitorRouter.get('/failed', (req: Request, resp: Response, next: NextFunction) => {
   findFailed(req, resp).catch(next)

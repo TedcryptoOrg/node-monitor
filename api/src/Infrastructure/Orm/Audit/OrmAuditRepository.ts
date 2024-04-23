@@ -16,9 +16,9 @@ export default class OrmAuditRepository implements AuditRepository {
       data: {
         message: audit.message,
         created_at: new Date(),
-        configuration_id: audit.configuration ? audit.configuration.id : undefined,
-        monitor_id: audit.monitor ? audit.monitor.id : undefined,
-        server_id: audit.server ? audit.server.id : undefined
+        configuration_id: audit.configuration !== null ? audit.configuration.id : undefined,
+        monitor_id: audit.monitor !== null ? audit.monitor.id : undefined,
+        server_id: audit.server !== null ? audit.server.id : undefined
       }
     }))
   }
@@ -33,6 +33,6 @@ export default class OrmAuditRepository implements AuditRepository {
         }
       })
 
-    return data.map(Audit.fromArray)
+    return data.map((data) => Audit.fromArray(data))
   }
 }

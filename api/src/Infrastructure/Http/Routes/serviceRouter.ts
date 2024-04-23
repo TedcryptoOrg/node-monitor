@@ -1,9 +1,9 @@
 import { upsert } from '../../../Ui/Http/Services/upsert'
 import { findAll } from '../../../Ui/Http/Services/findAll'
 import { deleteService } from '../../../Ui/Http/Services/delete'
-import { type Request, type Response, type NextFunction, type Router } from 'express'
+import { type Request, type Response, type NextFunction, Router } from 'express'
 
-const serviceRouter = require('express').Router()
+const serviceRouter = Router()
 
 serviceRouter.post('/', (req: Request, resp: Response, next: NextFunction) => {
   upsert(req, resp).catch(next)

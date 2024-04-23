@@ -6,14 +6,14 @@ export default class VerificationFailed extends Error {
     super(message)
   }
 
-  public static tokenExpired () {
+  public static tokenExpired (): VerificationFailed {
     return new VerificationFailed(
       VerificationFailed.TOKEN_EXPIRED,
       'Token expired'
     )
   }
 
-  public static failedToAuthenticate () {
+  public static failedToAuthenticate (): VerificationFailed {
     return new VerificationFailed(
       VerificationFailed.FAILED_TO_AUTHENTICATE,
       'Failed to authenticate token'

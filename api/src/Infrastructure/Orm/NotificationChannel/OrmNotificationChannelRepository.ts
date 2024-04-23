@@ -45,7 +45,7 @@ export default class OrmNotificationChannelRepository implements NotificationCha
       configuration_object: notificationChannel.toArray().configuration_object,
       updated_at: new Date()
     }
-    if (notificationChannel.id) {
+    if (notificationChannel.id !== undefined) {
       return NotificationChannel.fromArray(
         await this.ormClient.notification_channels.update({
           where: { id: notificationChannel.id },

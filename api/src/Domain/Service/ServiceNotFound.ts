@@ -8,7 +8,7 @@ export class ServiceNotFound extends Error {
     super(`Service ${serviceName} not found`)
   }
 
-  static withServer (serviceName: string, server: Server) {
+  static withServer (serviceName: string, server: Server): ServiceNotFound {
     return new ServiceNotFound(`${serviceName} on ${server.name}`)
   }
 }

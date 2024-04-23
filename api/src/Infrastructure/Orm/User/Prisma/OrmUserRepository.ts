@@ -16,14 +16,14 @@ export default class OrmUserRepository implements UserRepository {
   }
 
   public async get (id: number): Promise<User> {
-    const user: any = await this.prismaClient.user.findUniqueOrThrow({
+    const user = await this.prismaClient.user.findUniqueOrThrow({
       where: {
         id
       },
       include: { company: true }
     })
 
-    if (!user) {
+    if (user === null) {
       throw new RecordNotFound(`User with "${id}" id not found`)
     }
 
@@ -49,15 +49,15 @@ export default class OrmUserRepository implements UserRepository {
       }
     })
 
-    if (!user) {
+    if (user === null) {
       throw new RecordNotFound(`User with "${username}" username not found`)
     }
 
-    return User.fromObject(user as any)
+    return User.fromObject(user)
   }
 
   async upsert (user: User): Promise<User> {
-    if (!user.id && !user.raw_password) {
+    if (user.id === undefined && (user.raw_password === undefined || user.raw_password === '')) {
       throw new Error('Raw password is required')
     }
 
@@ -66,11 +66,11 @@ export default class OrmUserRepository implements UserRepository {
       is_active: user.is_active,
       is_admin: user.is_admin,
       is_super_admin: user.is_super_admin,
-      ...(user.raw_password ? { password: await this.passwordEncoder.hash(user.raw_password) } : {}),
-      ...(user.company ? { company: { connect: { id: user.company.id } } } : {})
+      ...(user.raw_password !== undefined ? { password: await this.passwordEncoder.hash(user.raw_password) } : {}),
+      ...(user.company !== undefined ? { company: { connect: { id: user.company.id } } } : {})
     }
 
-    if (user.id) {
+    if (user.id !== undefined) {
       return User.fromObject(await this.prismaClient.user.update({
         where: {
           id: user.id
@@ -105,6 +105,6 @@ export default class OrmUserRepository implements UserRepository {
       include: { company: true }
     })
 
-    return users.map((user: any) => User.fromObject(user))
+    return users.map((user) => User.fromObject(user))
   }
 }

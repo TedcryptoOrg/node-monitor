@@ -22,7 +22,7 @@ export default class OrmMonitorRepository implements MonitorRepository {
         server: true
       }
     })
-    if (!monitor) {
+    if (monitor === null) {
       throw new RecordNotFound(`Monitor with id ${id} not found`)
     }
 
@@ -43,7 +43,7 @@ export default class OrmMonitorRepository implements MonitorRepository {
       errored_at: monitor.erroredAt,
       updatedAt: new Date()
     }
-    if (monitor.id) {
+    if (monitor.id !== undefined) {
       const monitorData = await this.ormClient.monitors.update(
         {
           where: { id: monitor.id },
@@ -58,7 +58,7 @@ export default class OrmMonitorRepository implements MonitorRepository {
       return Monitor.fromArray(monitorData)
     }
 
-    if (!monitor.configuration) {
+    if (monitor.configuration === undefined) {
       throw new Error('Configuration is required')
     }
 
@@ -94,7 +94,7 @@ export default class OrmMonitorRepository implements MonitorRepository {
       }
     })
 
-    return monitors.map(Monitor.fromArray)
+    return monitors.map((monitor) => Monitor.fromArray(monitor))
   }
 
   async findFailed (limit: number, offset: number): Promise<Monitor[]> {
@@ -117,7 +117,7 @@ export default class OrmMonitorRepository implements MonitorRepository {
       skip: offset
     })
 
-    return monitors.map(Monitor.fromArray)
+    return monitors.map((monitor) => Monitor.fromArray(monitor))
   }
 
   async findWarnings (limit: number, offset: number): Promise<Monitor[]> {
@@ -143,6 +143,6 @@ export default class OrmMonitorRepository implements MonitorRepository {
       skip: offset
     })
 
-    return monitors.map(Monitor.fromArray)
+    return monitors.map((monitor) => Monitor.fromArray(monitor))
   }
 }

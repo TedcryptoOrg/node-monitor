@@ -22,13 +22,13 @@ export default class Telegram implements NotificationChannelClient {
     return new Telegram(
       telegramBot.bot_token,
       telegramBot.chat_id,
-      telegramBot.topic_id ? Number(telegramBot.topic_id) : undefined
+      telegramBot.topic_id !== undefined ? Number(telegramBot.topic_id) : undefined
     )
   }
 
   public async send (message: string): Promise<void> {
     await this.bot.telegram.sendMessage(this.chatId, message, {
-      ...(this.topicId ? { message_thread_id: this.topicId } : {})
+      ...(this.topicId !== undefined ? { message_thread_id: this.topicId } : {})
     })
   }
 }

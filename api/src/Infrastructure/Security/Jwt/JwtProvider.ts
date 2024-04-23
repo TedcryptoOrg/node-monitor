@@ -35,7 +35,7 @@ export default class JwtProvider implements SecurityProvider {
 
   async verifyToken (token: Token): Promise<User> {
     try {
-      const payload = await jwt.verify(
+      const payload = jwt.verify(
         token.value,
         process.env.SECRET_TOKEN ?? 'secret'
       ) as AuthenticatePayload

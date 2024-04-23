@@ -27,7 +27,7 @@ export default class Service {
       array.address,
       array.is_enabled,
       array.type as ServiceType,
-      array.server ? Server.fromArray(array.server) : undefined,
+      array.server !== undefined ? Server.fromArray(array.server) : undefined,
       array.id
     )
   }

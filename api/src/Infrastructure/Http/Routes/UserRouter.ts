@@ -3,10 +3,10 @@ import { me } from '../../../Ui/Http/User/me'
 import { get } from '../../../Ui/Http/User/get'
 import { upsert } from '../../../Ui/Http/User/upsert'
 import { remove } from '../../../Ui/Http/User/delete'
-import express, { type Request, type Response, type NextFunction, type Router } from 'express'
+import { type Request, type Response, type NextFunction, Router } from 'express'
 import { authenticateMiddleware } from '../AuthenticateMiddleware'
 
-const UserRouter = express.Router()
+const UserRouter = Router()
 
 UserRouter.get('/', (req: Request, resp: Response, next: NextFunction) => {
   list(req, resp).catch(next)

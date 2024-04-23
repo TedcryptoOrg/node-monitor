@@ -5,9 +5,9 @@ import { findMonitors } from '../../../Ui/Http/Server/findMonitors'
 import { upsert } from '../../../Ui/Http/Server/upsert'
 import { getMetrics } from '../../../Ui/Http/Server/getMetrics'
 import { deleteServer } from '../../../Ui/Http/Server/delete'
-import { type Request, type Response, type NextFunction, type Router } from 'express'
+import { type Request, type Response, type NextFunction, Router } from 'express'
 
-const serverRouter = require('express').Router()
+const serverRouter = Router()
 
 serverRouter.post('/', (req: Request, resp: Response, next: NextFunction) => {
   upsert(req, resp).catch(next)

@@ -33,7 +33,7 @@ export default class UpsertServerCommandHandler implements CommandHandler {
       configuration,
       null,
       null,
-      command.id
+      command.id !== undefined
         ? `Server ${configuration.name} updated`
         : `server ${configuration.name} created`
     ))

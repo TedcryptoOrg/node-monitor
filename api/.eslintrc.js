@@ -7,6 +7,8 @@ module.exports = {
     ],
     ignorePatterns: [
         'jest.config.ts',
+        '.eslintrc.js',
+        'babel.config.js',
         'node_modules/',
         'tests/',
         '**/Prometheus/prometheusUtils.ts',

@@ -26,11 +26,11 @@ export default class UpsertMonitorCommandHandler implements CommandHandler {
 
   async handle (command: UpsertMonitorCommand): Promise<Monitor> {
     const configuration = command.configurationId !== undefined
-        ? await this.configurationRepository.get(command.configurationId)
-        : null
+      ? await this.configurationRepository.get(command.configurationId)
+      : null
     const server = command.serverId !== undefined
-        ? await this.serverRepository.get(command.serverId)
-        : null
+      ? await this.serverRepository.get(command.serverId)
+      : null
 
     let previousEnabledStatus
     if (command.id !== undefined) {
@@ -44,7 +44,7 @@ export default class UpsertMonitorCommandHandler implements CommandHandler {
       command.name,
       command.type,
       command.isEnabled,
-      JSON.parse(command.configurationObject),
+      JSON.parse(command.configurationObject) as object,
       command.id,
       configuration ?? undefined,
       server ?? undefined,
@@ -57,7 +57,7 @@ export default class UpsertMonitorCommandHandler implements CommandHandler {
       configuration,
       server,
       monitor,
-      command.id
+      command.id !== undefined
         ? `Monitor ${command.name} updated`
         : `Monitor ${command.name} created`
     ))

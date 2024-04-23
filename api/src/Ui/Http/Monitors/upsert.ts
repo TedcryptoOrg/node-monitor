@@ -36,7 +36,9 @@ export const upsert = async (req: Request, resp: Response): Promise<void> => {
       castToNumberOrUndefined(req.body.configuration_id),
       castToString(req.body.configuration_object),
       castToNumber(req.body.server_id),
-      req.body.last_check,
+      req.body.last_check !== undefined
+        ? new Date(req.body.last_check as string)
+        : undefined,
       castToBooleanOrUndefined(req.body.status),
       castToStringOrUndefined(req.body.last_error),
       castToNumberOrUndefined(req.params.id)

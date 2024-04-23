@@ -14,8 +14,8 @@ export default class FindAllMonitorsCommandHandler implements CommandHandler {
 
   async handle (command: FindAllMonitorsCommand): Promise<Monitor[]> {
     const criteria = {
-      ...(command.configurationId && { configuration_id: command.configurationId }),
-      ...(command.serverId && { server_id: command.serverId })
+      ...(command.configurationId !== undefined && { configuration_id: command.configurationId }),
+      ...(command.serverId !== undefined && { server_id: command.serverId })
     }
 
     return await this.repository.findAll(criteria)

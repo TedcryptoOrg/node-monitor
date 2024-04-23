@@ -13,19 +13,19 @@ export default class OrmCompanyRepository implements CompanyRepository {
   }
 
   async findAll (): Promise<Company[]> {
-    const companies: any[] = await this.prismaClient.company.findMany()
+    const companies = await this.prismaClient.company.findMany()
 
     return companies.map(company => Company.fromObject(company))
   }
 
   public async get (id: number): Promise<Company> {
-    const company: any = await this.prismaClient.company.findUnique({
+    const company = await this.prismaClient.company.findUnique({
       where: {
         id
       }
     })
 
-    if (!company) {
+    if (company === undefined || company === null) {
       throw new RecordNotFound(`Company with "${id}" id not found`)
     }
 
@@ -33,8 +33,8 @@ export default class OrmCompanyRepository implements CompanyRepository {
   }
 
   async upsert (company: Company): Promise<Company> {
-    if (company.id) {
-      const data: any = await this.prismaClient.company.update({
+    if (company.id !== undefined) {
+      const data = await this.prismaClient.company.update({
         where: {
           id: company.id
         },
@@ -47,7 +47,7 @@ export default class OrmCompanyRepository implements CompanyRepository {
       return Company.fromObject(data)
     }
 
-    const data: any = await this.prismaClient.company.create({
+    const data = await this.prismaClient.company.create({
       data: {
         name: company.name,
         is_active: company.is_active

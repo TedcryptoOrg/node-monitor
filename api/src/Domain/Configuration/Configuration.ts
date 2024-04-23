@@ -35,7 +35,7 @@ export default class Configuration {
       array.is_enabled,
       array.monitors?.map(monitor => Monitor.fromArray(monitor)),
       array.servers?.map(server => Server.fromArray(server)),
-      array.notification_channels?.map(notification_channel => ConfigurationNotification.fromArray(notification_channel)),
+      array.notification_channels?.map(notificationChannel => ConfigurationNotification.fromArray(notificationChannel)),
       array.id,
       array.createdAt,
       array.updatedAt
@@ -49,7 +49,7 @@ export default class Configuration {
       is_enabled: this.is_enabled,
       monitors: this.monitors?.map(monitor => monitor.toArray()),
       servers: this.servers?.map(server => server.toArray()),
-      notification_channels: this.notification_channels?.map(notification_channel => notification_channel.toArray()),
+      notification_channels: this.notification_channels?.map(notificationChannel => notificationChannel.toArray()),
       id: this.id,
       createdAt: this.createdAt,
       updatedAt: this.updatedAt

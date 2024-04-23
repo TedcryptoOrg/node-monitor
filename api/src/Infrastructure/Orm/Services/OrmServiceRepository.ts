@@ -21,7 +21,7 @@ export default class OrmServiceRepository implements ServiceRepository {
         server: true
       }
     })
-    if (!data) {
+    if (data === undefined || data === null) {
       throw new RecordNotFound(`Service with id ${id} not found`)
     }
 
@@ -38,11 +38,11 @@ export default class OrmServiceRepository implements ServiceRepository {
       }
     })
 
-    return data.map(Service.fromArray)
+    return data.map((service) => Service.fromArray(service))
   }
 
   async upsert (service: Service): Promise<Service> {
-    if (!service.server) {
+    if (service.server === undefined) {
       throw new Error('Service must have a server')
     }
 
@@ -55,7 +55,7 @@ export default class OrmServiceRepository implements ServiceRepository {
       updatedAt: new Date()
     }
 
-    if (service.id) {
+    if (service.id !== undefined) {
       return Service.fromArray(await this.ormClient.services.update({
         where: {
           id: service.id

@@ -41,10 +41,14 @@ export default class Monitor {
       array.name,
       array.type as MonitorType,
       array.is_enabled,
-      JSON.parse(array.configuration_object),
+      JSON.parse(array.configuration_object) as object,
       array.id,
-      array.configuration ? Configuration.fromArray(array.configuration) : undefined,
-      array.server ? Server.fromArray(array.server) : undefined,
+      array.configuration !== undefined && array.configuration !== null
+        ? Configuration.fromArray(array.configuration)
+        : undefined,
+      array.server !== undefined && array.server !== null
+        ? Server.fromArray(array.server)
+        : undefined,
       array.last_check,
       array.status,
       array.last_error,

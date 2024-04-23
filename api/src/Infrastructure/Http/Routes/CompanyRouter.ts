@@ -2,9 +2,9 @@ import { list } from '../../../Ui/Http/Companies/list'
 import { get } from '../../../Ui/Http/Companies/get'
 import { upsert } from '../../../Ui/Http/Companies/upsert'
 import { remove } from '../../../Ui/Http/Companies/delete'
-import express, { type NextFunction, type Request, type Response, type Router } from 'express'
+import { type NextFunction, type Request, type Response, Router } from 'express'
 
-const CompanyRouter = express.Router()
+const CompanyRouter = Router()
 
 CompanyRouter.get('/', (req: Request, resp: Response, next: NextFunction) => {
   list(req, resp).catch(next)

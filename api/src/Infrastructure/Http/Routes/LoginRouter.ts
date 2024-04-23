@@ -1,7 +1,7 @@
 import { login } from '../../../Ui/Http/Login/login'
-import express, { type NextFunction, type Request, type Response, type Router } from 'express'
+import { type NextFunction, type Request, type Response, Router } from 'express'
 
-const LoginRouter = express.Router()
+const LoginRouter = Router()
 
 LoginRouter.post('/', (req: Request, resp: Response, next: NextFunction) => {
   login(req, resp).catch(next)

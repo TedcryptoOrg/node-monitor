@@ -21,8 +21,8 @@ export default class ConfigurationNotification {
 
   static fromArray (array: ConfigurationNotificationArray): ConfigurationNotification {
     return new ConfigurationNotification(
-      array.configuration ? Configuration.fromArray(array.configuration) : undefined,
-      array.notification_channel ? NotificationChannel.fromArray(array.notification_channel) : undefined,
+      array.configuration !== undefined ? Configuration.fromArray(array.configuration) : undefined,
+      array.notification_channel !== undefined ? NotificationChannel.fromArray(array.notification_channel) : undefined,
       array.id,
       array.created_at,
       array.updated_at

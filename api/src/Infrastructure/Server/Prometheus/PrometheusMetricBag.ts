@@ -1,4 +1,4 @@
-interface PrometheusMetric {
+export interface PrometheusMetric {
   name: string
   help: string
   type: string

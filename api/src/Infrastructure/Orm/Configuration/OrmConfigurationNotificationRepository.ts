@@ -21,7 +21,7 @@ export default class OrmConfigurationNotificationRepository implements Configura
       notification_channel: { connect: { id: configurationNotification.notificationChannel.id } },
       updated_at: new Date()
     }
-    if (configurationNotification.id) {
+    if (configurationNotification.id !== undefined) {
       const obj = await this.ormClient.configuration_notification_channels.update({
         where: { id: configurationNotification.id },
         data,
@@ -65,6 +65,6 @@ export default class OrmConfigurationNotificationRepository implements Configura
       }
     })
 
-    return objs.map(ConfigurationNotification.fromArray)
+    return objs.map((configurationNotificationChannel) => ConfigurationNotification.fromArray(configurationNotificationChannel))
   }
 }

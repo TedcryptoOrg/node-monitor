@@ -21,7 +21,7 @@ export default class UpsertNotificationChannelCommandHandler implements CommandH
       new NotificationChannel(
         command.name,
         command.type,
-        JSON.parse(command.configurationObject),
+        JSON.parse(command.configurationObject) as object,
         command.isEnabled,
         command.id
       )
@@ -32,7 +32,7 @@ export default class UpsertNotificationChannelCommandHandler implements CommandH
         null,
         null,
         null,
-                `Notification channel ${notificationChannel.name} ${(command.id ? 'edited' : 'created')}`
+                `Notification channel ${notificationChannel.name} ${(command.id !== undefined ? 'edited' : 'created')}`
       )
     )
   }

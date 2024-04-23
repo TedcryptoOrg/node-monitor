@@ -5,7 +5,7 @@ import type ConfigurationNotification from '../../../Domain/Configuration/Config
 
 export const associateNotificationChannel = async (req: Request, resp: Response): Promise<void> => {
   const requiredFields = ['configuration_id', 'notification_channel_id']
-  const missingFields = requiredFields.filter((field) => !req.body[field])
+  const missingFields = requiredFields.filter((field) => !(field in req.body))
   if (missingFields.length > 0) {
     resp.status(400).send({ message: `${missingFields.join(', ')} can not be empty!` })
     return

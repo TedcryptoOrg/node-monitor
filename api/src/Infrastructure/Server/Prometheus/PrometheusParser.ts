@@ -1,7 +1,7 @@
 import { injectable } from 'inversify'
 import parsePrometheusTextFormat from './prometheusUtils'
 import axios from 'axios'
-import PrometheusMetricBag from './PrometheusMetricBag'
+import PrometheusMetricBag, { PrometheusMetric } from './PrometheusMetricBag'
 import * as https from 'https'
 
 @injectable()
@@ -14,8 +14,8 @@ export class PrometheusParser {
       })
     })
 
-    return new PrometheusMetricBag(
-      parsePrometheusTextFormat(response.data)
-    )
+    const metrics: PrometheusMetric[] = parsePrometheusTextFormat(response.data as string)
+
+    return new PrometheusMetricBag(metrics)
   }
 }

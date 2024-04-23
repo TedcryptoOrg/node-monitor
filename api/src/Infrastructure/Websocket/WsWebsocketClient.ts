@@ -1,5 +1,5 @@
 import type WebsocketClient from '../../Domain/Websocket/WebsocketClient'
-import WebSocket, { type CloseEvent, type ErrorEvent } from 'ws'
+import WebSocket, { type CloseEvent, type ErrorEvent, type MessageEvent } from 'ws'
 
 export default class WsWebsocketClient implements WebsocketClient {
   private ws: WebSocket | undefined = undefined
@@ -36,19 +36,21 @@ export default class WsWebsocketClient implements WebsocketClient {
     })
   }
 
-  onError (callback: (error: Error) => void): void {
+  onError (callback: (error: any) => void): void {
     this.ws?.addEventListener('error', (event: ErrorEvent) => {
       callback(event.error)
     })
   }
 
   onMessage (callback: (message: string) => void): void {
-    this.ws?.addEventListener('message', (event) => {
+    this.ws?.addEventListener('message', (event: MessageEvent) => {
       let data: string
       if (typeof event.data === 'string') {
         data = event.data
+      } else if (typeof event.data === 'object') {
+        data = JSON.stringify(event.data)
       } else {
-        data = event.data.toString()
+        data = event.data
       }
       callback(data)
     })
