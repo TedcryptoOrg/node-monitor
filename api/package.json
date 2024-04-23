@@ -51,7 +51,7 @@
     "check:type": "tsc --noEmit",
     "test": "npx jest",
     "lint": "npm run check:type && npx eslint src/**/*.ts",
-    "lint:fix": "npx eslint --fix src/**/*.ts",
+    "lint:fix": "npx eslint . --fix",
     "build": "tsc -p .",
     "prisma:generate": "prisma generate"
   }

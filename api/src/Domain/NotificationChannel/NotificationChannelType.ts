@@ -1,3 +1,3 @@
 export enum NotificationChannelType {
-    TELEGRAM = 'telegram',
+  TELEGRAM = 'telegram',
 }

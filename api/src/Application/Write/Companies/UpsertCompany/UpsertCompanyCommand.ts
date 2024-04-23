@@ -1,9 +1,9 @@
-import Command from "../../../../Domain/Command/Command";
+import type Command from '../../../../Domain/Command/Command'
 
 export default class UpsertCompanyCommand implements Command {
-    constructor(
-        public id: number|undefined,
-        public name: string,
-        public is_active: boolean
-    ) {}
+  constructor (
+    public id: number | undefined,
+    public name: string,
+    public is_active: boolean
+  ) {}
 }

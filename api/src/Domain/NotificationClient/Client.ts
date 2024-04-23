@@ -1,3 +1,3 @@
 interface Client {
-    sendMessage(message: string): Promise<boolean>;
+  sendMessage: (message: string) => Promise<boolean>
 }

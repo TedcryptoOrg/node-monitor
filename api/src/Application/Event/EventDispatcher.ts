@@ -1,26 +1,26 @@
-import EventHandler from "../../Domain/Event/EventHandler";
-import {injectable, multiInject} from "inversify";
-import Event from "../../Domain/Event/Event";
-import {TYPES} from "../../Domain/DependencyInjection/types";
-import {EventDispatcher as EventDispatcherInterface} from "../../Domain/Event/EventDispatcher";
+import EventHandler from '../../Domain/Event/EventHandler'
+import { injectable, multiInject } from 'inversify'
+import Event from '../../Domain/Event/Event'
+import { TYPES } from '../../Domain/DependencyInjection/types'
+import { EventDispatcher as EventDispatcherInterface } from '../../Domain/Event/EventDispatcher'
 
 @injectable()
 export default class EventDispatcher implements EventDispatcherInterface {
-    constructor(
-        @multiInject(TYPES.EventHandler) private handlers: EventHandler[] = new Array<EventHandler>()
-    ) {
-    }
+  constructor (
+    @multiInject(TYPES.EventHandler) private readonly handlers: EventHandler[] = new Array<EventHandler>()
+  ) {
+  }
 
-    public async dispatch(event: Event): Promise<void> {
-        for (const handler of this.handlers) {
-            if (handler.supports(event)) {
-                try {
-                    await handler.handle(event);
-                } catch (error: any) {
-                    console.error(`Error occurred while handling event ${event.constructor.name} with handler ${handler.constructor.name}`);
-                    console.error(error);
-                }
-            }
+  public async dispatch (event: Event): Promise<void> {
+    for (const handler of this.handlers) {
+      if (handler.supports(event)) {
+        try {
+          await handler.handle(event)
+        } catch (error: any) {
+          console.error(`Error occurred while handling event ${event.constructor.name} with handler ${handler.constructor.name}`)
+          console.error(error)
         }
+      }
     }
+  }
 }

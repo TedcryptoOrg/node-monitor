@@ -1,9 +1,9 @@
-import Command from "../../../../Domain/Command/Command";
+import type Command from '../../../../Domain/Command/Command'
 
 export default class FindWarningsCommand implements Command {
-    constructor(
-        public readonly limit: number,
-        public readonly offset: number
-    ) {
-    }
+  constructor (
+    public readonly limit: number,
+    public readonly offset: number
+  ) {
+  }
 }

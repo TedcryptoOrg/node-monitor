@@ -1,4 +1,4 @@
-import {findLatest} from "../../../Ui/Http/Audit/findLatest";
+import { findLatest } from '../../../Ui/Http/Audit/findLatest'
 
 const auditRouter = require('express').Router()
 

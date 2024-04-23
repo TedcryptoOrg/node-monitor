@@ -1,5 +1,5 @@
-import Command from "./Command";
+import type Command from './Command'
 
 export default interface CommandHandler {
-    handle(command: Command): Promise<any>;
+  handle: (command: Command) => Promise<any>
 }

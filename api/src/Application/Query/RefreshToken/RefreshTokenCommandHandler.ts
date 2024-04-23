@@ -1,24 +1,24 @@
-import CommandHandler from "../../../Domain/Command/CommandHandler";
-import RefreshTokenCommand from "./RefreshTokenCommand";
-import {inject, injectable} from "inversify";
-import User from "../../../Domain/User/User";
-import SecurityProvider from "../../../Domain/Security/SecurityProvider";
-import Token from "../../../Domain/Security/Token";
-import {TYPES} from "../../../Domain/DependencyInjection/types";
+import CommandHandler from '../../../Domain/Command/CommandHandler'
+import RefreshTokenCommand from './RefreshTokenCommand'
+import { inject, injectable } from 'inversify'
+import User from '../../../Domain/User/User'
+import SecurityProvider from '../../../Domain/Security/SecurityProvider'
+import Token from '../../../Domain/Security/Token'
+import { TYPES } from '../../../Domain/DependencyInjection/types'
 
 @injectable()
 export default class RefreshTokenCommandHandler implements CommandHandler {
-    constructor(
-        @inject(TYPES.SecurityProvider) private readonly securityProvider: SecurityProvider,
-    ) {
-    }
+  constructor (
+    @inject(TYPES.SecurityProvider) private readonly securityProvider: SecurityProvider
+  ) {
+  }
 
-    public async handle(command: RefreshTokenCommand): Promise<{ user: User, accessToken: Token, refreshToken: Token }> {
-        const user = await this.securityProvider.verifyToken(new Token(command.token));
+  public async handle (command: RefreshTokenCommand): Promise<{ user: User, accessToken: Token, refreshToken: Token }> {
+    const user = await this.securityProvider.verifyToken(new Token(command.token))
 
-        return {
-            user: user,
-            ...this.securityProvider.generateTokens(user)
-        };
+    return {
+      user,
+      ...this.securityProvider.generateTokens(user)
     }
+  }
 }

@@ -1,4 +1,4 @@
-export type BlockAlertConfiguration = {
+export interface BlockAlertConfiguration {
   miss_tolerance: number
   miss_tolerance_period_seconds: number
   sleep_duration_seconds: number

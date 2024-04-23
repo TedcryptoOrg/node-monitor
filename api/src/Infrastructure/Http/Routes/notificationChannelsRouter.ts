@@ -1,8 +1,8 @@
-import {upsert} from '../../../Ui/Http/NotificationChannels/upsert'
-import {findAll} from '../../../Ui/Http/NotificationChannels/findAll'
-import {test} from '../../../Ui/Http/NotificationChannels/test'
-import {deleteNotificationChannel} from '../../../Ui/Http/NotificationChannels/delete'
-import {getById} from "../../../Ui/Http/NotificationChannels/getById";
+import { upsert } from '../../../Ui/Http/NotificationChannels/upsert'
+import { findAll } from '../../../Ui/Http/NotificationChannels/findAll'
+import { test } from '../../../Ui/Http/NotificationChannels/test'
+import { deleteNotificationChannel } from '../../../Ui/Http/NotificationChannels/delete'
+import { getById } from '../../../Ui/Http/NotificationChannels/getById'
 
 const notificationChannelsRouter = require('express').Router()
 

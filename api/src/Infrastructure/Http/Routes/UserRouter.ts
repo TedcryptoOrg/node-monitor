@@ -1,10 +1,10 @@
-import {list} from "../../../Ui/Http/User/list";
-import {me} from "../../../Ui/Http/User/me";
-import {get} from "../../../Ui/Http/User/get";
-import {upsert} from "../../../Ui/Http/User/upsert";
-import {remove} from "../../../Ui/Http/User/delete";
+import { list } from '../../../Ui/Http/User/list'
+import { me } from '../../../Ui/Http/User/me'
+import { get } from '../../../Ui/Http/User/get'
+import { upsert } from '../../../Ui/Http/User/upsert'
+import { remove } from '../../../Ui/Http/User/delete'
 import express from 'express'
-import {authenticateMiddleware} from "../AuthenticateMiddleware";
+import { authenticateMiddleware } from '../AuthenticateMiddleware'
 
 const UserRouter = express.Router()
 

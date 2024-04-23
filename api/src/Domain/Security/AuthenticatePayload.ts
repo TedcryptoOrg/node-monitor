@@ -1,3 +1,3 @@
-export type AuthenticatePayload = {
-    id: number,
+export interface AuthenticatePayload {
+  id: number
 }

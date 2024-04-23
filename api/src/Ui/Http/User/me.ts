@@ -1,8 +1,5 @@
-import { RequestHandler, Request, Response } from "express";
-import {handleCommand} from "../handleCommandUtil";
-import GetUserCommand from "../../../Application/Query/User/GetUser/GetUserCommand";
-import User from "../../../Domain/User/User";
+import { type Request, type Response } from 'express'
 
-export const me: RequestHandler = async (req: Request, resp: Response) => {
-    resp.status(200).send(resp.locals['user'].toObject());
+export const me = async (req: Request, resp: Response): Promise<void> => {
+  resp.status(200).send(resp.locals.user.toObject())
 }

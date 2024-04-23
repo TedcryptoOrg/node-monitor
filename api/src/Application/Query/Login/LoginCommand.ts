@@ -1,9 +1,9 @@
-import Command from "../../../Domain/Command/Command";
+import type Command from '../../../Domain/Command/Command'
 
 export default class LoginCommand implements Command {
-    constructor(
-        public username: string,
-        public password: string,
-    ) {
-    }
+  constructor (
+    public username: string,
+    public password: string
+  ) {
+  }
 }

@@ -1,6 +1,6 @@
-import NotificationChannel from "../NotificationChannel";
-import NotificationChannelClient from "./NotificationChannelClient";
+import type NotificationChannel from '../NotificationChannel'
+import type NotificationChannelClient from './NotificationChannelClient'
 
 export default interface NotificationChannelClientFactory {
-    createClient(notificationChannel: NotificationChannel): NotificationChannelClient
+  createClient: (notificationChannel: NotificationChannel) => NotificationChannelClient
 }

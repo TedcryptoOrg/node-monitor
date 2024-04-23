@@ -5,4 +5,8 @@ module.exports = {
             extends: 'love'
         }
     ],
+    ignorePatterns: [
+        'node_modules/',
+        'tests/'
+    ],
 }

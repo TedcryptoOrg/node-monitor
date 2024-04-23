@@ -1,5 +1,5 @@
 export interface ConsoleCommand {
-    configureArgs(inputArgs: any): void
-    
-    run(inputArgs: any): Promise<Number>
+  configureArgs: (inputArgs: any) => void
+
+  run: (inputArgs: any) => Promise<number>
 }
