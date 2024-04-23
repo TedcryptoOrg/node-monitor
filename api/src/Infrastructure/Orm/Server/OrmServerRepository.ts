@@ -1,4 +1,4 @@
-import Server, {ServerArray} from '../../../Domain/Server/Server'
+import Server, { ServerArray } from '../../../Domain/Server/Server'
 import ServerRepository, { FindAllCriteria } from '../../../Domain/Server/ServerRepository'
 import { inject, injectable } from 'inversify'
 import { TYPES } from '../../../Domain/DependencyInjection/types'

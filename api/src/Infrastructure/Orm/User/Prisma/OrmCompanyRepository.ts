@@ -2,7 +2,7 @@ import { inject, injectable } from 'inversify'
 import { PrismaClient } from '@prisma/client'
 import RecordNotFound from '../../../../Domain/RecordNotFound'
 import CompanyRepository from '../../../../Domain/User/CompanyRepository'
-import Company, {CompanyArray} from '../../../../Domain/User/Company'
+import Company, { CompanyArray } from '../../../../Domain/User/Company'
 import { TYPES } from '../../../../Domain/DependencyInjection/types'
 
 @injectable()

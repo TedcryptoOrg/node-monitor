@@ -1,4 +1,4 @@
-import Audit, {AuditArray} from '../../../Domain/Audit/Audit'
+import Audit, { AuditArray } from '../../../Domain/Audit/Audit'
 import AuditRepository from '../../../Domain/Audit/AuditRepository'
 import { inject, injectable } from 'inversify'
 import { TYPES } from '../../../Domain/DependencyInjection/types'

@@ -1,4 +1,4 @@
-import Service, {ServiceArray} from '../../../Domain/Service/Service'
+import Service, { ServiceArray } from '../../../Domain/Service/Service'
 import ServiceRepository, { FindAllCriteria } from '../../../Domain/Service/ServiceRepository'
 import { inject, injectable } from 'inversify'
 import { PrismaClient } from '@prisma/client'

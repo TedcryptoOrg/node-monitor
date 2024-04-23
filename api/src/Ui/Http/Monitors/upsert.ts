@@ -5,7 +5,6 @@ import type Monitor from '../../../Domain/Monitor/Monitor'
 import {
   castToBoolean,
   castToBooleanOrUndefined,
-  castToNumber,
   castToNumberOrUndefined,
   castToString,
   castToStringOrUndefined

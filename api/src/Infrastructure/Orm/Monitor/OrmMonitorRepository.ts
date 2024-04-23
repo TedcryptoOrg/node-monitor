@@ -1,6 +1,6 @@
 import { inject, injectable } from 'inversify'
 import { TYPES } from '../../../Domain/DependencyInjection/types'
-import Monitor, {MonitorArray} from '../../../Domain/Monitor/Monitor'
+import Monitor, { MonitorArray } from '../../../Domain/Monitor/Monitor'
 import { PrismaClient } from '@prisma/client'
 import MonitorRepository, { MonitorFindAllProps } from '../../../Domain/Monitor/MonitorRepository'
 import RecordNotFound from '../../../Domain/RecordNotFound'

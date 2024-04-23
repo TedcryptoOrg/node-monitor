@@ -1,7 +1,7 @@
 import { inject, injectable } from 'inversify'
 import UserRepository from '../../../../Domain/User/UserRepository'
 import { PrismaClient } from '@prisma/client'
-import User, {UserArray} from '../../../../Domain/User/User'
+import User, { UserArray } from '../../../../Domain/User/User'
 import RecordNotFound from '../../../../Domain/RecordNotFound'
 import { PasswordEncoder } from '../../../../Domain/Security/PasswordEncoder'
 import UserAlreadyExists from '../../../../Domain/User/UserAlreadyExists'
