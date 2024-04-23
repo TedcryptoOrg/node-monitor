@@ -10,12 +10,12 @@ export function castToBooleanOrUndefined (value: unknown): boolean | undefined {
 }
 
 export function castToBoolean (value: unknown): boolean {
-  value = castToBooleanOrUndefined(value)
-  if (value === undefined) {
+  const boolean = castToBooleanOrUndefined(value)
+  if (boolean === undefined) {
     throw new Error('Value is required')
   }
 
-  return value
+  return boolean
 }
 
 export function castToNumber (value: unknown): number {
