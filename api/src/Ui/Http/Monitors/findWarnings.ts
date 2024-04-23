@@ -1,9 +1,9 @@
-import { type RequestHandler, type Request, type Response } from 'express'
+import { type Request, type Response } from 'express'
 import { handleCommand } from '../handleCommandUtil'
 import FindWarningsCommand from '../../../Application/Query/Monitor/FindWarnings/FindWarningsCommand'
 import type Monitor from '../../../Domain/Monitor/Monitor'
 
-export const findWarnings: RequestHandler = async (req: Request, resp: Response): Promise<void> => {
+export const findWarnings = async (req: Request, resp: Response): Promise<void> => {
   await handleCommand(
     new FindWarningsCommand(
       Number(req.query.limit ?? 100),

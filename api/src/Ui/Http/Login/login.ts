@@ -1,17 +1,18 @@
-import { type RequestHandler, type Request, type Response } from 'express'
+import { type Request, type Response } from 'express'
 import { myContainer } from '../../../Infrastructure/DependencyInjection/inversify.config'
 import CommandHandlerManager from '../../../Infrastructure/CommandHandler/CommandHandlerManager'
 import LoginCommand from '../../../Application/Query/Login/LoginCommand'
 import RecordNotFound from '../../../Domain/RecordNotFound'
 import PasswordNotMatch from '../../../Application/Query/Login/PasswordNotMatch'
+import { castToString } from '../HttpUtil'
 
-export const login: RequestHandler = async (req: Request, resp: Response) => {
+export const login = async (req: Request, resp: Response): Promise<void> => {
   const commandHandler = myContainer.get(CommandHandlerManager)
 
   try {
     const commandResult = await commandHandler.handle(new LoginCommand(
-      req.body.username,
-      req.body.password
+      castToString(req.body.username),
+      castToString(req.body.password)
     ))
 
     resp.status(200).send({

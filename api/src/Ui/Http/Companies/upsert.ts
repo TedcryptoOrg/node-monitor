@@ -1,9 +1,10 @@
-import { type RequestHandler, type Request, type Response } from 'express'
+import { type Request, type Response } from 'express'
 import { handleCommand } from '../handleCommandUtil'
 import UpsertCompanyCommand from '../../../Application/Write/Companies/UpsertCompany/UpsertCompanyCommand'
+import { castToBoolean, castToNumberOrUndefined, castToString } from '../HttpUtil'
 
-export const upsert: RequestHandler = async (req: Request, resp: Response) => {
-  if (req.method === 'PUT' && !req.params.id) {
+export const upsert = async (req: Request, resp: Response): Promise<void> => {
+  if (req.method === 'PUT' && req.params.id === undefined) {
     resp.status(400).send('ID is required for update')
     return
   }
@@ -11,7 +12,7 @@ export const upsert: RequestHandler = async (req: Request, resp: Response) => {
   const requiredFields = ['name', 'is_active']
   const missingFields = []
   for (const field of requiredFields) {
-    if (!req.body[field]) {
+    if (!(field in req.body)) {
       missingFields.push(field)
     }
   }
@@ -22,9 +23,9 @@ export const upsert: RequestHandler = async (req: Request, resp: Response) => {
 
   await handleCommand(
     new UpsertCompanyCommand(
-      req.params.id ? Number(req.params.id) : undefined,
-      req.body.name,
-      req.body.is_active
+      castToNumberOrUndefined(req.params.id),
+      castToString(req.body.name),
+      castToBoolean(req.body.is_active)
     ),
     resp,
     () => resp.status(req.method === 'PUT' ? 204 : 201).send()

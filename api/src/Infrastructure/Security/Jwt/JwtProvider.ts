@@ -7,6 +7,7 @@ import { AuthenticatePayload } from '../../../Domain/Security/AuthenticatePayloa
 import VerificationFailed from '../../../Domain/Security/VerificationFailed'
 import UserRepository from '../../../Domain/User/UserRepository'
 import { TYPES } from '../../../Domain/DependencyInjection/types'
+import { castToNumber } from '../../../Ui/Http/HttpUtil'
 
 @injectable()
 export default class JwtProvider implements SecurityProvider {
@@ -15,13 +16,14 @@ export default class JwtProvider implements SecurityProvider {
   ) {}
 
   generateTokens (user: User): { accessToken: Token, refreshToken: Token } {
+    const authenticatePayload: AuthenticatePayload = { id: castToNumber(user.id) }
     const token = jwt.sign(
-      { id: user.id } as AuthenticatePayload,
+      authenticatePayload,
       process.env.SECRET_TOKEN ?? 'secret',
       { expiresIn: '15m' }
     )
     const refreshToken = jwt.sign(
-      { id: user.id } as AuthenticatePayload,
+      authenticatePayload,
       process.env.REFRESH_TOKEN_SECRET ?? 'refresh-secret'
     )
 

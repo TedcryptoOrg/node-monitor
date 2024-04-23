@@ -14,7 +14,7 @@ import LoginRouter from './Routes/LoginRouter'
 dotenv.config()
 
 const app = express()
-var corsOptions = {
+const corsOptions = {
   origin: process.env.CORS_ORIGIN
 }
 

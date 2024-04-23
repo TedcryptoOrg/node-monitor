@@ -6,7 +6,10 @@ module.exports = {
         }
     ],
     ignorePatterns: [
+        'jest.config.ts',
         'node_modules/',
-        'tests/'
+        'tests/',
+        '**/Prometheus/prometheusUtils.ts',
+        '**/Prometheus/parseLine.ts',
     ],
 }

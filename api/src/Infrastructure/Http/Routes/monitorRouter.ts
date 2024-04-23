@@ -5,16 +5,41 @@ import { deleteMonitor } from '../../../Ui/Http/Monitors/delete'
 import { findFailed } from '../../../Ui/Http/Monitors/findFailed'
 import { findWarnings } from '../../../Ui/Http/Monitors/findWarnings'
 import { findById } from '../../../Ui/Http/Monitors/findById'
+import { type Request, type Response, type NextFunction, type Router } from 'express'
 
 const monitorRouter = require('express').Router()
 
-monitorRouter.get('/failed', findFailed)
-monitorRouter.get('/warnings', findWarnings)
-monitorRouter.post('/', upsert)
-monitorRouter.get('/', findAll)
-monitorRouter.get('/:id', findById)
-monitorRouter.put('/:id', upsert)
-monitorRouter.delete('/:id', deleteMonitor)
-monitorRouter.post('/:id/ping', ping)
+monitorRouter.get('/failed', (req: Request, resp: Response, next: NextFunction) => {
+  findFailed(req, resp).catch(next)
+  next()
+})
+monitorRouter.get('/warnings', (req: Request, resp: Response, next: NextFunction) => {
+  findWarnings(req, resp).catch(next)
+  next()
+})
+monitorRouter.post('/', (req: Request, resp: Response, next: NextFunction) => {
+  upsert(req, resp).catch(next)
+  next()
+})
+monitorRouter.get('/', (req: Request, resp: Response, next: NextFunction) => {
+  findAll(req, resp).catch(next)
+  next()
+})
+monitorRouter.get('/:id', (req: Request, resp: Response, next: NextFunction) => {
+  findById(req, resp).catch(next)
+  next()
+})
+monitorRouter.put('/:id', (req: Request, resp: Response, next: NextFunction) => {
+  upsert(req, resp).catch(next)
+  next()
+})
+monitorRouter.delete('/:id', (req: Request, resp: Response, next: NextFunction) => {
+  deleteMonitor(req, resp).catch(next)
+  next()
+})
+monitorRouter.post('/:id/ping', (req: Request, resp: Response, next: NextFunction) => {
+  ping(req, resp).catch(next)
+  next()
+})
 
-export default monitorRouter
+export default monitorRouter as Router

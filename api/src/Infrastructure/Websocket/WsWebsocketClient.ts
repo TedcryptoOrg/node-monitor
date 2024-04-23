@@ -1,5 +1,5 @@
 import type WebsocketClient from '../../Domain/Websocket/WebsocketClient'
-import WebSocket from 'ws'
+import WebSocket, { type CloseEvent, type ErrorEvent } from 'ws'
 
 export default class WsWebsocketClient implements WebsocketClient {
   private ws: WebSocket | undefined = undefined
@@ -31,13 +31,13 @@ export default class WsWebsocketClient implements WebsocketClient {
   }
 
   onClose (callback: (code: number, reason: string) => void): void {
-    this.ws?.addEventListener('close', (event) => {
+    this.ws?.addEventListener('close', (event: CloseEvent) => {
       callback(event.code, event.reason)
     })
   }
 
   onError (callback: (error: Error) => void): void {
-    this.ws?.addEventListener('error', (event) => {
+    this.ws?.addEventListener('error', (event: ErrorEvent) => {
       callback(event.error)
     })
   }
@@ -77,7 +77,7 @@ export default class WsWebsocketClient implements WebsocketClient {
   private sendQueuedMessages (): void {
     while (this.messageQueue.length > 0) {
       const message = this.messageQueue.shift()
-      if (message) {
+      if (message !== undefined) {
         console.debug('Sending queued message')
         this.ws?.send(message)
       }

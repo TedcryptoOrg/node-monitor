@@ -14,7 +14,7 @@ async function run (): Promise<void> {
   const consoleCommands: Record<string, ConsoleCommand> = {}
   consoleCommands[CreateUser.commandName.toString()] = myContainer.get<CreateUser>(CreateUser)
 
-  if (!consoleCommands[action]) {
+  if (!(action in consoleCommands)) {
     throw new Error(`Unknown action: ${action}`)
   }
 

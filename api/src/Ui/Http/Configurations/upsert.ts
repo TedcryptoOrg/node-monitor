@@ -1,9 +1,10 @@
-import { type RequestHandler, type Request, type Response } from 'express'
+import { type Request, type Response } from 'express'
 import { handleCommand } from '../handleCommandUtil'
 import UpsertConfigurationCommand from '../../../Application/Write/Configuration/UpsertConfiguration/UpsertConfigurationCommand'
 import type Configuration from '../../../Domain/Configuration/Configuration'
+import { castToBoolean, castToNumberOrUndefined, castToString } from '../HttpUtil'
 
-export const upsert: RequestHandler = async (req: Request, resp: Response) => {
+export const upsert = async (req: Request, resp: Response): Promise<void> => {
   const requiredFields = ['name', 'chain', 'is_enabled']
   const missingFields = requiredFields.filter(field => !(field in req.body))
   if (missingFields.length > 0) {
@@ -13,14 +14,14 @@ export const upsert: RequestHandler = async (req: Request, resp: Response) => {
 
   await handleCommand(
     new UpsertConfigurationCommand(
-      req.body.name,
-      req.body.chain,
-      req.body.is_enabled,
-      req.params.id ? Number(req.params.id) : undefined
+      castToString(req.body.name),
+      castToString(req.body.chain),
+      castToBoolean(req.body.is_enabled),
+      castToNumberOrUndefined(req.params.id)
     ),
     resp,
     (configuration: Configuration) => {
-      resp.status(req.params.id ? 200 : 202).send(configuration.toArray())
+      resp.status(req.params.id !== undefined ? 200 : 202).send(configuration.toArray())
     }
   )
 }

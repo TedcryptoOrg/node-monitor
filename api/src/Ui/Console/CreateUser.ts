@@ -25,7 +25,7 @@ export default class CreateUser implements ConsoleCommand {
     await this.commandHandlerManager.handle(
       new UpsertUserCommand(
         undefined,
-        username,
+        username as string,
         isActive,
         isAdmin,
         isSuperAdmin,

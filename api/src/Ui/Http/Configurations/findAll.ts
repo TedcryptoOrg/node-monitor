@@ -1,8 +1,9 @@
 import { handleCommand } from '../handleCommandUtil'
 import FindAllConfigurationsCommand from '../../../Application/Query/Configuration/FindAllConfigurations/FindAllConfigurationsCommand'
 import type Configuration from '../../../Domain/Configuration/Configuration'
+import type { Request, Response } from 'express'
 
-export const findAll = async (req: any, resp: any) => {
+export const findAll = async (req: Request, resp: Response): Promise<void> => {
   await handleCommand(
     new FindAllConfigurationsCommand(),
     resp,

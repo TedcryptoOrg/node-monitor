@@ -41,7 +41,7 @@ export default class OrmConfigurationRepository implements ConfigurationReposito
       is_enabled: configuration.is_enabled
     }
 
-    if (configuration.id) {
+    if (configuration.id !== undefined) {
       return Configuration.fromArray(
         await this.ormClient.configurations.update({
           where: { id: configuration.id },

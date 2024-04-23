@@ -18,7 +18,7 @@ export default class OrmNotificationChannelRepository implements NotificationCha
       }
     })
 
-    if (!notificationChannel) {
+    if (notificationChannel === null || notificationChannel === undefined) {
       throw new Error('NotificationChannel not found')
     }
 

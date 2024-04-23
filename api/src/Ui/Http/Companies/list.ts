@@ -1,9 +1,9 @@
-import { type RequestHandler, type Request, type Response } from 'express'
+import { type Request, type Response } from 'express'
 import { handleCommand } from '../handleCommandUtil'
 import ListAllCompaniesCommand from '../../../Application/Query/Company/ListAllCompanies/ListAllCompaniesCommand'
 import type Company from '../../../Domain/User/Company'
 
-export const list: RequestHandler = async (req: Request, resp: Response) => {
+export const list = async (req: Request, resp: Response): Promise<void> => {
   await handleCommand(
     new ListAllCompaniesCommand(),
     resp,

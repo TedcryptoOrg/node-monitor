@@ -1,4 +1,4 @@
-export function convertBoolean (value: unknown): boolean | undefined {
+export function castToBooleanOrUndefined (value: unknown): boolean | undefined {
   if (value === undefined) {
     return undefined
   }
@@ -10,7 +10,7 @@ export function convertBoolean (value: unknown): boolean | undefined {
 }
 
 export function castToBoolean (value: unknown): boolean {
-  value = convertBoolean(value)
+  value = castToBooleanOrUndefined(value)
   if (value === undefined) {
     throw new Error('Value is required')
   }

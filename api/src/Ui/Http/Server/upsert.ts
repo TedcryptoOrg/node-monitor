@@ -9,7 +9,7 @@ export const upsert = async (req: Request, resp: Response): Promise<void> => {
   const missingFields = requiredFields.filter((field) => req.body[field] === undefined)
   if (missingFields.length > 0) {
     resp.status(400).send(`Missing fields: ${missingFields.join(', ')}`)
-    throw new Error(`Missing fields: ${missingFields.join(', ')}`)
+    return
   }
 
   await handleCommand(

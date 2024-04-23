@@ -25,7 +25,7 @@ export default class NotificationChannel {
     return new NotificationChannel(
       array.name,
       array.type as NotificationChannelType,
-      JSON.parse(array.configuration_object),
+      JSON.parse(array.configuration_object) as object,
       array.is_enabled,
       array.id,
       array.created_at,

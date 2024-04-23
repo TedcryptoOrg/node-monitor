@@ -22,7 +22,7 @@ export default class OrmServerRepository implements ServerRepository {
         services: true
       }
     })
-    if (!data) {
+    if (data === undefined || data === null) {
       throw new RecordNotFound(`Server with id ${id} not found`)
     }
 

@@ -1,10 +1,11 @@
-import { type RequestHandler, type Request, type Response } from 'express'
+import { type Request, type Response } from 'express'
 import { handleCommand } from '../handleCommandUtil'
 import TestNotificationChannelCommand from '../../../Application/Write/NotificationChannel/TestNotificationChannel/TestNotificationChannelCommand'
 import NotificationChannel from '../../../Domain/NotificationChannel/NotificationChannel'
 import { type NotificationChannelType } from '../../../Domain/NotificationChannel/NotificationChannelType'
+import { castToString } from '../HttpUtil'
 
-export const test: RequestHandler = async (req: Request, resp: Response) => {
+export const test = async (req: Request, resp: Response): Promise<void> => {
   const requiredFields = ['name', 'type', 'configuration_object', 'is_enabled']
   const missingFields = requiredFields.filter((field) => !(field in req.body))
   if (missingFields.length > 0) {
@@ -21,9 +22,9 @@ export const test: RequestHandler = async (req: Request, resp: Response) => {
 
   await handleCommand(
     new TestNotificationChannelCommand(new NotificationChannel(
-      req.body.name,
+      castToString(req.body.name),
       req.body.type as NotificationChannelType,
-      JSON.parse(configurationObject),
+      JSON.parse(configurationObject as string) as object,
       true
     )),
     resp,

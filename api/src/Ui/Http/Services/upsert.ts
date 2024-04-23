@@ -12,7 +12,7 @@ export const upsert = async (req: Request, resp: Response): Promise<void> => {
     resp.status(400).send({
       message: `Missing required fields: ${missingFields.join(', ')}`
     })
-    throw new Error(`Missing required fields: ${missingFields.join(', ')}`)
+    return
   }
 
   await handleCommand(

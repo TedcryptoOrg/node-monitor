@@ -6,10 +6,10 @@ export default class UpsertMonitorCommand implements Command {
     public readonly name: string,
     public readonly type: MonitorType,
     public readonly isEnabled: boolean,
-    public readonly configurationId: number | null,
+    public readonly configurationId: number | undefined,
     public readonly configurationObject: string,
-    public readonly serverId: number | null,
-    public readonly lastCheck: Date | null,
+    public readonly serverId?: number,
+    public readonly lastCheck?: Date,
     public readonly status?: boolean,
     public readonly lastError?: string,
     public readonly id?: number

@@ -1,12 +1,25 @@
 import { upsert } from '../../../Ui/Http/Services/upsert'
 import { findAll } from '../../../Ui/Http/Services/findAll'
 import { deleteService } from '../../../Ui/Http/Services/delete'
+import { type Request, type Response, type NextFunction, type Router } from 'express'
 
 const serviceRouter = require('express').Router()
 
-serviceRouter.post('/', upsert)
-serviceRouter.get('/', findAll)
-serviceRouter.put('/:id', upsert)
-serviceRouter.delete('/:id', deleteService)
+serviceRouter.post('/', (req: Request, resp: Response, next: NextFunction) => {
+  upsert(req, resp).catch(next)
+  next()
+})
+serviceRouter.get('/', (req: Request, resp: Response, next: NextFunction) => {
+  findAll(req, resp).catch(next)
+  next()
+})
+serviceRouter.put('/:id', (req: Request, resp: Response, next: NextFunction) => {
+  upsert(req, resp).catch(next)
+  next()
+})
+serviceRouter.delete('/:id', (req: Request, resp: Response, next: NextFunction) => {
+  deleteService(req, resp).catch(next)
+  next()
+})
 
-export default serviceRouter
+export default serviceRouter as Router

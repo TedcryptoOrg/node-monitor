@@ -14,6 +14,8 @@ export class PrometheusParser {
       })
     })
 
-    return new PrometheusMetricBag(parsePrometheusTextFormat(response.data))
+    return new PrometheusMetricBag(
+      parsePrometheusTextFormat(response.data)
+    )
   }
 }
