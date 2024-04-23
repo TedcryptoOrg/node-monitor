@@ -1,11 +1,13 @@
 import { handleCommand } from '../handleCommandUtil'
 import PingMonitorCommand from '../../../Application/Write/Monitor/PingMonitor/PingMonitorCommand'
+import type {Request, Response} from "express";
+import {castToBoolean} from "../HttpUtil";
 
-export const ping = async (req: any, resp: any) => {
+export const ping = async (req: Request, resp: Response): Promise<void> => {
   const requiredFields = ['status']
   const missingFields = requiredFields.filter((field: string) => !(field in req.body))
   if (missingFields.length > 0) {
-    return resp.status(400).send({
+    resp.status(400).send({
       message: `Missing required fields: ${missingFields.join(', ')}`
     })
   }
@@ -13,7 +15,7 @@ export const ping = async (req: any, resp: any) => {
   await handleCommand(
     new PingMonitorCommand(
       Number(req.params.id),
-      req.body.status === 'false' ? false : req.body.status, // TODO: cant make jest send false in boolean
+      castToBoolean(req.body.status),
       req.body.last_error ?? null
     ),
     resp,

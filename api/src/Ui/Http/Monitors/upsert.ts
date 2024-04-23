@@ -1,4 +1,4 @@
-import { type RequestHandler, type Request, type Response } from 'express'
+import { type Request, type Response } from 'express'
 import { handleCommand } from '../handleCommandUtil'
 import UpsertMonitorCommand from '../../../Application/Write/Monitor/UpsertMonitor/UpsertMonitorCommand'
 import type Monitor from '../../../Domain/Monitor/Monitor'
