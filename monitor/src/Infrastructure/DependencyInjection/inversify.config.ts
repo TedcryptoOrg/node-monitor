@@ -30,6 +30,7 @@ import LoggerManager from "../../Application/Logger/LoggerManager";
 import Logger from "../../Application/Logger/Logger";
 import WebsocketLogProvider from "../Logger/WebsocketLogProvider";
 import ConsoleLogProvider from "../Logger/ConsoleLogProvider";
+import LokiLogProvider from "../Logger/LokiLogProvider";
 
 const myContainer = new Container();
 
@@ -43,6 +44,12 @@ myContainer.bind(WebsocketLogProvider).toSelf()
 const loggerManager = new LoggerManager();
 loggerManager.addProvider(myContainer.get(ConsoleLogProvider));
 loggerManager.addProvider(myContainer.get(WebsocketLogProvider));
+if (process.env.LOKI_HOST && process.env.LOKI_AUTH) {
+    loggerManager.addProvider(new LokiLogProvider(
+        process.env.LOKI_HOST,
+        process.env.LOKI_AUTH,
+    ));
+}
 myContainer.bind<Logger>(TYPES.Logger).toConstantValue(loggerManager);
 
 // Command handlers
