@@ -7,11 +7,13 @@ import {sleep} from "../../Shared/sleep";
 import Command from "../../../Domain/Command/Command";
 import CheckStatusChanged from "../CheckStatusChanged";
 import {EventDispatcher} from "../../../Domain/Event/EventDispatcher";
+import Logger from "../../Logger/Logger";
 
 export abstract class AbstractChecker implements Checker {
     constructor(
         protected commandHandler: CommandHandler,
         protected eventDispatcher: EventDispatcher,
+        protected logger: Logger,
         protected monitor: Monitor,
         protected status: CheckStatus = CheckStatus.UNKNOWN,
         protected stopSignal: boolean = false
@@ -23,15 +25,15 @@ export abstract class AbstractChecker implements Checker {
 
     start(): void {
         if (!this.monitor.isEnabled) {
-            console.debug(`${this.monitor.getFullName()} is disabled`)
+            this.logger.debug(`${this.monitor.getFullName()} is disabled`, {monitorId: this.monitor.id, configurationId: this.monitor.configuration.id})
             return;
         }
         if (!this.stopSignal) {
-            console.debug(`${this.monitor.getFullName()} Already running`)
+            this.logger.debug(`${this.monitor.getFullName()} Already running`, {monitorId: this.monitor.id, configurationId: this.monitor.configuration.id})
             return;
         }
 
-        console.debug(`${this.monitor.getFullName()} Starting`)
+        this.logger.debug(`${this.monitor.getFullName()} Starting`, {monitorId: this.monitor.id, configurationId: this.monitor.configuration.id})
         this.stopSignal = false;
     }
 
@@ -71,7 +73,7 @@ export abstract class AbstractChecker implements Checker {
         do {
             const result: CheckResult = await this.commandHandler.handle(this.getCommand());
 
-            console.log(`${this.monitor.getFullName()}[Status: ${result.status.toString()}] ${result.message}`);
+            this.logger.log(`${this.monitor.getFullName()}[Status: ${result.status.toString()}] ${result.message}`, {monitorId: this.monitor.id, configurationId: this.monitor.configuration.id});
 
             if (this.status !== result.status) {
                 await this.eventDispatcher.dispatch(new CheckStatusChanged(this.monitor, this.status, result));
@@ -82,13 +84,13 @@ export abstract class AbstractChecker implements Checker {
             await this.postCheck(result)
 
             if (!this.stopSignal) {
-                //console.log(`${this.monitor.getFullName()} Sleeping for ${this.monitor.checkIntervalSeconds} seconds`)
+                //this.logger.log(`${this.monitor.getFullName()} Sleeping for ${this.monitor.checkIntervalSeconds} seconds`, {monitorId: this.monitor.id, configurationId: this.monitor.configuration.id})
 
                 await sleep(1000 * this.monitor.checkIntervalSeconds);
             }
         } while (!this.stopSignal);
         if (this.stopSignal) {
-            console.debug(`${this.monitor.getFullName()} Stopped as requested`)
+            this.logger.debug(`${this.monitor.getFullName()} Stopped as requested`, {monitorId: this.monitor.id, configurationId: this.monitor.configuration.id})
         }
     }
 }

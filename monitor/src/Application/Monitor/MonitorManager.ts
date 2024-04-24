@@ -9,6 +9,7 @@ import ApiClient from "../../Domain/ApiClient";
 import {WebSocketServer} from "../../Domain/Server/WebSocketServer";
 import MonitorCheckerFactory from "./MonitorCheckerFactory";
 import {CheckStatus} from "../../Domain/Checker/CheckStatusEnum";
+import Logger from "../Logger/Logger";
 
 type WebSocketMessage = {
     event: "configuration_enabled" | "configuration_disabled" | "monitor_updated" | "monitor_disabled" | "monitor_enabled",
@@ -26,13 +27,14 @@ export default class MonitorManager {
         @inject(TYPES.MonitorCheckerFactory) private readonly monitorCheckerFactory: MonitorCheckerFactory,
         @inject(TYPES.ApiClient) private readonly apiClient: ApiClient,
         @inject(TYPES.EventDispatcher) private readonly eventDispatcher: EventDispatcher,
-        @inject(TYPES.WebSocketServer) private readonly websocketServer: WebSocketServer
+        @inject(TYPES.WebSocketServer) private readonly websocketServer: WebSocketServer,
+        @inject(TYPES.Logger) private readonly logger: Logger
     ) {
         this.websocketServer.on('connection', ws => {
             ws.on('message', async (message: Buffer) => {
                 try {
                     const messageJson = JSON.parse(message.toString()) as WebSocketMessage;
-                    console.debug(`[WebServer Socket] Received event ${messageJson.event}`)
+                    this.logger.debug(`[WebServer Socket] Received event ${messageJson.event}`, {websocket_message: message.toString()})
 
                     if (['configuration_disabled', 'configuration_enabled'].includes(messageJson.event)) {
                         this.handleConfigurationEvent(messageJson.id, messageJson.event as "configuration_enabled" | "configuration_disabled")
@@ -40,7 +42,7 @@ export default class MonitorManager {
                         await this.handleMonitorEvent(messageJson.id, messageJson.event as "monitor_updated" | "monitor_disabled" | "monitor_enabled")
                     }
                 } catch (error) {
-                    console.error('Failed to parse configuration:', error);
+                    this.logger.error('Failed to parse configuration:', {error: error});
                 }
             });
         });
@@ -52,7 +54,7 @@ export default class MonitorManager {
 
     public pushMonitor(monitor: Monitor): void {
         if (this.monitors.hasOwnProperty(monitor.id)) {
-            console.warn(`Monitor ${monitor.getFullName()} already exists in the manager.`)
+            this.logger.warn(`Monitor ${monitor.getFullName()} already exists in the manager.`)
             return
         }
 
@@ -70,7 +72,7 @@ export default class MonitorManager {
     }
 
     public run(): void {
-        console.log('Running checks...');
+        this.logger.log('Running checks...');
         Object.values(this.monitors).forEach(async (monitor: Monitor) => {
             this.runCheck(monitor);
         });
@@ -92,7 +94,7 @@ export default class MonitorManager {
     }
 
     public stopCheck(monitor: Monitor): void {
-        console.debug(`Stopping check for ${monitor.getFullName()}`)
+        this.logger.debug(`Stopping check for ${monitor.getFullName()}`, {monitorId: monitor})
         this.checkers[monitor.id].stop();
     }
 
@@ -107,36 +109,36 @@ export default class MonitorManager {
 
     private async runCheck(monitor: Monitor, attempt: number = 1): Promise<void> {
         if (this.maxAttempts && this.maxAttempts < attempt) {
-            console.error(`Max attempts reached for ${monitor.getFullName()}. Skipping check.`)
+            this.logger.error(`Max attempts reached for ${monitor.getFullName()}. Skipping check.`, {monitorId: monitor.id})
             return;
         }
         if (!monitor.configuration.isEnabled) {
-            console.error(`${monitor.configuration.name} is disabled. Skipping check.`)
+            this.logger.error(`${monitor.configuration.name} is disabled. Skipping check.`, {monitorId: monitor.id})
             return
         }
         if (!monitor.isEnabled) {
-            console.error(`${monitor.getFullName()} is disabled. Skipping check.`)
+            this.logger.error(`${monitor.getFullName()} is disabled. Skipping check.`, {monitorId: monitor.id})
             return
         }
         let timeoutId = undefined;
         try {
             if (attempt > 1) {
                 timeoutId = setTimeout(() => {
-                    console.log(`After ${attempt} fails, counter has been reset to 0.`)
+                    this.logger.log(`After ${attempt} fails, counter has been reset to 0.`, {monitorId: monitor.id})
                     attempt = 0;
                 }, 60000)
             }
 
             await this.checkers[monitor.id].check()
         } catch (error: any) {
-            console.error(error)
+            this.logger.error(error.message, {monitorId: monitor.id, error: error})
 
             clearTimeout(timeoutId)
             this.checkers[monitor.id].setStatus(CheckStatus.ERROR)
 
             await this.eventDispatcher.dispatch(new RunCheckFailed(monitor, attempt, error))
 
-            console.debug(`${monitor.getFullName()}[Attempt: ${attempt}] Retrying in ${(attempt ** 2)} seconds`)
+            this.logger.debug(`${monitor.getFullName()}[Attempt: ${attempt}] Retrying in ${(attempt ** 2)} seconds`, {monitorId: monitor.id})
             await sleep(1000 * attempt ** 2)
             await this.runCheck(monitor, attempt + 1)
         }
@@ -174,7 +176,7 @@ export default class MonitorManager {
                 this.startCheck(monitor);
                 break;
             default:
-                console.error(`Unknown event ${event}`)
+                this.logger.error(`Unknown event ${event}`, {monitorId: monitor.id, configurationId: monitor.configuration.id})
         }
     }
 }

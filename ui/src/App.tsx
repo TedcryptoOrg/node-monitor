@@ -22,6 +22,7 @@ import UserComponent from "./components/User/UserComponent";
 import UserOverview from "./components/User/UserOverview";
 import UpsertUser from "./components/User/UpsertUser";
 import {LogoutComponent} from "./components/Security/LogoutComponent";
+import LogWatcher from "./components/logWatcher/LogWatcher";
 
 function App() {
     const api = useApi();
@@ -78,6 +79,7 @@ function App() {
                     <Routes>
                         {user ? (<>
                             <Route path="/" element={<DashboardComponent />} />
+                            <Route path="/logger" element={<LogWatcher />} />
                             <Route path="/configurations" element={<ConfigurationsComponent />} />
                             <Route path="/configurations/:id" element={<ConfigurationOverview />} />
                             <Route path="/network-status" element={<NetworkStatus />} />

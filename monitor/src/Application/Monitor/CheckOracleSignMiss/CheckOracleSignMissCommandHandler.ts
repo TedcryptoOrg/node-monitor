@@ -9,11 +9,13 @@ import BlockchainClient from "../../../Domain/Blockchain/BlockchainClient";
 import BlockchainClientFactory from "../../../Domain/Blockchain/BlockchainClientFactory";
 import Configuration from "../../../Domain/Configuration/Configuration";
 import {ServiceType} from "../../../Domain/Services/ServiceType";
+import Logger from "../../Logger/Logger";
 
 @injectable()
 export default class CheckOracleSignMissCommandHandler implements CommandHandler {
     constructor(
         @inject(TYPES.BlockchainClientFactory) private readonly clientFactory: BlockchainClientFactory,
+        @inject(TYPES.Logger) private readonly logger: Logger
     ) {
     }
 
@@ -39,7 +41,7 @@ export default class CheckOracleSignMissCommandHandler implements CommandHandler
         }
 
         if (currentMissCounter > command.lastState.lastNumberOfBlocksMissed) {
-            console.log(`🟡${command.messagePrefix} Counter has increased, current missed in this missing period: ${missDifference}. Refreshing previous incident timestamp.`)
+            this.logger.log(`🟡${command.messagePrefix} Counter has increased, current missed in this missing period: ${missDifference}. Refreshing previous incident timestamp.`, {command})
             if (missDifference >= command.missTolerance) {
                 return new CheckResult(
                     CheckStatus.ERROR,

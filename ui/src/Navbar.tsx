@@ -10,6 +10,7 @@ import NotificationChannelIcon from '@mui/icons-material/Message';
 import UserIcon from '@mui/icons-material/Person';
 import LogoutIcon from '@mui/icons-material/Logout';
 import CompanyIcon from '@mui/icons-material/House';
+import LoggerIcon from '@mui/icons-material/Pages';
 import {User} from "./types/User";
 
 const NavbarItem = ({ name, icon: Icon, path }: { name: string, icon: any, path: string }) => (
@@ -63,6 +64,13 @@ export const navbarItems = [
     name: 'Company',
     icon: CompanyIcon,
     path: '/companies',
+    component: NavbarItem,
+    security: (user: User) => user.is_super_admin
+  },
+  {
+    name: 'Tail log',
+    icon: LoggerIcon,
+    path: '/logger',
     component: NavbarItem,
     security: (user: User) => user.is_super_admin
   },

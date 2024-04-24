@@ -7,19 +7,21 @@ import {NoRecoverableException} from "../../../Domain/NoRecoverableException";
 import {inject, injectable} from "inversify";
 import {TYPES} from "../../../Domain/DependencyInjection/types";
 import ApiClient, {ServerMetricsResponse} from "../../../Domain/ApiClient";
+import Logger from "../../Logger/Logger";
 
 @injectable()
 export default class CheckDiskSpaceCommandHandler implements CommandHandler
 {
     constructor(
         @inject(TYPES.ApiClient) private readonly apiClient: ApiClient,
+        @inject(TYPES.Logger) private readonly logger: Logger
     ) {
     }
 
     async handle(command: CheckDiskSpaceCommand): Promise<CheckResult> {
         const metrics = await this.fetchMetrics(command);
 
-        console.debug(`${command.messagePrefix} Used disk space: ${metrics.usedDiskSpacePercentage}%`);
+        this.logger.debug(`${command.messagePrefix} Used disk space: ${metrics.usedDiskSpacePercentage}%`, {command});
 
         if (metrics.usedDiskSpacePercentage >= command.threshold) {
             return new CheckResult(
@@ -39,7 +41,7 @@ export default class CheckDiskSpaceCommandHandler implements CommandHandler
         try {
             return await this.apiClient.getServerMetrics(command.server.id)
         } catch (exception: any) {
-            console.error(exception);
+            this.logger.error(exception);
 
             if (attempts >= 5) {
                 throw new NoRecoverableException(`${command.messagePrefix} Error fetching metrics. Error: ${exception.message}`);
