@@ -78,6 +78,8 @@ import MonitorControllerEventHandler from '../../Application/Event/Monitor/Monit
 import AxiosHttpClient from '../Http/AxiosHttpClient'
 import { type HttpClient } from '../../Domain/Http/HttpClient'
 import { PARAMS } from './params'
+import ConfigurationControllerEventHandler
+  from '../../Application/Event/Configuration/ConfigurationControllerEventHandler'
 
 const myContainer = new Container()
 
@@ -142,6 +144,7 @@ myContainer.bind<CommandHandlerManager>(CommandHandlerManager).toSelf()
 // Events
 myContainer.bind(TYPES.EventHandler).to(MonitorStatusChangedHandler)
 myContainer.bind(TYPES.EventHandler).to(MonitorControllerEventHandler)
+myContainer.bind(TYPES.EventHandler).to(ConfigurationControllerEventHandler)
 myContainer.bind<EventDispatcherInterface>(TYPES.EventDispatcher).to(EventDispatcher)
 
 // Factories

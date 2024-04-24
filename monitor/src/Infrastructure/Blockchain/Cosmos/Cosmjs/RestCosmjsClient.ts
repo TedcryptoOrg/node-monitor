@@ -3,6 +3,7 @@ import {RecoverableException} from "../../../../Domain/RecoverableException";
 import CosmjsClient from "./CosmjsClient";
 import {ValidatorInfoResponse} from "./Response/Staking/ValidatorInfoResponse";
 import {SigningInfosResponse} from "./Response/Slashing/SigningInfosResponse";
+import Logger from "../../../../Application/Logger/Logger";
 
 type RestSigningInfosResponse = {
   val_signing_info: {
@@ -17,7 +18,8 @@ type RestSigningInfosResponse = {
 
 export class RestCosmjsClient implements CosmjsClient {
   constructor (
-    private readonly address: string
+    private readonly address: string,
+    private readonly logger: Logger,
   ) {
   }
 
@@ -52,7 +54,7 @@ export class RestCosmjsClient implements CosmjsClient {
 
     try {
       const restUrl = this.address + '/cosmos/slashing/v1beta1/signing_infos/' + valconsAddress
-      console.log('Fetching signing infos from: ' + restUrl)
+      this.logger.log('Fetching signing infos from: ' + restUrl, {valconsAddress})
       return (await axios.get(restUrl)).data as RestSigningInfosResponse
     } catch (error: any) {
       if (error.response?.data?.message) {
@@ -66,7 +68,7 @@ export class RestCosmjsClient implements CosmjsClient {
   async getValidatorInfo (valoperAddress: string): Promise<ValidatorInfoResponse> {
     try {
       const restUrl = this.address + '/cosmos/staking/v1beta1/validators/' + valoperAddress
-      console.log(restUrl)
+      this.logger.log(`Get validator info ${restUrl}`, {valoperAddress})
       const response: ValidatorInfoResponse = (await axios.get(restUrl)).data
 
       return {

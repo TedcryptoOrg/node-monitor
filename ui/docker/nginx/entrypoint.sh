@@ -7,14 +7,15 @@ if [ ! -d "/usr/share/nginx/html" ]; then
 fi
 
 # Define a list of environment variables to whitelist
-WHITELIST="API_HOST"
+WHITELIST="API_HOST WEBSOCKET_HOST"
 
 echo "window.globalConfig = {" > /usr/share/nginx/html/config.js
 for var in $WHITELIST; do
     if [ -n "${!var}" ]; then
         echo "$var:'${!var}'," >> /usr/share/nginx/html/config.js
     else
-        echo "Warning: $var is not set." >&2
+        echo "Error: $var is not set." >&2
+        exit 1
     fi
 done
 

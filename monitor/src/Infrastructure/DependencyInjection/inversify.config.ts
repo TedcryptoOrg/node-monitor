@@ -8,9 +8,6 @@ import ApiClient from "../../Domain/ApiClient";
 import {HttpApiClient} from "../Api/HttpApiClient";
 import TedcryptoApiClient from "../Api/Tedcrypto/TedcryptoApiClient";
 import CheckDiskSpaceCommandHandler from "../../Application/Monitor/CheckDiskSpace/CheckDiskSpaceCommandHandler";
-import {AlertChannel} from "../../Domain/Alerter/AlertChannel";
-import Alerter from "../../Domain/Alerter/Alerter";
-import AppAlerter from "../Alerter/AppAlerter";
 import EventHandler from "../../Domain/Event/EventHandler";
 import {EventDispatcher as EventDispatcherInterface } from "../../Domain/Event/EventDispatcher";
 import RunCheckFailedHandler from "../../Application/Event/Monitor/RunCheckFailedHandler";
@@ -26,12 +23,27 @@ import CheckSignMissCommandHandler from "../../Application/Monitor/CheckSignMiss
 import CheckBlockCommandHandler from "../../Application/Monitor/CheckBlock/CheckBlockCommandHandler";
 import CheckOracleSignMissCommandHandler
     from "../../Application/Monitor/CheckOracleSignMiss/CheckOracleSignMissCommandHandler";
-import Telegram from "../Alerter/Channels/Telegram";
 import {HttpClient} from "../../Domain/Http/HttpClient";
 import AxiosHttpClient from "../Http/AxiosHttpClient";
 import CheckStatusChangedHandler from "../../Application/Event/Monitor/CheckStatusChangedHandler";
+import LoggerManager from "../../Application/Logger/LoggerManager";
+import Logger from "../../Application/Logger/Logger";
+import WebsocketLogProvider from "../Logger/WebsocketLogProvider";
+import ConsoleLogProvider from "../Logger/ConsoleLogProvider";
 
 const myContainer = new Container();
+
+// Websocket
+myContainer.bind<WebsocketServerInterface>(TYPES.WebSocketServer).toConstantValue(new WsWebSocketServer(8081));
+
+// Logger
+myContainer.bind(ConsoleLogProvider).toSelf()
+myContainer.bind(WebsocketLogProvider).toSelf()
+
+const loggerManager = new LoggerManager();
+loggerManager.addProvider(myContainer.get(ConsoleLogProvider));
+loggerManager.addProvider(myContainer.get(WebsocketLogProvider));
+myContainer.bind<Logger>(TYPES.Logger).toConstantValue(loggerManager);
 
 // Command handlers
 myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(PingHealthcheckCommandHandler);
@@ -42,11 +54,6 @@ myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(CheckBlockCommandHandl
 myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(CheckOracleSignMissCommandHandler);
 myContainer.bind<CommandHandlerManager>(CommandHandlerManager).toSelf();
 
-// Alerter
-myContainer.bind<AlertChannel>(TYPES.AlertChannel).to(Telegram);
-myContainer.bind(AppAlerter).toSelf();
-myContainer.bind<Alerter>(TYPES.Alerter).to(AppAlerter);
-
 // Services
 myContainer.bind<HttpClient>(TYPES.HttpClient).to(AxiosHttpClient);
 
@@ -56,7 +63,6 @@ myContainer.bind<ApiClient>(TYPES.ApiClient).to(HttpApiClient);
 
 myContainer.bind<MonitorCheckerFactoryInterface>(TYPES.MonitorCheckerFactory).to(MonitorCheckerFactory);
 myContainer.bind(MonitorManager).toSelf();
-myContainer.bind<WebsocketServerInterface>(TYPES.WebSocketServer).toConstantValue(new WsWebSocketServer(8081));
 
 myContainer.bind(CosmosBlockchainClientFactory).toSelf()
 myContainer.bind<BlockchainClientFactory>(TYPES.BlockchainClientFactory).to(CosmosBlockchainClientFactory)

@@ -1,4 +1,4 @@
-import {injectable} from "inversify";
+import {inject, injectable} from "inversify";
 import BlockchainClient from "../../../Domain/Blockchain/BlockchainClient";
 import CosmosBlockchainClient from "./CosmosBlockchainClient";
 import {RestCosmjsClient} from "./Cosmjs/RestCosmjsClient";
@@ -8,13 +8,17 @@ import BlockchainClientFactory from "../../../Domain/Blockchain/BlockchainClient
 import Configuration from "../../../Domain/Configuration/Configuration";
 import Server from "../../../Domain/Server/Server";
 import {RpcCosmjsClient} from "./Cosmjs/RpcCosmjsClient";
+import {TYPES} from "../../../Domain/DependencyInjection/types";
+import Logger from "../../../Application/Logger/Logger";
 
 @injectable()
 export default class CosmosBlockchainClientFactory implements BlockchainClientFactory {
     private chainDirectory: ChainDirectory
     private cachedServers = new Map<string, string>
 
-    constructor() {
+    constructor(
+        @inject(TYPES.Logger) private readonly logger: Logger,
+    ) {
         this.chainDirectory = new ChainDirectory()
     }
 
@@ -27,7 +31,7 @@ export default class CosmosBlockchainClientFactory implements BlockchainClientFa
         switch (type) {
             case ServiceType.REST:
                 return new CosmosBlockchainClient(
-                    new RestCosmjsClient(this.cachedServers.get(`public-${configuration.chain}-${type}`) as string),
+                    new RestCosmjsClient(this.cachedServers.get(`public-${configuration.chain}-${type}`) as string, this.logger),
                     (await this.chainDirectory.getChainData(configuration.chain)).chain
                 )
             case ServiceType.RPC:
@@ -49,7 +53,7 @@ export default class CosmosBlockchainClientFactory implements BlockchainClientFa
         switch (type) {
             case ServiceType.REST:
                 return new CosmosBlockchainClient(
-                    new RestCosmjsClient(this.cachedServers.get(`configuration-${configuration.id}-${type}`) as string),
+                    new RestCosmjsClient(this.cachedServers.get(`configuration-${configuration.id}-${type}`) as string, this.logger),
                     (await this.chainDirectory.getChainData(configuration.chain)).chain
                 )
             case ServiceType.RPC:
@@ -64,7 +68,7 @@ export default class CosmosBlockchainClientFactory implements BlockchainClientFa
         if (!this.cachedServers.get(`server-${server.id}-${type}`)) {
             const address = await this.getBestServerForService([server], type)
             if (address === null) {
-                console.error('No service available for server', server)
+                this.logger.error('No service available for server', {server})
                 throw new Error('No service available for server')
             }
 
@@ -74,7 +78,7 @@ export default class CosmosBlockchainClientFactory implements BlockchainClientFa
         switch (type) {
             case ServiceType.REST:
                 return new CosmosBlockchainClient(
-                    new RestCosmjsClient(this.cachedServers.get(`server-${server.id}-${type}`) as string),
+                    new RestCosmjsClient(this.cachedServers.get(`server-${server.id}-${type}`) as string, this.logger),
                     (await this.chainDirectory.getChainData(configuration.chain)).chain
                 )
             case ServiceType.RPC:
@@ -97,7 +101,7 @@ export default class CosmosBlockchainClientFactory implements BlockchainClientFa
             }
         }
 
-        console.error('Falling to public services because servers are not available. Are they disabled?')
+        this.logger.error('Falling to public services because servers are not available. Are they disabled?', {servers, serviceType})
 
         return null
     }

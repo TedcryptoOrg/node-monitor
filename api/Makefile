@@ -70,6 +70,7 @@ npm-command:
 ## [App] Create Initial Admin user
 create-user:
 	$(DOCKER_COMPOSE_EXEC) node-app npx ts-node bin/console create-user admin true true true admin
+	echo "User: admin Password: admin created."
 
 ## [Tests] Run tests
 test:
@@ -94,3 +95,8 @@ db-diff db.diff db.create_migration db-create-migration:
 ## [Database] Run migrations
 db-migrate:
 	$(DOCKER_COMPOSE_EXEC) node-app npx prisma migrate dev
+
+.PHONY: db-test-setup db.test.setup
+## [DATABASE] Reset Database for tests
+db-test-setup db.test.setup:
+	$(DOCKER_COMPOSE_EXEC) node-app npm run test:setup

@@ -1,4 +1,4 @@
-import {WebSocketServer as WsServer} from "ws";
+import {WebSocketServer as WsServer, WebSocket} from "ws";
 import {WebSocketServer} from "../../Domain/Server/WebSocketServer";
 
 export default class WsWebSocketServer implements WebSocketServer{
@@ -18,5 +18,13 @@ export default class WsWebSocketServer implements WebSocketServer{
         }
 
         this.server?.on(event, listener);
+    }
+
+    send(message: string|object): void {
+        this.server?.clients.forEach(client => {
+            if (client.readyState === WebSocket.OPEN) {
+                client.send(Buffer.from(typeof message === 'string' ? message : JSON.stringify(message)));
+            }
+        });
     }
 }

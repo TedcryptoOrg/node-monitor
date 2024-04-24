@@ -47,5 +47,8 @@ jobs:
       - name: Check node-app status
         run: docker-compose ps node-app
 
+      - name: Prepare test environment
+        run: docker-compose exec -T node-app npm run test:setup
+
       - name: Run tests
-        run: docker compose exec node-app npm test --detectOpenHandles
+        run: docker compose exec -T node-app npm test

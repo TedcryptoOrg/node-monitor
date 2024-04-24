@@ -10,11 +10,13 @@ import BlockchainClient from "../../../Domain/Blockchain/BlockchainClient";
 import Server from "../../../Domain/Server/Server";
 import {ServiceType} from "../../../Domain/Services/ServiceType";
 import CheckBlockCommandState from "./CheckBlockCommandState";
+import Logger from "../../Logger/Logger";
 
 @injectable()
 export default class CheckBlockCommandHandler implements CommandHandler {
     constructor(
         @inject(TYPES.BlockchainClientFactory) private readonly clientFactory: BlockchainClientFactory,
+        @inject(TYPES.Logger) private readonly logger: Logger
     ) {
     }
 
@@ -23,7 +25,7 @@ export default class CheckBlockCommandHandler implements CommandHandler {
         const currentBlockHeight = await client.getBlockHeight()
         command.lastState?.blockEta.pushBlock(currentBlockHeight)
 
-        console.log(`️${command.messagePrefix} Height: ${currentBlockHeight}`)
+        this.logger.log(`️${command.messagePrefix} Height: ${currentBlockHeight}`, {command})
 
         if (command.lastState === undefined) {
             const isSyncing = await client.isSyncing()
@@ -51,7 +53,7 @@ export default class CheckBlockCommandHandler implements CommandHandler {
 
         if (currentBlockHeight <= command.lastState.currentBlockHeight) {
             const missCounter = command.lastState.missCounter + 1
-            console.log(`🟠️${command.messagePrefix} Block is not increasing. Miss counter: ${missCounter}`)
+            this.logger.log(`🟠️${command.messagePrefix} Block is not increasing. Miss counter: ${missCounter}`, {command})
             if (missCounter >= command.missTolerance) {
                 return new CheckResult(
                     CheckStatus.ERROR,
@@ -84,15 +86,15 @@ export default class CheckBlockCommandHandler implements CommandHandler {
     }
 
     private async handleSyncing(command: CheckBlockCommand, currentBlockHeight: number): Promise<CheckResult> {
-        console.log(`🟠️${command.messagePrefix} Node is syncing...`)
+        this.logger.log(`🟠️${command.messagePrefix} Node is syncing...`, {command})
         const publicClient = await this.getClient(command.configuration)
         let message = `Node is syncing... Current height: ${currentBlockHeight}`
         try {
             const knownBlockHeight = await publicClient.getBlockHeight()
             message += `, known block height: ${knownBlockHeight}`
             message += `, ETA: ${command.lastState?.blockEta.getEta(knownBlockHeight)}`
-        } catch (error) {
-            console.error(error)
+        } catch (error: any) {
+            this.logger.error(error.message, {command})
         }
 
         return new CheckResult(
