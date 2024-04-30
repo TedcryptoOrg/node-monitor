@@ -56,9 +56,6 @@ RUN npm ci --omit=dev
 
 COPY --from=build /app/dist .
 
-# Disable core dumps
-RUN echo "" > /proc/sys/kernel/core_pattern
-
 RUN npm install -g pm2
 
 EXPOSE 8081
