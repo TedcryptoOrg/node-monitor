@@ -1,9 +1,12 @@
 #!/bin/sh
 set -e
 
+# Disable core dumps
+limit coredumpsize 0
+
 # Start the app
 if [ "$APP_ENV" = "prod" ]; then
-  pm2-runtime src/index.js
+  NODE_OPTIONS="--max-old-space-size=4096" pm2-runtime src/index.js
 elif [ "$APP_ENV" = "dev" ]; then
   cd src && npm run start:watch
 else
