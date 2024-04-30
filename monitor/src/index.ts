@@ -53,6 +53,6 @@ setInterval(() => {
 }, 1000 * 60 * 5)
 
 main().catch((error) => {
-  logger.error(`An error occurred: ${error.message}}`, {error})
+  logger.error(`An error occurred: ${error.message}`, {error})
   process.exit(1)
 })
