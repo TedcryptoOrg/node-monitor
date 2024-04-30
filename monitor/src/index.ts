@@ -8,22 +8,18 @@ import ApiClient from "./Domain/ApiClient";
 import MonitorManager from "./Application/Monitor/MonitorManager";
 import Logger from "./Application/Logger/Logger";
 
+const logger = myContainer.get<Logger>(TYPES.Logger)
+
 async function main (): Promise<void> {
-  const logger = myContainer.get<Logger>(TYPES.Logger)
   logger.log('Booting up monitor...')
 
   const monitorManager = myContainer.get(MonitorManager)
   let configurations: Configuration[] = []
-  try {
-    configurations = await myContainer.get<ApiClient>(TYPES.ApiClient).getConfigurations();
-  } catch (error) {
-    logger.error('Failed to get configurations:', {error})
-    process.exit(1)
-  }
-
+  configurations = await myContainer.get<ApiClient>(TYPES.ApiClient).getConfigurations();
   if (configurations.length === 0) {
     throw new Error('No configurations found!');
   }
+
   for (const configuration of configurations) {
     if (!configuration.isEnabled) {
         logger.warn(`❌️[${configuration.name}] Configuration is disabled. Skipping...`, {configurationId: configuration.id})
@@ -45,8 +41,18 @@ async function main (): Promise<void> {
   monitorManager.run()
 }
 
+setInterval(() => {
+  const memoryUsage = process.memoryUsage();
+  logger.log(
+      `==Memory usage==\n`
+      +`Heap Total: ${Math.round(memoryUsage.heapTotal / 1024 / 1024 * 100) / 100} MB\n`
+      +`Heap Used: ${Math.round(memoryUsage.heapUsed / 1024 / 1024 * 100) / 100} MB\n`
+      +`RSS: ${Math.round(memoryUsage.rss / 1024 / 1024 * 100) / 100} MB`,
+      {memoryUsage}
+  );
+}, 1000 * 60 * 5)
+
 main().catch((error) => {
-  console.error('An error occurred:', error.message)
-  myContainer.get<Logger>(TYPES.Logger).error('An error occurred:', error.message)
+  logger.error(`An error occurred: ${error.message}}`, {error})
   process.exit(1)
 })
