@@ -2,7 +2,7 @@
 set -e
 
 # Disable core dumps
-prlimit --core=0:0
+ulimit -c 0
 
 # Start the app
 if [ "$APP_ENV" = "prod" ]; then

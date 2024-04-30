@@ -56,7 +56,6 @@ RUN npm ci --omit=dev
 
 COPY --from=build /app/dist .
 
-RUN apk add --no-cache util-linux
 RUN npm install -g pm2
 
 EXPOSE 8081
