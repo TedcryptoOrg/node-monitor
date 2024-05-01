@@ -21,13 +21,14 @@ export default class JwtProvider implements SecurityProvider {
   ) {}
 
   generateTokens (user: User): SecurityTokens {
+    const authenticatePayload: AuthenticatePayload = { id: castToNumber(user.id) }
     const token = jwt.sign(
-      { id: castToNumber(user.id) },
+      authenticatePayload,
       process.env.SECRET_TOKEN ?? 'secret',
       { expiresIn: '15m' }
     )
     const refreshToken = jwt.sign(
-      { id: castToNumber(user.id) },
+      authenticatePayload,
       process.env.SECRET_TOKEN ?? 'secret',
       { expiresIn: '7d' }
     )
