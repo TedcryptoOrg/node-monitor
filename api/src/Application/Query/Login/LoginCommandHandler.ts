@@ -9,6 +9,12 @@ import Token from '../../../Domain/Security/Token'
 import { PasswordEncoder } from '../../../Domain/Security/PasswordEncoder'
 import { TYPES } from '../../../Domain/DependencyInjection/types'
 
+export interface LoginCommandHandlerResult {
+  user: User
+  accessToken: Token
+  refreshToken: Token
+}
+
 @injectable()
 export default class LoginCommandHandler implements CommandHandler<LoginCommand> {
   constructor (
@@ -18,7 +24,7 @@ export default class LoginCommandHandler implements CommandHandler<LoginCommand>
   ) {
   }
 
-  public async handle (command: LoginCommand): Promise<{ user: User, accessToken: Token, refreshToken: Token }> {
+  public async handle (command: LoginCommand): Promise<LoginCommandHandlerResult> {
     const user = await this.userRepository.getByUsername(command.username)
     if (user.password === undefined) {
       throw new PasswordNotMatch('User is not allowed to login with password')

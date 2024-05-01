@@ -2,8 +2,8 @@ import React, {useCallback, useEffect, useState} from 'react';
 import {useNavigate, useParams} from 'react-router-dom';
 import {TextField, Button, Container, Box, Typography, Grid, FormControlLabel, Checkbox} from '@mui/material';
 import {enqueueSnackbar} from "notistack";
-import axios, {AxiosError} from "axios";
-import {Company, CompanyInput} from "../../types/Company";
+import {AxiosError} from "axios";
+import {CompanyInput} from "../../types/Company";
 import {useApi} from "../../context/ApiProvider";
 
 type RouteParams = {
@@ -35,7 +35,7 @@ const UpsertCompany: React.FC = () => {
                     console.error('Error:', error);
                 });
         }
-    }, [id]);
+    }, [id, api]);
 
     useEffect(() => {
         fetchData();

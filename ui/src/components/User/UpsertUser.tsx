@@ -40,7 +40,7 @@ const UpsertUser: React.FC = () => {
                     enqueueSnackbar('Failed to load data!', {variant: 'error'})
                 });
         }
-    }, [id]);
+    }, [id, api]);
 
     useEffect(() => {
         fetchData();

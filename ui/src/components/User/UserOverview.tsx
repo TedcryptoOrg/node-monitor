@@ -4,7 +4,7 @@ import {
     LinearProgress, Typography, Grid, Card, CardContent, CardActions
 } from '@mui/material';
 import {useParams} from 'react-router-dom';
-import BooleanIcon from "../shared/BooleanIcon";
+import BooleanIcon from "../Shared/BooleanIcon";
 import {enqueueSnackbar} from "notistack";
 import {User} from "../../types/User";
 import CompanyLink from "../Company/CompanyLink";
@@ -39,7 +39,7 @@ const UserOverview: React.FC = () => {
             })
             .finally(() => setLoading(false))
         ;
-    }, [id]);
+    }, [id, api]);
 
     useEffect(() => {
         if (firstRender.current) {

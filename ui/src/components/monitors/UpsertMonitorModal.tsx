@@ -71,7 +71,7 @@ const UpsertMonitorModal: React.FC<UpsertMonitorModalProps> = (
                     setServers(data);
                 });
         }
-    }, [configuration])
+    }, [configuration, api])
 
     useEffect(() => {
         setName(editMonitor ? editMonitor.name : '');
@@ -126,8 +126,6 @@ const UpsertMonitorModal: React.FC<UpsertMonitorModalProps> = (
         const url = editMonitor
             ? `/monitors/${editMonitor.id}`
             : `/monitors`;
-        const method = editMonitor ? 'PUT' : 'POST';
-
         api?.[editMonitor ? 'put' : 'post'](url, monitor)
             .then(response => {
                 if (response.ok) {

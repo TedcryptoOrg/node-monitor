@@ -34,7 +34,7 @@ const CompanyAutocomplete: React.FC<CompanyAutocompleteProps> = (
             .catch((error) => {
                 console.error('Error:', error);
             })
-    }, [company]);
+    }, [company, api]);
 
     return (
         <>

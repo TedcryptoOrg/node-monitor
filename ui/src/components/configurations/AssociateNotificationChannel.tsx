@@ -33,7 +33,7 @@ const AssociateNotificationChannel: React.FC<AssociateNotificationChannelProps> 
                 .then(data => setNotificationChannels(data));
             firstRender.current = false;
         }
-    }, [setNotificationChannels, firstRender]);
+    }, [setNotificationChannels, firstRender, api]);
 
     const handleAdd = () => {
         if (!selectedChannel) {

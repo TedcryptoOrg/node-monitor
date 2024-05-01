@@ -9,7 +9,7 @@ import monitorRouter from './Routes/monitorRouter'
 import notificationChannelsRouter from './Routes/notificationChannelsRouter'
 import CompanyRouter from './Routes/CompanyRouter'
 import UserRouter from './Routes/UserRouter'
-import LoginRouter from './Routes/LoginRouter'
+import SecurityRouter from './Routes/SecurityRouter'
 
 dotenv.config()
 
@@ -27,6 +27,7 @@ app.get('/', (req: any, res: any) => {
   res.send('Hello there!')
 })
 
+app.use('/api', SecurityRouter)
 app.use('/api/configurations', configurationRouter)
 app.use('/api/audit', auditRouter)
 app.use('/api/servers', serverRouter)
@@ -35,7 +36,6 @@ app.use('/api/monitors', monitorRouter)
 app.use('/api/notification-channels', notificationChannelsRouter)
 app.use('/api/companies', CompanyRouter)
 app.use('/api/users', UserRouter)
-app.use('/api/login', LoginRouter)
 
 app.use((req: Request, res: Response, next: NextFunction) => {
   if (res.headersSent) {

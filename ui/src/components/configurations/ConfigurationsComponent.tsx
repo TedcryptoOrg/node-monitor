@@ -11,7 +11,7 @@ import {
   LinearProgress,
 } from "@mui/material";
 import UpsertConfigurationModal from "./UpsertConfigurationModal";
-import BooleanIcon from "../shared/BooleanIcon";
+import BooleanIcon from "../Shared/BooleanIcon";
 import ConfigurationLink from "./ConfigurationLink";
 import MonitorsStatus from "../monitors/MonitorsStatus";
 import { enqueueSnackbar } from "notistack";

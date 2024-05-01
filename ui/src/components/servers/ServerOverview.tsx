@@ -14,7 +14,7 @@ import {useParams} from 'react-router-dom';
 import { ApiServer } from '../../types/ApiServer';
 import { ApiService } from '../../types/ApiService';
 import UpsertServiceModal from '../services/UpsertServiceModal';
-import BooleanIcon from "../shared/BooleanIcon";
+import BooleanIcon from "../Shared/BooleanIcon";
 import UpsertServerModal from "./UpsertServerModal";
 import ConfigurationLink from "../configurations/ConfigurationLink";
 import MonitorsList from "../monitors/MonitorsList";
@@ -43,7 +43,7 @@ const ServerOverview: React.FC = () => {
 
                 setServices(response.body ?? [])
             })
-    }, [id]);
+    }, [id, api]);
 
     const fetchData = useCallback(() => {
         api?.get(`/servers/${id}`)
@@ -56,7 +56,7 @@ const ServerOverview: React.FC = () => {
             })
             .then(data => setServer(data))
             .catch((error) => enqueueSnackbar(`Failed to fetch server data: ${error}`, {variant: 'error'}))
-    }, [id]);
+    }, [id, api]);
 
     useEffect(() => {
         if (firstRender.current) {

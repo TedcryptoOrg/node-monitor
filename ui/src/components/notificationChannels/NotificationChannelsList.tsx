@@ -11,7 +11,7 @@ import {
 import React, {useCallback, useEffect, useRef, useState} from "react";
 import {ApiNotificationChannel} from "../../types/ApiNotificationChannel";
 import UpsertNotificationChannelModal from "./UpsertNotificationChannelModal";
-import BooleanIcon from "../shared/BooleanIcon";
+import BooleanIcon from "../Shared/BooleanIcon";
 import {enqueueSnackbar} from "notistack";
 import {ApiConfiguration} from "../../types/ApiConfiguration";
 import {useApi} from "../../context/ApiProvider";
@@ -56,7 +56,7 @@ const NotificationChannelsList: React.FC<NotificationChannelsListProps> = (
             })
             .finally(() => setIsLoading(false))
         ;
-    }, [setNotificationChannels, setIsLoading])
+    }, [setNotificationChannels, setIsLoading, api, configuration])
 
     useEffect(() => {
         if (isFirstRender.current) {

@@ -33,7 +33,7 @@ const AuditComponent: React.FC = () => {
             firstRender.current = false;
             return;
         }
-    }, []);
+    }, [api]);
 
     return (
         <div>

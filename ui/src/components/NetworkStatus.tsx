@@ -120,7 +120,7 @@ const NetworkStatus: React.FC = () => {
             firstRender.current = false;
             return;
         }
-    }, []);
+    }, [api]);
 
     const bytesToGigabytes = (bytes: number) => {
         return (bytes / (1024 * 1024 * 1024)).toFixed(2);

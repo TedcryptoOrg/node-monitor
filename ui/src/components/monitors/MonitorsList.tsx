@@ -10,7 +10,7 @@ import {
     TableRow
 } from "@mui/material";
 import ServerLink from "../servers/ServerLink";
-import BooleanIcon from "../shared/BooleanIcon";
+import BooleanIcon from "../Shared/BooleanIcon";
 import MonitorsStatus from "./MonitorsStatus";
 import React, {useCallback, useEffect, useState} from "react";
 import UpsertMonitorModal from "./UpsertMonitorModal";
@@ -53,7 +53,7 @@ const MonitorsList: React.FC<MonitorsListProps> = ({configuration, server}) => {
             })
             .finally(() => setIsLoading(false))
         ;
-    }, [configuration.id, server])
+    }, [configuration.id, server, api])
 
     useEffect(() => {
         fetchData()

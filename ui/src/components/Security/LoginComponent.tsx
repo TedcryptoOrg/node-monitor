@@ -8,7 +8,7 @@ import {useNavigate} from "react-router-dom";
 
 const LoginComponent: React.FC = () => {
     const api = useApi();
-    const {setAccessToken, setRefreshToken} = useUserStore();
+    const {handleLoginResponse} = useUserStore();
     const navigate = useNavigate();
 
     const [username, setUsername] = useState('');
@@ -21,9 +21,7 @@ const LoginComponent: React.FC = () => {
             username: username,
             password: password
         }).then((response) => {
-            setAccessToken(response.body.accessToken.value);
-            setRefreshToken(response.body.refreshToken.value);
-
+            handleLoginResponse(response);
             navigate('/')
         }).catch((error: any) => {
             console.error('Error:', error);
