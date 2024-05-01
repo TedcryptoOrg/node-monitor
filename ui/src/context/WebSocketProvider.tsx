@@ -40,7 +40,7 @@ export default function WebSocketProvider({children, onOpen, onError, onMessage}
         return () => {
             webSocketClient.close();
         };
-    }, [webSocketClient]);
+    }, [webSocketClient, onOpen, onError, onMessage]);
 
     return (
         <WebSocketContext.Provider value={{webSocketClient, onOpen, onError}}>

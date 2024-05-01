@@ -19,7 +19,7 @@ import { useParams } from "react-router-dom";
 import { ApiConfiguration } from "../../types/ApiConfiguration";
 import { ApiServer } from "../../types/ApiServer";
 import UpsertServerModal from "../servers/UpsertServerModal";
-import BooleanIcon from "../shared/BooleanIcon";
+import BooleanIcon from "../Shared/BooleanIcon";
 import UpsertConfigurationModal from "./UpsertConfigurationModal";
 import ServerLink from "../servers/ServerLink";
 import MonitorsStatus from "../monitors/MonitorsStatus";
@@ -60,7 +60,7 @@ const ConfigurationOverview: React.FC = () => {
         setServers([])
       })
       .finally(() => setLoadingServers(false))
-  }, [id]);
+  }, [id, api]);
 
   const fetchData = useCallback(() => {
     setLoadingConfiguration(true);
@@ -83,7 +83,7 @@ const ConfigurationOverview: React.FC = () => {
       })
       .finally(() => setLoadingConfiguration(false))
     ;
-  }, [id]);
+  }, [id, api]);
 
   useEffect(() => {
     if (firstRender.current) {

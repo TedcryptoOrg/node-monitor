@@ -1,9 +1,10 @@
+import {UserState} from "../stores/useUserStore";
+
 export default class ApiClient {
     base_url: string;
 
     constructor(
-        private readonly accessToken: string|null,
-        private readonly refreshToken: string|null,
+        private readonly userStore: UserState,
         api_host: string
     ) {
         this.base_url =  api_host + '/api';
@@ -15,10 +16,24 @@ export default class ApiClient {
             query = '?' + query;
         }
 
-        if (this.accessToken && (!options.headers || !options.headers.Authorization)) {
+        let accessToken = this.userStore.securityTokens?.accessToken;
+
+        if (this.userStore.securityTokens && (!options.headers || !options.headers.Authorization)) {
+            if (this.userStore.securityTokens.accessTokenExpiresAt.toTimeString() <= new Date().toTimeString()) {
+                console.debug('Access token expired... refreshing')
+                // Refresh token
+                const response = await this.post('/refresh', undefined, {
+                    headers: {
+                        'Authorization': this.userStore.securityTokens.refreshToken,
+                    }
+                })
+                const apiSecurityTokens = this.userStore.handleLoginResponse(response);
+                accessToken = apiSecurityTokens.accessToken;
+            }
+
             options.headers = {
                 ...options.headers,
-                'Authorization': this.accessToken,
+                'Authorization': accessToken,
             };
         }
 

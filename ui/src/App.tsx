@@ -13,7 +13,6 @@ import AuditComponent from "./components/AuditComponent";
 import NotificationChannelsComponent from "./components/notificationChannels/NotificationChannelsComponent";
 import {useApi} from "./context/ApiProvider";
 import {useUserStore} from "./stores/useUserStore";
-import {enqueueSnackbar} from "notistack";
 import LoginComponent from "./components/Security/LoginComponent";
 import CompaniesComponent from "./components/Company/CompaniesComponent";
 import CompanyOverview from "./components/Company/CompanyOverview";
@@ -26,39 +25,40 @@ import LogWatcher from "./components/logWatcher/LogWatcher";
 
 function App() {
     const api = useApi();
-    const { user, setUser, accessToken, setAccessToken } = useUserStore();
+    const { user, setUser, securityTokens, setApiSecurityTokens } = useUserStore();
 
     const fetchMe = useCallback(() => {
-        api?.get('/users/me')
-            .then((response) => {
-                if (response.ok && response.body) {
-                    setUser(response.body);
-                    return
-                }
+        if (!user) {
+            api?.get('/users/me')
+                .then((response) => {
+                    if (!response.ok || !response.body) {
+                        throw new Error('Failed to fetch user!')
+                    }
 
-                throw new Error('Failed to fetch user!')
-            })
-            .catch((error) => {
-                console.error('Error:', error);
-                enqueueSnackbar('Failed to fetch user!', {variant: 'error'});
-                setUser(undefined);
-                setAccessToken(null);
-            });
-    }, [accessToken]);
+                    setUser(response.body);
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                    setUser(undefined);
+                    setApiSecurityTokens(null);
+                });
+        }
+    }, [user]);
 
     useEffect(() => {
-        if (accessToken) {
+        if (securityTokens) {
             fetchMe();
         } else {
             setUser(undefined);
+            setApiSecurityTokens(null);
         }
-    }, [fetchMe, accessToken]);
+    }, [fetchMe]);
 
     return (
         <>
         <Router>
             <Box sx={{ display: 'flex' }}>
-                {accessToken && <Drawer
+                {securityTokens && <Drawer
                     variant="permanent"
                     sx={{
                         width: 240,

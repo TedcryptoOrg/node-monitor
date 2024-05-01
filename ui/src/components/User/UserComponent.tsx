@@ -10,7 +10,7 @@ import {
     Paper,
     LinearProgress
 } from '@mui/material';
-import BooleanIcon from "../shared/BooleanIcon";
+import BooleanIcon from "../Shared/BooleanIcon";
 import {enqueueSnackbar} from "notistack";
 import {User} from "../../types/User";
 import CompanyLink from "../Company/CompanyLink";
@@ -39,7 +39,7 @@ const UserComponent: React.FC = () => {
                 setUsersData([])
             })
             .finally(() => setIsLoading(false));
-    }, []);
+    }, [api]);
 
     useEffect(() => {
         if (firstRender.current) {

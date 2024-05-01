@@ -16,20 +16,15 @@ export const login = async (req: Request, resp: Response): Promise<void> => {
     ))
 
     resp.status(200).send({
-      accessToken: commandResult.accessToken,
-      refreshToken: commandResult.refreshToken
+      accessToken: commandResult.accessToken.toArray(),
+      refreshToken: commandResult.refreshToken.toArray()
     })
   } catch (error) {
-    console.error(error)
-    if (error instanceof RecordNotFound) {
-      resp.status(404).send({ message: 'User not found' })
-      return
-    }
-    if (error instanceof PasswordNotMatch) {
-      resp.status(401).send({ message: 'Incorrect password' })
+    if (error instanceof RecordNotFound || error instanceof PasswordNotMatch) {
+      resp.status(401).send({ message: 'Username or password is incorrect' })
       return
     }
 
-    resp.status(500).send({ message: 'An error occurred while processing the request. Please try again later.' })
+    throw error
   }
 }

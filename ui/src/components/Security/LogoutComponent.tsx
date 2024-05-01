@@ -3,16 +3,15 @@ import { useNavigate } from 'react-router-dom';
 import {useUserStore} from "../../stores/useUserStore";
 
 export const LogoutComponent: React.FC = () => {
-    const { setAccessToken, setRefreshToken, setUser } = useUserStore();
+    const { setUser, setApiSecurityTokens } = useUserStore();
     const navigate = useNavigate();
 
     useEffect(() => {
-        setAccessToken(null);
-        setRefreshToken(null);
+        setApiSecurityTokens(null);
         setUser(undefined);
 
         navigate('/login')
-    }, []);
+    }, [setApiSecurityTokens, setUser, navigate]);
 
     return null;
 };

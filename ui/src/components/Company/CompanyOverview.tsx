@@ -4,7 +4,7 @@ import {
     LinearProgress, Typography, Grid, Card, CardContent, CardActions
 } from '@mui/material';
 import {useParams} from 'react-router-dom';
-import BooleanIcon from "../shared/BooleanIcon";
+import BooleanIcon from "../Shared/BooleanIcon";
 import {enqueueSnackbar} from "notistack";
 import {Company} from "../../types/Company";
 import {useApi} from "../../context/ApiProvider";
@@ -38,7 +38,7 @@ const DistributeChainOverview: React.FC = () => {
             })
             .finally(() => setLoading(false))
         ;
-    }, [id]);
+    }, [id, api]);
 
     useEffect(() => {
         if (firstRender.current) {
@@ -48,35 +48,31 @@ const DistributeChainOverview: React.FC = () => {
     }, [fetchData, id]);
 
     return (
-        <>
-            <Grid container spacing={1}>
-                <Grid xs={12}>
-                    <Typography variant="h5">Distribute chain Overview</Typography>
-                </Grid>
-                <Grid xs={12} md={12}>
-                    {isLoading ? <LinearProgress /> : (company && (
-                        <>
-                            <Card>
-                                <CardContent>
-                                    <p>Name: {company.name}</p>
-                                    <p>Is Enabled: <BooleanIcon value={company.is_active}/></p>
-                                    <p>Created At: {company.created_at?.toLocaleString()}</p>
-                                    <p>Updated At: {company.updated_at?.toLocaleString()}</p>
-                                </CardContent>
-                                <CardActions>
-                                    <Button variant="contained"
-                                            color="warning"
-                                            href={`/companies/${company.id}/edit`}
-                                    >
-                                        Edit
-                                    </Button>
-                                </CardActions>
-                            </Card>
-                        </>
-                    ))}
-                </Grid>
+        <Grid container spacing={1}>
+            <Grid xs={12}>
+                <Typography variant="h5">Company Overview</Typography>
             </Grid>
-        </>
+            <Grid xs={12} md={6}>
+                {isLoading ? <LinearProgress /> : (company && (
+                    <Card>
+                        <CardContent>
+                            <p>Name: {company.name}</p>
+                            <p>Is Enabled: <BooleanIcon value={company.is_active}/></p>
+                            <p>Created At: {company.created_at?.toLocaleString()}</p>
+                            <p>Updated At: {company.updated_at?.toLocaleString()}</p>
+                        </CardContent>
+                        <CardActions>
+                            <Button variant="contained"
+                                    color="warning"
+                                    href={`/companies/${company.id}/edit`}
+                            >
+                                Edit
+                            </Button>
+                        </CardActions>
+                    </Card>
+                ))}
+            </Grid>
+        </Grid>
     );
 }
 

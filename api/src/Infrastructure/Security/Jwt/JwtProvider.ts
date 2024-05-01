@@ -9,13 +9,18 @@ import UserRepository from '../../../Domain/User/UserRepository'
 import { TYPES } from '../../../Domain/DependencyInjection/types'
 import { castToNumber } from '../../../Ui/Http/HttpUtil'
 
+export interface SecurityTokens {
+  accessToken: Token
+  refreshToken: Token
+}
+
 @injectable()
 export default class JwtProvider implements SecurityProvider {
   constructor (
     @inject(TYPES.UserRepository) private readonly userRepository: UserRepository
   ) {}
 
-  generateTokens (user: User): { accessToken: Token, refreshToken: Token } {
+  generateTokens (user: User): SecurityTokens {
     const authenticatePayload: AuthenticatePayload = { id: castToNumber(user.id) }
     const token = jwt.sign(
       authenticatePayload,
@@ -24,23 +29,24 @@ export default class JwtProvider implements SecurityProvider {
     )
     const refreshToken = jwt.sign(
       authenticatePayload,
-      process.env.REFRESH_TOKEN_SECRET ?? 'refresh-secret'
+      process.env.SECRET_TOKEN ?? 'secret',
+      { expiresIn: '7d' }
     )
 
     return {
-      accessToken: new Token(token),
-      refreshToken: new Token(refreshToken)
+      accessToken: new Token(token, new Date(Date.now() + 15 * 60 * 1000)),
+      refreshToken: new Token(refreshToken, new Date(Date.now() + 7 * 24 * 60 * 60 * 1000))
     }
   }
 
   async verifyToken (token: Token): Promise<User> {
     try {
       const payload = jwt.verify(
-        token.value,
+        token.token,
         process.env.SECRET_TOKEN ?? 'secret'
       ) as AuthenticatePayload
 
-      return await this.userRepository.get(payload.id)
+      return await this.userRepository.get(Number(payload.id))
     } catch (err) {
       if (err instanceof jwt.TokenExpiredError) {
         throw VerificationFailed.tokenExpired()

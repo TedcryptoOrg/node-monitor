@@ -9,7 +9,7 @@ import {
     Typography
 } from "@mui/material";
 import React, {useCallback, useEffect, useRef, useState} from "react";
-import BooleanIcon from "../shared/BooleanIcon";
+import BooleanIcon from "../Shared/BooleanIcon";
 import {enqueueSnackbar} from "notistack";
 import {ApiConfiguration} from "../../types/ApiConfiguration";
 import {ApiConfigurationNotificationChannel} from "../../types/ApiConfigurationNotificationChannel";
@@ -48,7 +48,7 @@ const ConfigurationNotificationChannelsList: React.FC<NotificationChannelsListPr
             })
             .finally(() => setIsLoading(false))
         ;
-    }, [configuration.id, setNotificationChannels, setIsLoading])
+    }, [configuration.id, setNotificationChannels, setIsLoading, api])
 
     useEffect(() => {
         if (isFirstRender.current) {
