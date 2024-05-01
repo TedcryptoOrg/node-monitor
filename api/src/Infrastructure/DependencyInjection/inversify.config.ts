@@ -80,6 +80,7 @@ import { type HttpClient } from '../../Domain/Http/HttpClient'
 import { PARAMS } from './params'
 import ConfigurationControllerEventHandler
   from '../../Application/Event/Configuration/ConfigurationControllerEventHandler'
+import RefreshTokenCommandHandler from '../../Application/Query/RefreshToken/RefreshTokenCommandHandler'
 
 const myContainer = new Container()
 
@@ -139,6 +140,7 @@ myContainer.bind(TYPES.CommandHandler).to(UpsertCompanyCommandHandler)
 myContainer.bind(TYPES.CommandHandler).to(ListAllUsersCommandHandler)
 myContainer.bind(TYPES.CommandHandler).to(ListAllCompaniesCommandHandler)
 myContainer.bind(TYPES.CommandHandler).to(LoginCommandHandler)
+myContainer.bind(TYPES.CommandHandler).to(RefreshTokenCommandHandler)
 myContainer.bind<CommandHandlerManager>(CommandHandlerManager).toSelf()
 
 // Events
