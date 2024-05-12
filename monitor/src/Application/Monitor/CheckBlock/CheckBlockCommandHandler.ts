@@ -13,7 +13,7 @@ import CheckBlockCommandState from './CheckBlockCommandState'
 import Logger from '../../Logger/Logger'
 
 @injectable()
-export default class CheckBlockCommandHandler implements CommandHandler {
+export default class CheckBlockCommandHandler implements CommandHandler<CheckBlockCommand> {
   constructor (
     @inject(TYPES.BlockchainClientFactory) private readonly clientFactory: BlockchainClientFactory,
     @inject(TYPES.Logger) private readonly logger: Logger

@@ -10,7 +10,7 @@ import ApiClient, { ServerMetricsResponse } from '../../../Domain/ApiClient'
 import Logger from '../../Logger/Logger'
 
 @injectable()
-export default class CheckDiskSpaceCommandHandler implements CommandHandler {
+export default class CheckDiskSpaceCommandHandler implements CommandHandler<CheckDiskSpaceCommand> {
   constructor (
     @inject(TYPES.ApiClient) private readonly apiClient: ApiClient,
     @inject(TYPES.Logger) private readonly logger: Logger

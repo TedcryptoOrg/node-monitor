@@ -7,7 +7,7 @@ import CheckStatusChanged from '../../Monitor/CheckStatusChanged'
 import { CheckStatus } from '../../../Domain/Checker/CheckStatusEnum'
 
 @injectable()
-export default class CheckStatusChangedHandler implements EventHandler {
+export default class CheckStatusChangedHandler implements EventHandler<CheckStatusChanged> {
   constructor (
     @inject(TYPES.ApiClient) private readonly apiClient: ApiClient
   ) {

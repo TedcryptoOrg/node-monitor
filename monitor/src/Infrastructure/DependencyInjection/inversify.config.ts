@@ -1,14 +1,12 @@
 import { Container } from 'inversify'
 import CommandHandlerManager from '../CommandHandler/CommandHandlerManager'
 import { TYPES } from '../../Domain/DependencyInjection/types'
-import type CommandHandler from '../../Domain/Command/CommandHandler'
 import EventDispatcher from '../../Application/Event/EventDispatcher'
 import PingHealthcheckCommandHandler from '../../Application/Healthchecker/Ping/PingHealthcheckCommandHandler'
 import type ApiClient from '../../Domain/ApiClient'
 import { HttpApiClient } from '../Api/HttpApiClient'
 import TedcryptoApiClient from '../Api/Tedcrypto/TedcryptoApiClient'
 import CheckDiskSpaceCommandHandler from '../../Application/Monitor/CheckDiskSpace/CheckDiskSpaceCommandHandler'
-import type EventHandler from '../../Domain/Event/EventHandler'
 import { type EventDispatcher as EventDispatcherInterface } from '../../Domain/Event/EventDispatcher'
 import RunCheckFailedHandler from '../../Application/Event/Monitor/RunCheckFailedHandler'
 import { type WebSocketServer as WebsocketServerInterface } from '../../Domain/Server/WebSocketServer'
@@ -54,12 +52,12 @@ if (!isEmpty(process.env.LOKI_HOST)) {
 myContainer.bind<Logger>(TYPES.Logger).toConstantValue(loggerManager)
 
 // Command handlers
-myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(PingHealthcheckCommandHandler)
-myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(CheckDiskSpaceCommandHandler)
-myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(CheckUrlCommandHandler)
-myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(CheckSignMissCommandHandler)
-myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(CheckBlockCommandHandler)
-myContainer.bind<CommandHandler>(TYPES.CommandHandler).to(CheckOracleSignMissCommandHandler)
+myContainer.bind(TYPES.CommandHandler).to(PingHealthcheckCommandHandler)
+myContainer.bind(TYPES.CommandHandler).to(CheckDiskSpaceCommandHandler)
+myContainer.bind(TYPES.CommandHandler).to(CheckUrlCommandHandler)
+myContainer.bind(TYPES.CommandHandler).to(CheckSignMissCommandHandler)
+myContainer.bind(TYPES.CommandHandler).to(CheckBlockCommandHandler)
+myContainer.bind(TYPES.CommandHandler).to(CheckOracleSignMissCommandHandler)
 myContainer.bind<CommandHandlerManager>(CommandHandlerManager).toSelf()
 
 // Services
@@ -76,8 +74,8 @@ myContainer.bind(CosmosBlockchainClientFactory).toSelf()
 myContainer.bind<BlockchainClientFactory>(TYPES.BlockchainClientFactory).to(CosmosBlockchainClientFactory)
 
 // Events
-myContainer.bind<EventHandler>(TYPES.EventHandler).to(RunCheckFailedHandler)
-myContainer.bind<EventHandler>(TYPES.EventHandler).to(CheckStatusChangedHandler)
+myContainer.bind(TYPES.EventHandler).to(RunCheckFailedHandler)
+myContainer.bind(TYPES.EventHandler).to(CheckStatusChangedHandler)
 myContainer.bind(EventDispatcher).toSelf()
 myContainer.bind<EventDispatcherInterface>(TYPES.EventDispatcher).to(EventDispatcher)
 

@@ -12,7 +12,7 @@ import { ServiceType } from '../../../Domain/Services/ServiceType'
 import Logger from '../../Logger/Logger'
 
 @injectable()
-export default class CheckSignMissCommandHandler implements CommandHandler {
+export default class CheckSignMissCommandHandler implements CommandHandler<CheckSignMissCommand> {
   constructor (
     @inject(TYPES.BlockchainClientFactory) private readonly clientFactory: BlockchainClientFactory,
     @inject(TYPES.Logger) private readonly logger: Logger

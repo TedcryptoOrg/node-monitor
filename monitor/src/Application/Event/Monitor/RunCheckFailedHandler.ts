@@ -6,7 +6,7 @@ import { TYPES } from '../../../Domain/DependencyInjection/types'
 import ApiClient from '../../../Domain/ApiClient'
 
 @injectable()
-export default class RunCheckFailedHandler implements EventHandler {
+export default class RunCheckFailedHandler implements EventHandler<RunCheckFailed> {
   constructor (
     @inject(TYPES.ApiClient) private readonly apiClient: ApiClient
   ) {

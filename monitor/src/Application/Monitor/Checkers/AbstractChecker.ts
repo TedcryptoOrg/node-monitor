@@ -11,7 +11,7 @@ import type Logger from '../../Logger/Logger'
 
 export abstract class AbstractChecker implements Checker {
   constructor (
-    protected commandHandler: CommandHandler,
+    protected commandHandler: CommandHandler<Command>,
     protected eventDispatcher: EventDispatcher,
     protected logger: Logger,
     protected monitor: Monitor,
