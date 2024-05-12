@@ -4,9 +4,7 @@ module.exports = {
             files: ['*.js', '*.jsx', '*.ts', '*.tsx'],
             extends: 'love',
             rules: {
-                //'@typescript-eslint/no-extraneous-class': 'off',
                 '@typescript-eslint/no-empty-interface': 'off',
-                //'@typescript-eslint/naming-convention': 'off',
             }
         }
     ],
