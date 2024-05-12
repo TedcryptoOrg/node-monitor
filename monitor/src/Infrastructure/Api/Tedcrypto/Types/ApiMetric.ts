@@ -1,14 +1,14 @@
-import {ApiConfiguration} from "./ApiConfiguration";
-import {ApiServer} from "./ApiServer";
+import { type ApiConfiguration } from './ApiConfiguration'
+import { type ApiServer } from './ApiServer'
 
-export type ApiMetric = {
-    configuration: ApiConfiguration,
-    server: ApiServer,
-    freeDiskSpace: number;
-    usedDiskSpace: number;
-    totalDiskSpace: number;
-    usedDiskSpacePercentage: number;
-    memoryUsage: number;
-    memoryUsagePercentage: number;
-    totalMemory: number;
+export interface ApiMetric {
+  configuration: ApiConfiguration
+  server: ApiServer
+  freeDiskSpace: number
+  usedDiskSpace: number
+  totalDiskSpace: number
+  usedDiskSpacePercentage: number
+  memoryUsage: number
+  memoryUsagePercentage: number
+  totalMemory: number
 }

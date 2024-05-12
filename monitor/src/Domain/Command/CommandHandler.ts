@@ -1,5 +1,3 @@
-import Command from "./Command";
-
-export default interface CommandHandler {
-    handle(command: Command): Promise<any>;
+export default interface CommandHandler<C> {
+  handle: (command: C) => Promise<any>
 }

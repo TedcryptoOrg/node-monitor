@@ -5,7 +5,7 @@ module.exports = {
             extends: 'love',
             rules: {
                 //'@typescript-eslint/no-extraneous-class': 'off',
-                //'@typescript-eslint/no-empty-interface': 'off',
+                '@typescript-eslint/no-empty-interface': 'off',
                 //'@typescript-eslint/naming-convention': 'off',
             }
         }

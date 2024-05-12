@@ -1,6 +1,6 @@
-import Monitor from "./Monitor";
-import Checker from "../Checker/Checker";
+import type Monitor from './Monitor'
+import type Checker from '../Checker/Checker'
 
 export interface MonitorCheckerFactory {
-    create(monitor: Monitor): Checker;
+  create: (monitor: Monitor) => Checker
 }
