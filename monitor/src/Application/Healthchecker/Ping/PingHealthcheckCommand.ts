@@ -1,8 +1,8 @@
-import Command from "../../../Domain/Command/Command";
+import type Command from '../../../Domain/Command/Command'
 
 export default class PingHealthcheckCommand implements Command {
-    constructor(
-        public readonly healthCheckUrl: string,
-    ) {
-    }
+  constructor (
+    public readonly healthCheckUrl: string
+  ) {
+  }
 }

@@ -1,12 +1,13 @@
-import Configuration from "./Domain/Configuration/Configuration";
+import type Configuration from './Domain/Configuration/Configuration'
 
-require('dotenv').config({ path: '.env', override: false })
+import { myContainer } from './Infrastructure/DependencyInjection/inversify.config'
+import { TYPES } from './Domain/DependencyInjection/types'
+import type ApiClient from './Domain/ApiClient'
+import MonitorManager from './Application/Monitor/MonitorManager'
+import type Logger from './Application/Logger/Logger'
+import dotenv from 'dotenv'
 
-import {myContainer} from "./Infrastructure/DependencyInjection/inversify.config";
-import {TYPES} from "./Domain/DependencyInjection/types";
-import ApiClient from "./Domain/ApiClient";
-import MonitorManager from "./Application/Monitor/MonitorManager";
-import Logger from "./Application/Logger/Logger";
+dotenv.config({ path: '.env', override: false })
 
 const logger = myContainer.get<Logger>(TYPES.Logger)
 
@@ -15,25 +16,25 @@ async function main (): Promise<void> {
 
   const monitorManager = myContainer.get(MonitorManager)
   let configurations: Configuration[] = []
-  configurations = await myContainer.get<ApiClient>(TYPES.ApiClient).getConfigurations();
+  configurations = await myContainer.get<ApiClient>(TYPES.ApiClient).getConfigurations()
   if (configurations.length === 0) {
-    throw new Error('No configurations found!');
+    throw new Error('No configurations found!')
   }
 
   for (const configuration of configurations) {
     if (!configuration.isEnabled) {
-        logger.warn(`❌️[${configuration.name}] Configuration is disabled. Skipping...`, {configurationId: configuration.id})
-        continue
+      logger.warn(`❌️[${configuration.name}] Configuration is disabled. Skipping...`, { configurationId: configuration.id })
+      continue
     }
 
-    logger.log(`Loaded configuration: ${configuration.name}`, {configurationId: configuration.id})
+    logger.log(`Loaded configuration: ${configuration.name}`, { configurationId: configuration.id })
     if (configuration.monitors.length === 0) {
-      logger.warn(`No monitors found for configuration: ${configuration.name}`, {configurationId: configuration.id})
+      logger.warn(`No monitors found for configuration: ${configuration.name}`, { configurationId: configuration.id })
       continue
     }
 
     for (const monitor of configuration.monitors) {
-      logger.log(`${monitor.getFullName()} loaded`, {configurationId: configuration.id, monitorId: monitor.id})
+      logger.log(`${monitor.getFullName()} loaded`, { configurationId: configuration.id, monitorId: monitor.id })
       monitorManager.pushMonitor(monitor)
     }
   }
@@ -42,17 +43,17 @@ async function main (): Promise<void> {
 }
 
 setInterval(() => {
-  const memoryUsage = process.memoryUsage();
+  const memoryUsage = process.memoryUsage()
   logger.log(
-      `==Memory usage==\n`
-      +`Heap Total: ${Math.round(memoryUsage.heapTotal / 1024 / 1024 * 100) / 100} MB\n`
-      +`Heap Used: ${Math.round(memoryUsage.heapUsed / 1024 / 1024 * 100) / 100} MB\n`
-      +`RSS: ${Math.round(memoryUsage.rss / 1024 / 1024 * 100) / 100} MB`,
-      {memoryUsage}
-  );
+    '==Memory usage==\n' +
+      `Heap Total: ${Math.round(memoryUsage.heapTotal / 1024 / 1024 * 100) / 100} MB\n` +
+      `Heap Used: ${Math.round(memoryUsage.heapUsed / 1024 / 1024 * 100) / 100} MB\n` +
+      `RSS: ${Math.round(memoryUsage.rss / 1024 / 1024 * 100) / 100} MB`,
+    { memoryUsage }
+  )
 }, 1000 * 60 * 5)
 
 main().catch((error) => {
-  logger.error(`An error occurred: ${error.message}`, {error})
+  logger.error(`An error occurred: ${error.message}`, { error })
   process.exit(1)
 })

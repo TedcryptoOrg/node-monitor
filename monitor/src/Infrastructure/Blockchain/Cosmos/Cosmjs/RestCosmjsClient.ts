@@ -1,11 +1,11 @@
 import axios from 'axios'
-import {RecoverableException} from "../../../../Domain/RecoverableException";
-import CosmjsClient from "./CosmjsClient";
-import {ValidatorInfoResponse} from "./Response/Staking/ValidatorInfoResponse";
-import {SigningInfosResponse} from "./Response/Slashing/SigningInfosResponse";
-import Logger from "../../../../Application/Logger/Logger";
+import { RecoverableException } from '../../../../Domain/RecoverableException'
+import type CosmjsClient from './CosmjsClient'
+import { type ValidatorInfoResponse } from './Response/Staking/ValidatorInfoResponse'
+import { type SigningInfosResponse } from './Response/Slashing/SigningInfosResponse'
+import type Logger from '../../../../Application/Logger/Logger'
 
-type RestSigningInfosResponse = {
+interface RestSigningInfosResponse {
   val_signing_info: {
     address: string
     start_height: string
@@ -19,17 +19,17 @@ type RestSigningInfosResponse = {
 export class RestCosmjsClient implements CosmjsClient {
   constructor (
     private readonly address: string,
-    private readonly logger: Logger,
+    private readonly logger: Logger
   ) {
   }
 
-  async fetchOracleMissCounter(chain: string, validatorAddress: string): Promise<number> {
+  async fetchOracleMissCounter (chain: string, validatorAddress: string): Promise<number> {
     const response = await axios.get(this.getOracleMissCounterEndpoint(chain, validatorAddress))
 
     return Number(response.data.miss_counter)
-    }
+  }
 
-  async getBlockHeight(): Promise<number> {
+  async getBlockHeight (): Promise<number> {
     try {
       const restUrl = this.address + '/cosmos/base/tendermint/v1beta1/blocks/latest'
       return (await axios.get(restUrl)).data.block.header.height
@@ -54,10 +54,10 @@ export class RestCosmjsClient implements CosmjsClient {
 
     try {
       const restUrl = this.address + '/cosmos/slashing/v1beta1/signing_infos/' + valconsAddress
-      this.logger.log('Fetching signing infos from: ' + restUrl, {valconsAddress})
+      this.logger.log('Fetching signing infos from: ' + restUrl, { valconsAddress })
       return (await axios.get(restUrl)).data as RestSigningInfosResponse
     } catch (error: any) {
-      if (error.response?.data?.message) {
+      if (error.response?.data?.message !== undefined) {
         throw new Error(`Error fetching validator signing info from REST. Code ${error.response.data.code}: ${error.response.data.message}`)
       }
 
@@ -68,7 +68,7 @@ export class RestCosmjsClient implements CosmjsClient {
   async getValidatorInfo (valoperAddress: string): Promise<ValidatorInfoResponse> {
     try {
       const restUrl = this.address + '/cosmos/staking/v1beta1/validators/' + valoperAddress
-      this.logger.log(`Get validator info ${restUrl}`, {valoperAddress})
+      this.logger.log(`Get validator info ${restUrl}`, { valoperAddress })
       const response: ValidatorInfoResponse = (await axios.get(restUrl)).data
 
       return {
@@ -95,7 +95,7 @@ export class RestCosmjsClient implements CosmjsClient {
       }
     } catch (error: any) {
       const message = 'Error fetching validator info from REST: '
-      if (error.response?.data?.message) {
+      if (error.response?.data?.message !== undefined) {
         throw new Error(message + error.response.data.message)
       }
 
@@ -103,14 +103,14 @@ export class RestCosmjsClient implements CosmjsClient {
     }
   }
 
-  private getOracleMissCounterEndpoint(chain: string, valoperAddress: string): string {
+  private getOracleMissCounterEndpoint (chain: string, valoperAddress: string): string {
     switch (chain) {
-        case 'kujira':
-          return this.address+'/oracle/validators/%valoper%/miss'.replace('%valoper%', valoperAddress)
-        case 'ojo':
-          return this.address+'/ojo/oracle/v1/validators/%valoper%/miss'.replace('%valoper%', valoperAddress)
-        default:
-          throw new Error('Unknown chain: ' + chain)
-      }
+      case 'kujira':
+        return this.address + '/oracle/validators/%valoper%/miss'.replace('%valoper%', valoperAddress)
+      case 'ojo':
+        return this.address + '/ojo/oracle/v1/validators/%valoper%/miss'.replace('%valoper%', valoperAddress)
+      default:
+        throw new Error('Unknown chain: ' + chain)
+    }
   }
 }

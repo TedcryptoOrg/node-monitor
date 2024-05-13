@@ -1,5 +1,5 @@
-import LogProviderInterface from "./LogProviderInterface";
+import type LogProviderInterface from './LogProviderInterface'
 
 export default interface Logger extends LogProviderInterface {
-    addProvider(provider: LogProviderInterface): void;
+  addProvider: (provider: LogProviderInterface) => void
 }

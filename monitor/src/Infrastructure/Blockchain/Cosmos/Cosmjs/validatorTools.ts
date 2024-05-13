@@ -1,7 +1,7 @@
 import { pubkeyToAddress } from '@cosmjs/amino'
 import { pubkeyType } from '@cosmjs/amino/build/pubkeys'
 
-export function getValConsAddressFromPubKey (prefix: string, type: string, key: string) {
+export function getValConsAddressFromPubKey (prefix: string, type: string, key: string): string {
   if (type.includes('ed25519')) {
     return pubkeyToAddress({
       type: pubkeyType.ed25519,
