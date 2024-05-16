@@ -2,7 +2,7 @@ import {ApiMonitorInput} from "../types/ApiMonitor";
 import ApiClient from "./ApiClient";
 
 class MonitorService {
-    async upsertMonitor(api: ApiClient, monitor: ApiMonitorInput): Promise<boolean> {
+    async upsertMonitor(api: ApiClient, monitor: ApiMonitorInput): Promise<boolean | undefined> {
         const url = `/monitors${monitor.id ? `/${monitor.id}` : ''}`;
 
         return api?.[monitor.id ? 'put' : 'post'](url, monitor)

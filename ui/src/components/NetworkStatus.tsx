@@ -85,9 +85,7 @@ const NetworkStatus: React.FC = () => {
         if (firstRender.current) {
             api?.get(`/configurations`)
                 .then(response => {
-                    if (!response.ok) {
-                        throw Error('Failed to fetch')
-                    }
+                    
 
                     return response.body
                 })
@@ -98,10 +96,10 @@ const NetworkStatus: React.FC = () => {
                         }
 
                         for (const server of configuration.servers) {
-                            api?.get(`/servers/${server.id}/metrics`)
+                            api?.get(`/servers/${server.id}/metrics`, undefined, {maxRetries: 3})
                                 .then(response => {
                                     if (!response.ok) {
-                                        throw Error('Failed to fetch')
+
                                     }
 
                                     return response.body
@@ -120,7 +118,7 @@ const NetworkStatus: React.FC = () => {
             firstRender.current = false;
             return;
         }
-    }, [api]);
+    }, []);
 
     const bytesToGigabytes = (bytes: number) => {
         return (bytes / (1024 * 1024 * 1024)).toFixed(2);

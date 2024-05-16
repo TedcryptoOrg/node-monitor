@@ -10,7 +10,7 @@ export default class ApiClient {
         this.base_url =  api_host + '/api';
     }
 
-    async request(options: { query: string, method: string, headers?: any, body?: any, url: string}) {
+    async request(options: { query: string, method: string, headers?: any, body?: any, url: string, maxRetries?: number, delay?: number }) {
         let query = new URLSearchParams(options.query || {}).toString();
         if (query !== '') {
             query = '?' + query;
@@ -38,38 +38,47 @@ export default class ApiClient {
         }
 
         let response;
-        try {
-            // @ts-ignore
-            response = await fetch(this.base_url + options.url + query, {
-                method: options.method,
-                headers: {
-                    'Content-Type': 'application/json',
-                    ...options.headers,
-                },
-                body: options.body ? JSON.stringify(options.body) : null,
-            });
-        } catch (error: any) {
-            response = {
-                ok: false,
-                status: 500,
-                json: async () => { return {
-                    code: 500,
-                    message: 'The server is unresponsive',
-                    description: error.toString(),
-                }; }
-            };
+        let retries = 0;
+        const maxRetries = options.maxRetries || 3;
+        let delay = options.delay ||  1000; // initial delay in milliseconds
+
+        while (retries < maxRetries) {
+            try {
+                // @ts-ignore
+                response = await fetch(this.base_url + options.url + query, {
+                    method: options.method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        ...options.headers,
+                    },
+                    body: options.body ? JSON.stringify(options.body) : null,
+                });
+
+                if (response.ok) {
+                    break; // exit the loop if the response is successful
+                }
+            } catch (error: any) {
+                // Ignore the error and continue with the next retry
+            }
+
+            retries++;
+            await new Promise(resolve => setTimeout(resolve, delay)); // wait for the specified delay
+
+            delay *= 2; // double the delay for the next retry
         }
 
         let body = null;
         try {
-            body = await response.json();
+            if (response) {
+                body = await response.json();
+            }
         } catch (error) {
             // Ignore
         }
 
         return {
-            ok: response.ok,
-            status: response.status,
+            ok: response?.ok,
+            status: response?.status,
             body: body
         };
     }
