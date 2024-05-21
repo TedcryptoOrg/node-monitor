@@ -22,7 +22,7 @@ const LoginComponent: React.FC = () => {
             password: password
         }).then((response) => {
             handleLoginResponse(response);
-            navigate('/')
+            window.location.href = '/';
         }).catch((error: any) => {
             console.error('Error:', error);
             if (error instanceof AxiosError && error.response?.data.message !== undefined) {

@@ -4,7 +4,7 @@ import { Drawer, List } from '@mui/material';
 import { Box } from '@mui/system';
 import { navbarItems } from './Navbar';
 import ConfigurationsComponent from './components/configurations/ConfigurationsComponent';
-import NetworkStatus from './components/NetworkStatus';
+import NetworkStatus from './components/NetworkStatus/NetworkStatus';
 import ServersComponent from './components/servers/ServersComponent';
 import DashboardComponent from './components/DashboardComponent';
 import ConfigurationOverview from './components/configurations/ConfigurationOverview';
@@ -58,7 +58,7 @@ function App() {
         <>
         <Router>
             <Box sx={{ display: 'flex' }}>
-                {securityTokens && <Drawer
+                {user && <Drawer
                     variant="permanent"
                     sx={{
                         width: 240,
