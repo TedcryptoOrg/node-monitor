@@ -32,7 +32,7 @@ jobs:
       - name: Check Docker Image Existence
         id: check-image
         run: |
-          IMAGE_NAME="joshlopes/tedcrypto-node-monitor-frontend-v2:pr-${{ fromJson(steps.get-sha.outputs.data).head.sha }}"
+          IMAGE_NAME="joshlopes/tedcrypto-node-monitor-frontend:pr-${{ fromJson(steps.get-sha.outputs.data).head.sha }}"
           EXISTS=$(docker manifest inspect $IMAGE_NAME > /dev/null 2>&1 && echo "yes" || echo "no")
           if [ "$EXISTS" == "no" ]; then
             echo "::error::Docker image does not exist. Deployment aborted."
@@ -45,7 +45,7 @@ jobs:
       - name: Deploy Image to Staging Server
         if: steps.check-image.outputs.exists == 'yes'
         run: |
-          IMAGE_TAG="joshlopes/tedcrypto-node-monitor-frontend-v2:pr-${{ fromJson(steps.get-sha.outputs.data).head.sha }}"
+          IMAGE_TAG="joshlopes/tedcrypto-node-monitor-frontend:pr-${{ fromJson(steps.get-sha.outputs.data).head.sha }}"
           echo "Deploying Image: $IMAGE_TAG"
 
       - name: Deploy Image to CapRrover
@@ -55,7 +55,7 @@ jobs:
           server: "${{ secrets.CAPROVER_SERVER }}"
           app: "${{ secrets.CAPROVER_FRONTEND_STAGING_APP }}"
           token: "${{ secrets.CAPROVER_FRONTEND_STAGING_TOKEN }}"
-          image: "joshlopes/tedcrypto-node-monitor-frontend-v2:pr-${{ fromJson(steps.get-sha.outputs.data).head.sha }}"
+          image: "joshlopes/tedcrypto-node-monitor-frontend:pr-${{ fromJson(steps.get-sha.outputs.data).head.sha }}"
 
       - name: Comment on PR
         if: steps.check-image.outputs.exists == 'yes'
