@@ -1,20 +1,20 @@
-name: "Frontend: Build (Next)"
+name: "Frontend: Build"
 
 defaults:
   run:
-    working-directory: "frontend"
+    working-directory: "ui"
 
 on:
   workflow_dispatch: ~
   pull_request:
     paths:
       - ".github/workflows/frontend.build-image.yaml"
-      - "frontend/**"
+      - "ui/**"
   push:
     paths:
       - ".github/workflows/frontend.build-image.yaml"
       - ".github/workflows/frontend.deploy.yaml"
-      - "frontend/**"
+      - "ui/**"
     tags:
       - 'frontend-v*'
     branches:
@@ -64,18 +64,20 @@ jobs:
         id: meta
         uses: docker/metadata-action@f7b4ed12385588c3f9bc252f0a2b520d83b52d48
         with:
-          images: joshlopes/tedcrypto-node-monitor-frontend-v2
+          images: joshlopes/tedcrypto-node-monitor-frontend
 
       - name: Build and push Docker image
         uses: docker/build-push-action@2a53c6ccda456d31fb62eedc658aae06e238b7bd
         with:
-          context: ./frontend
-          file: ./frontend/docker/Dockerfile
+          context: ./ui
+          build-args: |
+            "REACT_APP_API_HOST=${{ secrets.REACT_APP_API_HOST }}"
+          file: ./ui/docker/Dockerfile
           push: true
           provenance: false
           load: false
           tags: |
-            ${{ (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/frontend-v')) && format('joshlopes/tedcrypto-node-monitor-frontend-v2:{0}', steps.tag.outputs.tag) || '' }}
-            ${{ github.event_name == 'pull_request' && format('joshlopes/tedcrypto-node-monitor-frontend-v2:pr-{0}', steps.sha.outputs.sha) || '' }}
-            ${{ github.event_name == 'pull_request' && format('joshlopes/tedcrypto-node-monitor-frontend-v2:pr-{0}', github.event.pull_request.number) || '' }}
+            ${{ (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/frontend-v')) && format('joshlopes/tedcrypto-node-monitor-frontend:{0}', steps.tag.outputs.tag) || '' }}
+            ${{ github.event_name == 'pull_request' && format('joshlopes/tedcrypto-node-monitor-frontend:pr-{0}', steps.sha.outputs.sha) || '' }}
+            ${{ github.event_name == 'pull_request' && format('joshlopes/tedcrypto-node-monitor-frontend:pr-{0}', github.event.pull_request.number) || '' }}
           labels: ${{ steps.meta.outputs.labels }}
