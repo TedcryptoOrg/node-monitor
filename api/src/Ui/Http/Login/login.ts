@@ -19,12 +19,12 @@ export const login = async (req: Request, resp: Response): Promise<void> => {
       accessToken: commandResult.accessToken.toArray(),
       refreshToken: commandResult.refreshToken.toArray()
     })
-  } catch (error) {
+  } catch (error: any) {
     if (error instanceof RecordNotFound || error instanceof PasswordNotMatch) {
       resp.status(401).send({ message: 'Username or password is incorrect' })
       return
     }
 
-    throw error
+    throw error as Error
   }
 }

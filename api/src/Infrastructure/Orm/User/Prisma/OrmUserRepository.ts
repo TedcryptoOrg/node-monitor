@@ -38,7 +38,7 @@ export default class OrmUserRepository implements UserRepository {
         return null
       }
 
-      throw error
+      throw error as Error
     }
   }
 
@@ -88,7 +88,7 @@ export default class OrmUserRepository implements UserRepository {
         throw new UserAlreadyExists(user.username)
       }
 
-      throw error
+      throw error as Error
     }
   }
 
