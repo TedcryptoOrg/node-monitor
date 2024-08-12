@@ -1,6 +1,6 @@
-import { type ApiServer } from './ApiServer'
-import { type ApiMonitor } from './ApiMonitor'
-import { type ApiConfigurationNotificationChannel } from './ApiConfigurationNotificationChannel'
+import type { ApiServer } from './ApiServer'
+import type { ApiMonitor } from './ApiMonitor'
+import type { ApiConfigurationNotificationChannel } from './ApiConfigurationNotificationChannel'
 
 export interface ApiConfiguration {
   id: number

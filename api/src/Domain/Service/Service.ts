@@ -1,5 +1,5 @@
 import Server, { type ServerArray } from '../Server/Server'
-import { type ServiceType } from './ServiceType'
+import type { ServiceType } from './ServiceType'
 
 export interface ServiceArray {
   name: string

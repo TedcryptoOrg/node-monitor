@@ -1,5 +1,5 @@
-import { type ApiConfiguration } from './ApiConfiguration'
-import { type ApiServer } from './ApiServer'
+import type { ApiConfiguration } from './ApiConfiguration'
+import type { ApiServer } from './ApiServer'
 
 export interface ApiMetric {
   configuration: ApiConfiguration

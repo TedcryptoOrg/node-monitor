@@ -1,5 +1,5 @@
 import type Command from '../../../../Domain/Command/Command'
-import { type NotificationChannelType } from '../../../../Domain/NotificationChannel/NotificationChannelType'
+import type { NotificationChannelType } from '../../../../Domain/NotificationChannel/NotificationChannelType'
 
 export default class UpsertNotificationChannelCommand implements Command {
   constructor (

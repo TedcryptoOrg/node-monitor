@@ -1,11 +1,11 @@
 import axios from 'axios'
 import type CosmjsClient from './CosmjsClient'
-import { type SigningInfosResponse } from './Response/Slashing/SigningInfosResponse'
-import { type ValidatorInfoResponse } from './Response/Staking/ValidatorInfoResponse'
+import type { SigningInfosResponse } from './Response/Slashing/SigningInfosResponse'
+import type { ValidatorInfoResponse } from './Response/Staking/ValidatorInfoResponse'
 import { createDateFromSeconds } from '../../../../Application/Shared/dateTools'
 import { createSlashingClient, createStakingClient } from './queryClientFactory'
-import { type QueryClientImpl as StakingQueryClient } from 'cosmjs-types/cosmos/staking/v1beta1/query'
-import { type QueryClientImpl as SlashingQueryClient } from 'cosmjs-types/cosmos/slashing/v1beta1/query'
+import type { QueryClientImpl as StakingQueryClient } from 'cosmjs-types/cosmos/staking/v1beta1/query'
+import type { QueryClientImpl as SlashingQueryClient } from 'cosmjs-types/cosmos/slashing/v1beta1/query'
 
 interface RpcStatus {
   node_info: {

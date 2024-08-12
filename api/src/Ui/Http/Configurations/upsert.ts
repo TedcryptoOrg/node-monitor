@@ -1,4 +1,4 @@
-import { type Request, type Response } from 'express'
+import type { Request, Response } from 'express'
 import { handleCommand } from '../handleCommandUtil'
 import UpsertConfigurationCommand from '../../../Application/Write/Configuration/UpsertConfiguration/UpsertConfigurationCommand'
 import type Configuration from '../../../Domain/Configuration/Configuration'

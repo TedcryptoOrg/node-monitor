@@ -1,8 +1,8 @@
 import axios from 'axios'
 import { RecoverableException } from '../../../../Domain/RecoverableException'
 import type CosmjsClient from './CosmjsClient'
-import { type ValidatorInfoResponse } from './Response/Staking/ValidatorInfoResponse'
-import { type SigningInfosResponse } from './Response/Slashing/SigningInfosResponse'
+import type { ValidatorInfoResponse } from './Response/Staking/ValidatorInfoResponse'
+import type { SigningInfosResponse } from './Response/Slashing/SigningInfosResponse'
 import type Logger from '../../../../Application/Logger/Logger'
 
 interface RestSigningInfosResponse {

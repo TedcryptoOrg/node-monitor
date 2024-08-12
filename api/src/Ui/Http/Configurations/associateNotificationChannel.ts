@@ -1,4 +1,4 @@
-import { type Request, type Response } from 'express'
+import type { Request, Response } from 'express'
 import { handleCommand } from '../handleCommandUtil'
 import AssociateNotificationChannelCommand from '../../../Application/Write/Configuration/AssociateNotificationChannel/AssociateNotificationChannelCommand'
 import type ConfigurationNotification from '../../../Domain/Configuration/ConfigurationNotification'

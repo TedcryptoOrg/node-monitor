@@ -6,7 +6,7 @@ import type CheckResult from '../CheckResult'
 import { sleep } from '../../Shared/sleep'
 import type Command from '../../../Domain/Command/Command'
 import CheckStatusChanged from '../CheckStatusChanged'
-import { type EventDispatcher } from '../../../Domain/Event/EventDispatcher'
+import type { EventDispatcher } from '../../../Domain/Event/EventDispatcher'
 import type Logger from '../../Logger/Logger'
 
 export abstract class AbstractChecker implements Checker {
@@ -16,7 +16,7 @@ export abstract class AbstractChecker implements Checker {
     protected logger: Logger,
     protected monitor: Monitor,
     protected status: CheckStatus = CheckStatus.UNKNOWN,
-    protected stopSignal: boolean = false
+    protected stopSignal = false
   ) {
     if (!monitor.isEnabled) {
       this.stopSignal = true

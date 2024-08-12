@@ -1,5 +1,5 @@
-import { type ApiConfiguration } from './ApiConfiguration'
-import { type ApiService } from './ApiService'
+import type { ApiConfiguration } from './ApiConfiguration'
+import type { ApiService } from './ApiService'
 
 export interface ApiServerInput {
   name: string

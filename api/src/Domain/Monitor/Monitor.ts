@@ -1,6 +1,6 @@
 import Configuration, { type ConfigurationArray } from '../Configuration/Configuration'
 import Server, { type ServerArray } from '../Server/Server'
-import { type MonitorType } from './MonitorType'
+import type { MonitorType } from './MonitorType'
 
 export interface MonitorArray {
   name: string

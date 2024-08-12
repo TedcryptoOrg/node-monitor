@@ -1,4 +1,4 @@
-import { type NotificationChannelTypeEnum } from './NotificationChannelType'
+import type { NotificationChannelTypeEnum } from './NotificationChannelType'
 
 export interface ApiNotificationChannel {
   id: number

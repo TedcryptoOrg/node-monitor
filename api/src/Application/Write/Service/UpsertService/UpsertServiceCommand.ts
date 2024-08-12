@@ -1,5 +1,5 @@
 import type Command from '../../../../Domain/Command/Command'
-import { type ServiceType } from '../../../../Domain/Service/ServiceType'
+import type { ServiceType } from '../../../../Domain/Service/ServiceType'
 
 export default class UpsertServiceCommand implements Command {
   constructor (

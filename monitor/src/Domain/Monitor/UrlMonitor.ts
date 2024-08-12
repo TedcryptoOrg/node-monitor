@@ -1,5 +1,5 @@
 import type Monitor from './Monitor'
-import { type MonitorType } from './MonitorType'
+import type { MonitorType } from './MonitorType'
 import type Configuration from '../Configuration/Configuration'
 
 export default class UrlMonitor implements Monitor {

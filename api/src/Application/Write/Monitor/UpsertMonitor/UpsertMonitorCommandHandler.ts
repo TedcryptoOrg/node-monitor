@@ -32,7 +32,7 @@ export default class UpsertMonitorCommandHandler implements CommandHandler<Upser
       ? await this.serverRepository.get(command.serverId)
       : null
 
-    let previousEnabledStatus: boolean | undefined
+    let previousEnabledStatus: boolean | null = null
     if (command.id !== undefined) {
       previousEnabledStatus = (await this.monitorRepository.get(command.id)).isEnabled
     }

@@ -4,6 +4,9 @@ module.exports = [{
     rules: {
         ...require('eslint-config-love').rules,
         "@typescript-eslint/no-empty-interface": "off",
+        "@typescript-eslint/no-explicit-any": "off",
+        "@typescript-eslint/class-methods-use-this": "off",
+        "@typescript-eslint/max-params": "off",
     },
     ignores: [
         'jest.config.ts',

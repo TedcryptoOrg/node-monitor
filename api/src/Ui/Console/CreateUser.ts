@@ -13,6 +13,7 @@ export default class CreateUser implements ConsoleCommand {
   }
 
   configureArgs (inputArgs: any): void {
+    // Nothing
   }
 
   public async run (inputArgs: any): Promise<number> {

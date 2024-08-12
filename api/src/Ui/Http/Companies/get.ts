@@ -1,4 +1,4 @@
-import { type Request, type Response } from 'express'
+import type { Request, Response } from 'express'
 import { handleCommand } from '../handleCommandUtil'
 import GetCompanyCommand from '../../../Application/Query/Company/GetCompany/GetCompanyCommand'
 import type Company from '../../../Domain/User/Company'

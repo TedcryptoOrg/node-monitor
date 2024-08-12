@@ -1,4 +1,4 @@
-import { type Request, type Response } from 'express'
+import type { Request, Response } from 'express'
 import { handleCommand } from '../handleCommandUtil'
 import UpsertUserCommand from '../../../Application/Write/User/UpsertUser/UpsertUserCommand'
 import { castToBoolean, castToString, castToStringOrUndefined } from '../HttpUtil'

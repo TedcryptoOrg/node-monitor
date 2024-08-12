@@ -107,7 +107,7 @@ export default class MonitorManager {
     void this.runCheck(monitor)
   }
 
-  private async runCheck (monitor: Monitor, attempt: number = 1): Promise<void> {
+  private async runCheck (monitor: Monitor, attempt = 1): Promise<void> {
     if (this.maxAttempts !== undefined && this.maxAttempts < attempt) {
       this.logger.error(`Max attempts reached for ${monitor.getFullName()}. Skipping check.`, { monitorId: monitor.id })
       return
@@ -120,7 +120,7 @@ export default class MonitorManager {
       this.logger.error(`${monitor.getFullName()} is disabled. Skipping check.`, { monitorId: monitor.id })
       return
     }
-    let timeoutId
+    let timeoutId: NodeJS.Timeout|null = null
     try {
       if (attempt > 1) {
         timeoutId = setTimeout(() => {
@@ -133,7 +133,9 @@ export default class MonitorManager {
     } catch (error: any) {
       this.logger.error(error.message as string, { monitorId: monitor.id, exception: error })
 
-      clearTimeout(timeoutId)
+      if (timeoutId !== null) {
+        clearTimeout(timeoutId)
+      }
       this.checkers[monitor.id].setStatus(CheckStatus.ERROR)
 
       await this.eventDispatcher.dispatch(new RunCheckFailed(monitor, attempt, error as Error))

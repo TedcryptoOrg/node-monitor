@@ -1,4 +1,4 @@
-import { type Request, type Response } from 'express'
+import type { Request, Response } from 'express'
 import { handleCommand } from '../handleCommandUtil'
 import FindWarningsCommand from '../../../Application/Query/Monitor/FindWarnings/FindWarningsCommand'
 import type Monitor from '../../../Domain/Monitor/Monitor'

@@ -1,8 +1,8 @@
-import { type Request, type Response } from 'express'
+import type { Request, Response } from 'express'
 import { handleCommand } from '../handleCommandUtil'
 import TestNotificationChannelCommand from '../../../Application/Write/NotificationChannel/TestNotificationChannel/TestNotificationChannelCommand'
 import NotificationChannel from '../../../Domain/NotificationChannel/NotificationChannel'
-import { type NotificationChannelType } from '../../../Domain/NotificationChannel/NotificationChannelType'
+import type { NotificationChannelType } from '../../../Domain/NotificationChannel/NotificationChannelType'
 import { castToString } from '../HttpUtil'
 
 export const test = async (req: Request, resp: Response): Promise<void> => {

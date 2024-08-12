@@ -1,7 +1,7 @@
 import type BlockchainClient from '../../../Domain/Blockchain/BlockchainClient'
 import { getValConsAddressFromPubKey } from './Cosmjs/validatorTools'
 import type CosmjsClient from './Cosmjs/CosmjsClient'
-import { type Chain } from '@tedcryptoorg/cosmos-directory'
+import type { Chain } from '@tedcryptoorg/cosmos-directory'
 
 export default class CosmosBlockchainClient implements BlockchainClient {
   constructor (

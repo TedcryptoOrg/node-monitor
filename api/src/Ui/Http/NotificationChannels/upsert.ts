@@ -1,8 +1,8 @@
-import { type Request, type Response } from 'express'
+import type { Request, Response } from 'express'
 import { handleCommand } from '../handleCommandUtil'
 import UpsertNotificationChannelCommand from '../../../Application/Write/NotificationChannel/UpsertNotificationChannel/UpsertNotificationChannelCommand'
 import { castToBoolean, castToNumberOrUndefined, castToString } from '../HttpUtil'
-import { type NotificationChannelType } from '../../../Domain/NotificationChannel/NotificationChannelType'
+import type { NotificationChannelType } from '../../../Domain/NotificationChannel/NotificationChannelType'
 
 export const upsert = async (req: Request, resp: Response): Promise<void> => {
   const requiredFields = ['name', 'type', 'configuration_object', 'is_enabled']
