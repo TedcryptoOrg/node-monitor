@@ -1,4 +1,4 @@
-import { type ServiceTypeEnum } from './ServiceTypeEnum'
+import type { ServiceTypeEnum } from './ServiceTypeEnum'
 
 export interface ApiService {
   id?: number

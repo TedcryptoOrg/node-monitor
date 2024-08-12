@@ -7,7 +7,7 @@ export default class CheckBlockCommandState {
     public readonly missCounter: number,
     public readonly lastIncident: number,
     public readonly lastStatus: CheckStatus,
-    public readonly isSyncing: boolean = false,
+    public readonly isSyncing = false,
     public readonly blockEta: BlockEta
   ) {
   }

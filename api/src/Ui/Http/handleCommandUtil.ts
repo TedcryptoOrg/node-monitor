@@ -1,4 +1,4 @@
-import { type Response } from 'express'
+import type { Response } from 'express'
 import type Command from '../../Domain/Command/Command'
 import { myContainer } from '../../Infrastructure/DependencyInjection/inversify.config'
 import RecordNotFound from '../../Domain/RecordNotFound'

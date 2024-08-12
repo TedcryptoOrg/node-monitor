@@ -20,7 +20,7 @@ export default class UpsertConfigurationCommandHandler implements CommandHandler
   }
 
   async handle (command: UpsertConfigurationCommand): Promise<Configuration> {
-    let lastState
+    let lastState = false
     if (command.id !== undefined) {
       lastState = (await this.configurationRepository.get(command.id)).is_enabled
     }

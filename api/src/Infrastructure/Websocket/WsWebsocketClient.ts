@@ -3,7 +3,7 @@ import WebSocket, { type CloseEvent, type ErrorEvent, type MessageEvent } from '
 
 export default class WsWebsocketClient implements WebsocketClient {
   private ws: WebSocket | undefined = undefined
-  private isOpen: boolean = false
+  private isOpen = false
   private readonly messageQueue: Buffer[] = []
 
   constructor (
@@ -44,7 +44,7 @@ export default class WsWebsocketClient implements WebsocketClient {
 
   onMessage (callback: (message: string) => void): void {
     this.ws?.addEventListener('message', (event: MessageEvent) => {
-      let data: string
+      let data = ''
       if (typeof event.data === 'string') {
         data = event.data
       } else if (typeof event.data === 'object') {

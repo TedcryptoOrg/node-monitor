@@ -1,7 +1,7 @@
 import type BlockchainClient from './BlockchainClient'
 import type Configuration from '../Configuration/Configuration'
 import type Server from '../Server/Server'
-import { type ServiceType } from '../Services/ServiceType'
+import type { ServiceType } from '../Services/ServiceType'
 
 export default interface BlockchainClientFactory {
   /**

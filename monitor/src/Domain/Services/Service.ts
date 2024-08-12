@@ -1,4 +1,4 @@
-import { type ServiceType } from './ServiceType'
+import type { ServiceType } from './ServiceType'
 
 export default class Service {
   constructor (

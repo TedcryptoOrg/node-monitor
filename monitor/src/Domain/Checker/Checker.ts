@@ -1,5 +1,5 @@
 import type Monitor from '../Monitor/Monitor'
-import { type CheckStatus } from './CheckStatusEnum'
+import type { CheckStatus } from './CheckStatusEnum'
 
 export default interface Checker {
   start: () => void

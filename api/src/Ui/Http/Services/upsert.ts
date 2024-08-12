@@ -1,8 +1,8 @@
-import { type Request, type Response } from 'express'
+import type { Request, Response } from 'express'
 import { handleCommand } from '../handleCommandUtil'
 import UpsertServiceCommand from '../../../Application/Write/Service/UpsertService/UpsertServiceCommand'
 import type Service from '../../../Domain/Service/Service'
-import { type ServiceType } from '../../../Domain/Service/ServiceType'
+import type { ServiceType } from '../../../Domain/Service/ServiceType'
 import { castToBoolean, castToNumber, castToNumberOrUndefined, castToString } from '../HttpUtil'
 
 export const upsert = async (req: Request, resp: Response): Promise<void> => {

@@ -1,6 +1,6 @@
 export default class VerificationFailed extends Error {
-  static TOKEN_EXPIRED: string = 'token_expired'
-  static FAILED_TO_AUTHENTICATE: string = 'failed_to_authenticate'
+  static TOKEN_EXPIRED = 'token_expired'
+  static FAILED_TO_AUTHENTICATE = 'failed_to_authenticate'
 
   private constructor (public readonly code: string, message: string) {
     super(message)

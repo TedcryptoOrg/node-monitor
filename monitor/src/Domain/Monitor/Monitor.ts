@@ -1,5 +1,5 @@
 import type Configuration from '../Configuration/Configuration'
-import { type MonitorType } from './MonitorType'
+import type { MonitorType } from './MonitorType'
 
 export default interface Monitor {
   id: number

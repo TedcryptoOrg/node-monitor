@@ -1,7 +1,7 @@
 import type Server from '../Server/Server'
 import type Monitor from './Monitor'
 import type Configuration from '../Configuration/Configuration'
-import { type MonitorType } from './MonitorType'
+import type { MonitorType } from './MonitorType'
 
 export default class DiskSpaceCheckMonitor implements Monitor {
   constructor (

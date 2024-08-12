@@ -35,7 +35,7 @@ export default class CheckDiskSpaceCommandHandler implements CommandHandler<Chec
     )
   }
 
-  private async fetchMetrics (command: CheckDiskSpaceCommand, attempts: number = 0): Promise<ServerMetricsResponse> {
+  private async fetchMetrics (command: CheckDiskSpaceCommand, attempts = 0): Promise<ServerMetricsResponse> {
     try {
       return await this.apiClient.getServerMetrics(command.server.id)
     } catch (exception: any) {

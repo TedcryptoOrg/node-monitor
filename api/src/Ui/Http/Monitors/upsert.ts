@@ -1,4 +1,4 @@
-import { type Request, type Response } from 'express'
+import type { Request, Response } from 'express'
 import { handleCommand } from '../handleCommandUtil'
 import UpsertMonitorCommand from '../../../Application/Write/Monitor/UpsertMonitor/UpsertMonitorCommand'
 import type Monitor from '../../../Domain/Monitor/Monitor'
@@ -9,7 +9,7 @@ import {
   castToString,
   castToStringOrUndefined
 } from '../HttpUtil'
-import { type MonitorType } from '../../../Domain/Monitor/MonitorType'
+import type { MonitorType } from '../../../Domain/Monitor/MonitorType'
 
 export const upsert = async (req: Request, resp: Response): Promise<void> => {
   const requiredFields = ['name', 'type', 'configuration_id', 'configuration_object', 'is_enabled']

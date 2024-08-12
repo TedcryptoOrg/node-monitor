@@ -1,5 +1,5 @@
 import { myContainer } from '../src/Infrastructure/DependencyInjection/inversify.config'
-import { type ConsoleCommand } from '../src/Domain/Console/ConsoleCommand'
+import type { ConsoleCommand } from '../src/Domain/Console/ConsoleCommand'
 import CreateUser from '../src/Ui/Console/CreateUser'
 
 async function run (): Promise<void> {

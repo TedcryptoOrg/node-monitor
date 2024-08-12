@@ -1,5 +1,5 @@
 import { WebSocketServer as WsServer, WebSocket } from 'ws'
-import { type WebSocketServer } from '../../Domain/Server/WebSocketServer'
+import type { WebSocketServer } from '../../Domain/Server/WebSocketServer'
 
 export default class WsWebSocketServer implements WebSocketServer {
   server: WsServer | undefined

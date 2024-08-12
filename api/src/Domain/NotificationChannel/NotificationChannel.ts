@@ -1,4 +1,4 @@
-import { type NotificationChannelType } from './NotificationChannelType'
+import type { NotificationChannelType } from './NotificationChannelType'
 
 export interface NotificationChannelArray {
   name: string

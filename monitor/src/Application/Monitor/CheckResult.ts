@@ -1,4 +1,4 @@
-import { type CheckStatus } from '../../Domain/Checker/CheckStatusEnum'
+import type { CheckStatus } from '../../Domain/Checker/CheckStatusEnum'
 import type CheckSignCommandState from './CheckSignMiss/CheckSignCommandState'
 import type CheckBlockCommandState from './CheckBlock/CheckBlockCommandState'
 

@@ -1,4 +1,4 @@
-import { type ApiNotificationChannel } from './ApiNotificationChannel'
+import type { ApiNotificationChannel } from './ApiNotificationChannel'
 
 export interface ApiConfigurationNotificationChannelInput {
   configuration_id: number

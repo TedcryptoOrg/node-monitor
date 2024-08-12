@@ -1,4 +1,4 @@
-import { type Request, type Response } from 'express'
+import type { Request, Response } from 'express'
 import { myContainer } from '../../../Infrastructure/DependencyInjection/inversify.config'
 import CommandHandlerManager from '../../../Infrastructure/CommandHandler/CommandHandlerManager'
 import LoginCommand from '../../../Application/Query/Login/LoginCommand'

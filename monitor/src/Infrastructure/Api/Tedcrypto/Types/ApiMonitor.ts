@@ -1,6 +1,6 @@
-import { type ApiMonitorTypeEnum } from './ApiMonitorTypeEnum'
-import { type ApiConfiguration } from './ApiConfiguration'
-import { type ApiServer } from './ApiServer'
+import type { ApiMonitorTypeEnum } from './ApiMonitorTypeEnum'
+import type { ApiConfiguration } from './ApiConfiguration'
+import type { ApiServer } from './ApiServer'
 
 export interface BlockAlertConfiguration {
   miss_tolerance: number

@@ -1,4 +1,4 @@
-import { type Request, type Response } from 'express'
+import type { Request, Response } from 'express'
 import { handleCommand } from '../handleCommandUtil'
 import DeleteUserCommand from '../../../Application/Write/User/DeleteUser/DeleteUserCommand'
 

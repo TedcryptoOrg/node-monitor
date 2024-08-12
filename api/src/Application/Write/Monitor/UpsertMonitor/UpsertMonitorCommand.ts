@@ -1,5 +1,5 @@
 import type Command from '../../../../Domain/Command/Command'
-import { type MonitorType } from '../../../../Domain/Monitor/MonitorType'
+import type { MonitorType } from '../../../../Domain/Monitor/MonitorType'
 
 export default class UpsertMonitorCommand implements Command {
   constructor (

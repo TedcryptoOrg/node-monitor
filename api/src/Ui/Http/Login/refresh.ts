@@ -1,7 +1,7 @@
-import { type Request, type Response } from 'express'
+import type { Request, Response } from 'express'
 import RefreshTokenCommand from '../../../Application/Query/RefreshToken/RefreshTokenCommand'
 import { handleCommand } from '../handleCommandUtil'
-import { type RefreshTokenCommandHandlerResult } from '../../../Application/Query/RefreshToken/RefreshTokenCommandHandler'
+import type { RefreshTokenCommandHandlerResult } from '../../../Application/Query/RefreshToken/RefreshTokenCommandHandler'
 
 export const refresh = async (req: Request, resp: Response): Promise<void> => {
   const authorization = req.headers.authorization
