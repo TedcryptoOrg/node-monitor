@@ -42,13 +42,13 @@ jobs:
           ./docker/wait-for-services.sh
 
       - name: Display node-app logs
-        run: docker-compose logs node-app
+        run: docker compose logs node-app
 
       - name: Check node-app status
-        run: docker-compose ps node-app
+        run: docker compose ps node-app
 
       - name: Prepare test environment
-        run: docker-compose exec -T node-app npm run test:setup
+        run: docker compose exec -T node-app npm run test:setup
 
       - name: Run tests
         run: docker compose exec -T node-app npm test
