@@ -3,7 +3,7 @@ set -e
 
 # Function to check health
 check_health() {
-  docker-compose ps | grep 'health: starting'
+  docker compose ps | grep 'health: starting'
 }
 
 # Wait for health checks to pass
