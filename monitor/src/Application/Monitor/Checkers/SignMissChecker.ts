@@ -4,18 +4,13 @@ import CheckSignMissCommand from '../CheckSignMiss/CheckSignMissCommand'
 import SignMissMonitor from '../../../Domain/Monitor/SignMissMonitor'
 import type CheckResult from '../CheckResult'
 import CheckSignCommandState from '../CheckSignMiss/CheckSignCommandState'
-import type CheckBlockCommandState from '../CheckBlock/CheckBlockCommandState'
 
 export default class SignMissChecker extends AbstractChecker {
-  private lastCommandState: CheckSignCommandState | CheckBlockCommandState | undefined
+  private lastCommandState: CheckSignCommandState | undefined
 
   getCommand (): Command {
     if (!(this.monitor instanceof SignMissMonitor)) {
       throw new Error('Invalid monitor type')
-    }
-    if (this.lastCommandState !== undefined &&
-            !(this.lastCommandState instanceof CheckSignCommandState)) {
-      throw new Error('Invalid last state type')
     }
 
     return new CheckSignMissCommand(
@@ -29,6 +24,10 @@ export default class SignMissChecker extends AbstractChecker {
   }
 
   protected async postCheck (result: CheckResult): Promise<void> {
+    if (result.state !== undefined && !(result.state instanceof CheckSignCommandState)) {
+      throw new Error('Invalid last state type')
+    }
+
     this.lastCommandState = result.state
     await super.postCheck(result)
   }

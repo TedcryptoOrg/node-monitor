@@ -7,6 +7,7 @@ import { TYPES } from '../../../Domain/DependencyInjection/types'
 import { HttpClient } from '../../../Domain/Http/HttpClient'
 import { AxiosError } from 'axios'
 import Logger from '../../Logger/Logger'
+import CheckUrlCommandState from "./CheckUrlCommandState";
 
 @injectable()
 export default class CheckUrlCommandHandler implements CommandHandler<CheckUrlCommand> {
@@ -24,7 +25,29 @@ export default class CheckUrlCommandHandler implements CommandHandler<CheckUrlCo
       const axiosError = error as AxiosError
       if (axiosError.code === 'ECONNABORTED' || axiosError.response === undefined) {
         this.logger.error(`Error checking URL: ${command.url}`, { error })
-        return new CheckResult(CheckStatus.ERROR, `URL ${command.url} is unreachable`)
+        if (command.allowedAttempts === 0) {
+            return new CheckResult(
+                CheckStatus.ERROR,
+                `URL ${command.url} is unreachable.`,
+                CheckUrlCommandState.create()
+            )
+        }
+        if (command.lastState === undefined) {
+            return new CheckResult(
+                CheckStatus.WARNING,
+                `URL ${command.url} is unreachable.`,
+                CheckUrlCommandState.create()
+            )
+        }
+        if (command.lastState.numFailures < command.allowedAttempts) {
+            return new CheckResult(
+                CheckStatus.WARNING,
+                `URL ${command.url} is unreachable. Attempt ${command.lastState.numFailures + 1}`,
+                command.lastState.incrementFailure()
+            )
+        }
+
+        return new CheckResult(CheckStatus.ERROR, `URL ${command.url} is unreachable. Attempts ${command.allowedAttempts} exceeded. Attempt ${command.lastState.numFailures + 1}`)
       }
     }
 

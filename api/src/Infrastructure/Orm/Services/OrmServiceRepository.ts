@@ -28,7 +28,7 @@ export default class OrmServiceRepository implements ServiceRepository {
     return Service.fromArray(data)
   }
 
-  async findAll (criteria?: FindAllCriteria | undefined): Promise<Service[]> {
+  async findAll (criteria?: FindAllCriteria): Promise<Service[]> {
     const data = await this.ormClient.services.findMany({
       where: {
         server_id: criteria?.server_id

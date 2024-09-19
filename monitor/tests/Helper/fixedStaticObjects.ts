@@ -78,6 +78,7 @@ export const createUrlMonitor = (url?: string): UrlMonitor => {
         60,
         true,
         url ?? 'http://localhost',
+        0
     )
 }
 
