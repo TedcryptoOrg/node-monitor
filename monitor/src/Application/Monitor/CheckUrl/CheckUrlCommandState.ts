@@ -1,7 +1,12 @@
 export default class CheckUrlCommandState {
-  constructor(
+  private constructor(
       public readonly numFailures: number,
   ) {
+  }
+
+  static create(): CheckUrlCommandState
+  {
+    return new CheckUrlCommandState(1);
   }
 
   public incrementFailure(): CheckUrlCommandState
