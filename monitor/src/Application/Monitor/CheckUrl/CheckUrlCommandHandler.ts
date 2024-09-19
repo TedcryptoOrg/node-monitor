@@ -24,6 +24,14 @@ export default class CheckUrlCommandHandler implements CommandHandler<CheckUrlCo
       const axiosError = error as AxiosError
       if (axiosError.code === 'ECONNABORTED' || axiosError.response === undefined) {
         this.logger.error(`Error checking URL: ${command.url}`, { error })
+        if (command.lastState !== undefined && command.lastState.numFailures <= command.allowedAttempts) {
+            return new CheckResult(
+                CheckStatus.WARNING,
+                `URL ${command.url} is unreachable. Attempt ${command.lastState.numFailures}`,
+                command.lastState.incrementFailure()
+            )
+        }
+
         return new CheckResult(CheckStatus.ERROR, `URL ${command.url} is unreachable`)
       }
     }

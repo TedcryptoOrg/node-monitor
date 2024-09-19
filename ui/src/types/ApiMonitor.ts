@@ -27,6 +27,7 @@ export type PriceFeederMissCountConfiguration = {
 export type UrlCheckConfiguration = {
     name: string,
     address: string,
+    allowed_attempts?: number,
 }
 
 export type SignMissCheckConfiguration = {

@@ -11,7 +11,8 @@ export default class UrlMonitor implements Monitor {
     public readonly alertSleepDurationMinutes: number,
     public readonly checkIntervalSeconds: number,
     public readonly isEnabled: boolean,
-    public readonly url: string
+    public readonly url: string,
+    public readonly allowedAttempts: number,
   ) {
   }
 

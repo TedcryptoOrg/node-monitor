@@ -11,7 +11,8 @@ export default class UrlChecker extends AbstractChecker {
 
     return new CheckUrlCommand(
       this.monitor.getFullName(),
-      this.monitor.url
+      this.monitor.url,
+      this.monitor.allowedAttempts,
     )
   }
 }

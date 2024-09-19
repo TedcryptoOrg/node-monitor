@@ -111,7 +111,8 @@ export class HttpApiClient implements ApiClient {
           Number(monitorConfig.alert_sleep_duration_minutes ?? 10),
           60, // TODO: hardcoded value
           monitor.is_enabled,
-          monitorConfig.address
+          monitorConfig.address,
+          monitorConfig.allowed_attempts ?? 3
         )
       } case ApiMonitorTypeEnum.SIGN_MISS_CHECK: {
         const monitorConfig = JSON.parse(monitor.configuration_object) as SignMissCheckConfiguration

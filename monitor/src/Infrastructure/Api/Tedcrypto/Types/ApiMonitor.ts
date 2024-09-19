@@ -27,6 +27,7 @@ export interface UrlCheckConfiguration {
   name: string
   address: string
   alert_sleep_duration_minutes?: number
+  allowed_attempts?: number // @TODO: Optional just while we are not setting it for everyone
 }
 
 export interface SignMissCheckConfiguration {
