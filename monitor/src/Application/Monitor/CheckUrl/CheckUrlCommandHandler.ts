@@ -40,7 +40,7 @@ export default class CheckUrlCommandHandler implements CommandHandler<CheckUrlCo
             )
         }
 
-        return new CheckResult(CheckStatus.ERROR, `URL ${command.url} is unreachable`)
+        return new CheckResult(CheckStatus.ERROR, `URL ${command.url} is unreachable. Attempts ${command.lastState.numFailures} exceeded`)
       }
     }
 
