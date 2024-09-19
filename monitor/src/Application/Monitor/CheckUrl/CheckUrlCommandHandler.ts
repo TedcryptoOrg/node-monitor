@@ -27,20 +27,20 @@ export default class CheckUrlCommandHandler implements CommandHandler<CheckUrlCo
         this.logger.error(`Error checking URL: ${command.url}`, { error })
         if (command.lastState === undefined) {
             return new CheckResult(
-                CheckStatus.ERROR,
-                `URL ${command.url} is unreachable`,
+                CheckStatus.WARNING,
+                `URL ${command.url} is unreachable.`,
                 CheckUrlCommandState.create()
             )
         }
         if (command.lastState.numFailures <= command.allowedAttempts) {
             return new CheckResult(
                 CheckStatus.WARNING,
-                `URL ${command.url} is unreachable. Attempt ${command.lastState.numFailures}`,
+                `URL ${command.url} is unreachable. Attempt ${command.lastState.numFailures + 1}`,
                 command.lastState.incrementFailure()
             )
         }
 
-        return new CheckResult(CheckStatus.ERROR, `URL ${command.url} is unreachable. Attempts ${command.lastState.numFailures} exceeded`)
+        return new CheckResult(CheckStatus.ERROR, `URL ${command.url} is unreachable. Attempts ${command.allowedAttempts} exceeded. Attempt ${command.lastState.numFailures + 1}`)
       }
     }
 
