@@ -21,7 +21,7 @@
     "typescript": "^5.0.0"
   },
   "dependencies": {
-    "@prisma/client": "^5.11.0",
+    "@prisma/client": "^6.0.0",
     "argon2": "^0.41.0",
     "axios": "^1.5.1",
     "cors": "^2.8.5",
@@ -30,7 +30,7 @@
     "inversify": "^6.0.2",
     "jsonwebtoken": "^9.0.2",
     "mariadb": "^3.2.1",
-    "prisma": "^5.11.0",
+    "prisma": "^6.0.0",
     "reflect-metadata": "^0.2.1",
     "shallow-equal": "^3.1.0",
     "telegraf": "^4.15.3",
