@@ -1,187 +1,92 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import {
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    Paper,
-    Button,
-    DialogContent, DialogContentText, LinearProgress
-} from '@mui/material';
-import {useParams} from 'react-router-dom';
+import { useParams } from 'react-router-dom';
+import { Box, Grid, LinearProgress } from '@mui/material';
 import { ApiServer } from '../../types/ApiServer';
-import { ApiService } from '../../types/ApiService';
-import UpsertServiceModal from '../services/UpsertServiceModal';
-import BooleanIcon from "../Shared/BooleanIcon";
-import UpsertServerModal from "./UpsertServerModal";
-import ConfigurationLink from "../configurations/ConfigurationLink";
-import MonitorsList from "../monitors/MonitorsList";
-import {enqueueSnackbar} from "notistack";
-import {useApi} from "../../context/ApiProvider";
-
-type RouteParams = {
-    [key: string]: string;
-};
+import { useApi } from '../../context/ApiProvider';
+import { enqueueSnackbar } from 'notistack';
+import ServerHeader from './details/ServerHeader';
+import ServerDetails from './details/ServerDetails';
+import ServerServices from './details/ServerServices';
+import ServerMonitors from './details/ServerMonitors';
+import ServerMetrics from './details/ServerMetrics';
 
 const ServerOverview: React.FC = () => {
-    const api = useApi();
-    const { id } = useParams<RouteParams>() as { id: string };
-    const [server, setServer] = useState<ApiServer>({} as ApiServer);
-    const [services, setServices] = useState<ApiService[]>([]);
-    const [openServiceModal, setOpenServiceModal] = useState(false);
-    const [editService, setEditService] = useState<ApiService|null>(null);
-    const firstRender = React.useRef(true);
+  const api = useApi();
+  const { id } = useParams<{ id: string }>();
+  const [server, setServer] = useState<ApiServer | null>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-    const fetchServices = useCallback(() => {
-        api?.get(`/servers/${id}/services`)
-            .then(response => {
-                if (!response.ok) {
-                    throw Error('Failed to fetch')
-                }
-
-                setServices(response.body ?? [])
-            })
-    }, [id, api]);
-
-    const fetchData = useCallback(() => {
-        api?.get(`/servers/${id}`)
-            .then(response => {
-                if (!response.ok) {
-                    throw Error('Failed to fetch server data')
-                }
-
-                return response.body
-            })
-            .then(data => setServer(data))
-            .catch((error) => enqueueSnackbar(`Failed to fetch server data: ${error}`, {variant: 'error'}))
-    }, [id, api]);
-
-    useEffect(() => {
-        if (firstRender.current) {
-            fetchData();
-            fetchServices();
-            firstRender.current = false
+  const fetchData = useCallback(() => {
+    setIsLoading(true);
+    api?.get(`/servers/${id}`)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Failed to fetch server data');
         }
-    }, [id, fetchData, fetchServices]);
+        return response.body;
+      })
+      .then(data => setServer(data))
+      .catch(error => {
+        console.error('Error:', error);
+        enqueueSnackbar('Failed to fetch server data', { variant: 'error' });
+        setServer(null);
+      })
+      .finally(() => setIsLoading(false));
+    api?.get(`/servers/${id}/monitors`)
+        .then(response => {
+            if (!response.ok) {
+            throw new Error('Failed to fetch server monitors');
+            }
+            return response.body;
+        })
+        .then(data => setServer(prev => prev ? { ...prev, monitors: data } : null))
+        .catch(error => {
+            console.error('Error:', error);
+            enqueueSnackbar('Failed to fetch server monitors', { variant: 'error' });
+        });
+  }, [id, api]);
 
-    // Service modal
-    const handleServiceModalOpen = () => {
-        setOpenServiceModal(true);
-    }
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
-    const handleServiceModalClose = () => {
-        setOpenServiceModal(false);
-        setEditService(null)
-    };
+  if (isLoading) {
+    return <LinearProgress />;
+  }
 
-    const handleEditService = (id: number) => {
-        const service = services.find((service: ApiService) => service.id === id);
-        if (service) {
-            setEditService(service)
-            handleServiceModalOpen()
-        } else {
-            enqueueSnackbar(`No service found with id ${id}`, {variant: 'error'});
-        }
-    };
+  if (!server) {
+    return null;
+  }
 
-    const handleRemoveService = (id: number) => {
-        api?.delete(`/services/${id}`)
-            .then(() => {
-                enqueueSnackbar('Service removed.', {variant: 'success'})
-                fetchServices()
-            }).catch((error) => {
-                enqueueSnackbar(`Failed to remove service: ${error}`, {variant: 'error'});
-            });
-    };
+  return (
+    <Box>
+      <ServerHeader server={server} onUpdate={fetchData} />
+      
+      <Grid container spacing={3} sx={{ mt: 1 }}>
+        <Grid item xs={12} md={4}>
+          <ServerDetails server={server} />
+        </Grid>
+        
+        <Grid item xs={12} md={8}>
+          <ServerMetrics server={server} />
+        </Grid>
 
-    // Server
-    const [openServerModal, setOpenServerModal] = useState(false);
+        <Grid item xs={12}>
+          <ServerServices 
+            server={server} 
+            onUpdate={fetchData}
+          />
+        </Grid>
 
-    return (
-        <div>
-            <h2>Server Overview</h2>
-            {server && (
-                <DialogContent>
-                    <DialogContentText>
-                        <p>
-                            Configuration: {server.configuration && <ConfigurationLink configuration={server.configuration} />}
-                        </p>
-                        <p>Name: {server.name}</p>
-                        <p>Address: {server.address}</p>
-                        <p>Is Enabled: <BooleanIcon value={server.is_enabled}/></p>
-                        <p>Created At: {server.created_at ? new Date(server.created_at).toLocaleString() : 'unknown'}</p>
-                        <p>Updated At: {server.updated_at ? new Date(server.updated_at).toLocaleString() : 'unknown'}</p>
-                    </DialogContentText>
-                    <DialogContentText>
-                        <UpsertServerModal
-                            open={openServerModal}
-                            fetchData={fetchData}
-                            configurationId={server.configuration?.id}
-                            handleClose={() => {setOpenServerModal(false)}}
-                            editServer={server}
-                        />
-                        <Button variant="contained" color="primary" onClick={() => {setOpenServerModal(true)}}>
-                            Edit
-                        </Button>
-                    </DialogContentText>
-                </DialogContent>
-            )}
-
-            <h3>Services</h3>
-            <Button variant="outlined" onClick={handleServiceModalOpen}>
-                Add Service
-            </Button>
-            <UpsertServiceModal
-                open={openServiceModal}
-                fetchData={() => {fetchServices();}}
-                server={server}
-                editService={editService}
-                handleClose={handleServiceModalClose}
-            />
-            <TableContainer component={Paper}>
-                <Table>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell>ID</TableCell>
-                            <TableCell>Name</TableCell>
-                            <TableCell>Address</TableCell>
-                            <TableCell>Is Enabled</TableCell>
-                            <TableCell>Type</TableCell>
-                            <TableCell>Actions</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {services.map((service: ApiService) => (
-                            <TableRow key={service.id}>
-                                <TableCell>{service.id}</TableCell>
-                                <TableCell>{service.name}</TableCell>
-                                <TableCell>{service.address}</TableCell>
-                                <TableCell>
-                                    <BooleanIcon value={service.is_enabled}/>
-                                </TableCell>
-                                <TableCell>{service.type}</TableCell>
-                                <TableCell>
-                                    <Button variant="contained" color="primary"
-                                            onClick={() => handleEditService(service.id ?? 0)}>
-                                        Edit
-                                    </Button>
-                                    <Button variant="contained" color="secondary"
-                                            onClick={() => handleRemoveService(service.id ?? 0)}>
-                                        Remove
-                                    </Button>
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
-
-            <h3>Monitors</h3>
-            {server.configuration ? <MonitorsList configuration={server.configuration} /> : <LinearProgress />}
-        </div>
-    );
-}
+        <Grid item xs={12}>
+          <ServerMonitors 
+            server={server}
+            onUpdate={fetchData}
+          />
+        </Grid>
+      </Grid>
+    </Box>
+  );
+};
 
 export default ServerOverview;
