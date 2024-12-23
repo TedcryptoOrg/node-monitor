@@ -1,21 +1,19 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import {
-  Box,
-  LinearProgress,
-} from '@mui/material';
-import { useApi } from "../../context/ApiProvider";
+import React, { useState, useCallback, useEffect } from 'react';
+import { Box, Typography } from '@mui/material';
 import ConfigurationsList from './ConfigurationsList';
 import ConfigurationHeader from './ConfigurationHeader';
 import ConfigurationFilters from './ConfigurationFilters';
-import { ApiConfiguration } from '../../types/ApiConfiguration';
 import { useConfigurationFilters } from './hooks/useConfigurationFilters';
 import { useCompanies } from './hooks/useCompanies';
+import { useApi } from '../../context/ApiProvider';
+import { ApiConfiguration } from '../../types/ApiConfiguration';
 
 const ConfigurationsComponent: React.FC = () => {
   const api = useApi();
-  const [isLoading, setIsLoading] = useState(true);
   const [configurations, setConfigurations] = useState<ApiConfiguration[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const { companies } = useCompanies();
+  
   const {
     search,
     setSearch,
@@ -26,32 +24,27 @@ const ConfigurationsComponent: React.FC = () => {
     filteredConfigurations
   } = useConfigurationFilters(configurations);
 
-  const fetchData = useCallback(() => {
-    setIsLoading(true);
-    api?.get(`/configurations`)
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Failed to fetch configurations');
-        }
-        return response.body;
-      })
-      .then(data => {
-        setConfigurations(data);
-      })
-      .catch((error) => {
-        console.error('Error:', error);
-        setConfigurations([]);
-      })
-      .finally(() => setIsLoading(false));
+  const fetchConfigurations = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const response = await api?.get('/configurations');
+      if (response?.ok) {
+        setConfigurations(response.body);
+      }
+    } catch (error) {
+      console.error('Error fetching configurations:', error);
+    } finally {
+      setIsLoading(false);
+    }
   }, [api]);
 
   useEffect(() => {
-    fetchData();
-  }, [fetchData]);
+    fetchConfigurations();
+  }, [fetchConfigurations]);
 
   return (
     <Box>
-      <ConfigurationHeader onConfigurationAdded={fetchData} />
+      <ConfigurationHeader onConfigurationAdded={fetchConfigurations} />
       
       <Box sx={{ mt: 4 }}>
         <ConfigurationFilters
@@ -64,16 +57,11 @@ const ConfigurationsComponent: React.FC = () => {
           companies={companies}
         />
 
-        {isLoading ? (
-          <Box sx={{ width: '100%' }}>
-            <LinearProgress />
-          </Box>
-        ) : (
-          <ConfigurationsList 
-            configurations={filteredConfigurations}
-            onConfigurationUpdated={fetchData}
-          />
-        )}
+        <ConfigurationsList 
+          configurations={filteredConfigurations}
+          onConfigurationUpdated={fetchConfigurations}
+          isLoading={isLoading}
+        />
       </Box>
     </Box>
   );

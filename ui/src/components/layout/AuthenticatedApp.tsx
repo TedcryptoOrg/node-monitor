@@ -1,5 +1,5 @@
 import React from 'react';
-import { Route, Routes } from 'react-router-dom';
+import { Routes, Route } from 'react-router-dom';
 import DashboardLayout from './DashboardLayout';
 import DashboardComponent from '../DashboardComponent';
 import LogWatcher from '../logWatcher/LogWatcher';
@@ -10,9 +10,9 @@ import ServersComponent from '../servers/ServersComponent';
 import ServerOverview from '../servers/ServerOverview';
 import AuditComponent from '../AuditComponent';
 import NotificationChannelsComponent from '../notificationChannels/NotificationChannelsComponent';
-import CompaniesComponent from '../Company/CompaniesComponent';
-import CompanyOverview from '../Company/CompanyOverview';
-import UpsertCompany from '../Company/UpsertCompany';
+import CompanyComponent from '../Company/CompanyComponent';
+import { CompanyOverview } from '../Company/CompanyOverview';
+import { UpsertCompany } from '../Company/UpsertCompany';
 import UserComponent from '../User/UserComponent';
 import UserOverview from '../User/UserOverview';
 import UpsertUser from '../User/UpsertUser';
@@ -31,7 +31,7 @@ const AuthenticatedApp: React.FC = () => {
         <Route path="/servers/:id" element={<ServerOverview />} />
         <Route path="/audit" element={<AuditComponent />} />
         <Route path="/notification-channels" element={<NotificationChannelsComponent />} />
-        <Route path="/companies" element={<CompaniesComponent />} />
+        <Route path="/companies" element={<CompanyComponent />} />
         <Route path="/companies/:id" element={<CompanyOverview />} />
         <Route path="/companies/:id/edit" element={<UpsertCompany />} />
         <Route path="/companies/add" element={<UpsertCompany />} />

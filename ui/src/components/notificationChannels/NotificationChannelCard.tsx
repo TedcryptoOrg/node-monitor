@@ -2,12 +2,15 @@ import React from 'react';
 import {
   Card,
   CardContent,
+  CardActions,
   Typography,
   Box,
   IconButton,
   Tooltip,
   Chip,
+  useTheme,
 } from '@mui/material';
+import { alpha } from '@mui/material/styles';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { ApiNotificationChannel } from '../../types/ApiNotificationChannel';
@@ -24,6 +27,8 @@ const NotificationChannelCard: React.FC<NotificationChannelCardProps> = ({
   onEdit,
   onDelete,
 }) => {
+  const theme = useTheme();
+
   return (
     <Card
       sx={{
@@ -36,45 +41,22 @@ const NotificationChannelCard: React.FC<NotificationChannelCardProps> = ({
         },
       }}
     >
-      <CardContent>
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-          <Box>
-            <Typography variant="h6" component="h2" gutterBottom fontWeight={600}>
-              {channel.name}
-            </Typography>
-            <Chip
-              label={channel.type}
-              size="small"
-              sx={{
-                textTransform: 'capitalize',
-                bgcolor: 'primary.main',
-                color: 'white',
-                fontWeight: 500,
-                mb: 2,
-              }}
-            />
-          </Box>
-          <Box sx={{ display: 'flex', gap: 1 }}>
-            <Tooltip title="Edit Channel">
-              <IconButton
-                size="small"
-                onClick={() => onEdit(channel)}
-                sx={{ color: 'warning.main' }}
-              >
-                <EditIcon fontSize="small" />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Delete Channel">
-              <IconButton
-                size="small"
-                onClick={() => onDelete(channel.id)}
-                sx={{ color: 'error.main' }}
-              >
-                <DeleteIcon fontSize="small" />
-              </IconButton>
-            </Tooltip>
-          </Box>
-        </Box>
+      <CardContent sx={{ flexGrow: 1 }}>
+        <Typography variant="h6" component="h2" gutterBottom fontWeight={600}>
+          {channel.name}
+        </Typography>
+        
+        <Chip
+          label={channel.type}
+          size="small"
+          sx={{
+            textTransform: 'capitalize',
+            bgcolor: 'primary.main',
+            color: 'white',
+            fontWeight: 500,
+            mb: 2,
+          }}
+        />
 
         <Box sx={{ mt: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
           <Typography variant="body2" color="text.secondary">
@@ -90,6 +72,39 @@ const NotificationChannelCard: React.FC<NotificationChannelCardProps> = ({
           Created: {new Date(channel.created_at!).toLocaleDateString()}
         </Typography>
       </CardContent>
+
+      <CardActions sx={{ justifyContent: 'flex-end', px: 2, pb: 2 }}>
+        <Tooltip title="Edit Channel">
+          <IconButton
+            size="small"
+            onClick={() => onEdit(channel)}
+            sx={{
+              color: 'text.secondary',
+              '&:hover': {
+                color: 'warning.main',
+                bgcolor: alpha(theme.palette.warning.main, 0.1),
+              },
+            }}
+          >
+            <EditIcon fontSize="small" />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Delete Channel">
+          <IconButton
+            size="small"
+            onClick={() => onDelete(channel.id)}
+            sx={{
+              color: 'text.secondary',
+              '&:hover': {
+                color: 'error.main',
+                bgcolor: alpha(theme.palette.error.main, 0.1),
+              },
+            }}
+          >
+            <DeleteIcon fontSize="small" />
+          </IconButton>
+        </Tooltip>
+      </CardActions>
     </Card>
   );
 };

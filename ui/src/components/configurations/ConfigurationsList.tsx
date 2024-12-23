@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Grid,
   Card,
@@ -8,33 +8,57 @@ import {
   Button,
   Box,
   Chip,
-  IconButton,
-  Tooltip,
+  LinearProgress,
+  Stack,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  CardActionArea,
 } from '@mui/material';
 import { ApiConfiguration } from '../../types/ApiConfiguration';
+import { useNavigate } from 'react-router-dom';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
-import VisibilityIcon from '@mui/icons-material/Visibility';
-import { useNavigate } from 'react-router-dom';
+import StorageIcon from '@mui/icons-material/Storage';
+import MonitorHeartIcon from '@mui/icons-material/MonitorHeart';
 import { useApi } from '../../context/ApiProvider';
 import { enqueueSnackbar } from 'notistack';
 import MonitorsStatus from '../monitors/MonitorsStatus';
+import UpsertConfigurationModal from './UpsertConfigurationModal';
 
 interface ConfigurationsListProps {
   configurations: ApiConfiguration[];
   onConfigurationUpdated: () => void;
+  isLoading: boolean;
 }
 
 const ConfigurationsList: React.FC<ConfigurationsListProps> = ({
   configurations,
   onConfigurationUpdated,
+  isLoading,
 }) => {
-  const navigate = useNavigate();
   const api = useApi();
+  const navigate = useNavigate();
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [selectedConfig, setSelectedConfig] = useState<ApiConfiguration | null>(null);
 
-  const handleDelete = async (id: number) => {
+  const handleEdit = (config: ApiConfiguration) => {
+    setSelectedConfig(config);
+    setEditModalOpen(true);
+  };
+
+  const handleDeleteClick = (config: ApiConfiguration) => {
+    setSelectedConfig(config);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!selectedConfig) return;
+
     try {
-      const response = await api?.delete(`/configurations/${id}`);
+      const response = await api?.delete(`/configurations/${selectedConfig.id}`);
       if (response?.ok) {
         enqueueSnackbar('Configuration deleted successfully', { variant: 'success' });
         onConfigurationUpdated();
@@ -44,14 +68,21 @@ const ConfigurationsList: React.FC<ConfigurationsListProps> = ({
     } catch (error) {
       console.error('Error:', error);
       enqueueSnackbar('Failed to delete configuration', { variant: 'error' });
+    } finally {
+      setDeleteDialogOpen(false);
+      setSelectedConfig(null);
     }
   };
 
+  if (isLoading) {
+    return <LinearProgress />;
+  }
+
   if (configurations.length === 0) {
     return (
-      <Box
-        sx={{
-          textAlign: 'center',
+      <Box 
+        sx={{ 
+          textAlign: 'center', 
           py: 8,
           bgcolor: 'background.paper',
           borderRadius: 2,
@@ -70,78 +101,122 @@ const ConfigurationsList: React.FC<ConfigurationsListProps> = ({
   }
 
   return (
-    <Grid container spacing={3}>
-      {configurations.map((config) => (
-        <Grid item xs={12} sm={6} md={4} key={config.id}>
-          <Card
-            sx={{
-              height: '100%',
-              display: 'flex',
-              flexDirection: 'column',
-              transition: 'transform 0.2s ease-in-out',
-              '&:hover': {
-                transform: 'translateY(-4px)',
-              },
-            }}
-          >
-            <CardContent sx={{ flexGrow: 1 }}>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                <Typography variant="h6" component="h2" fontWeight={600}>
-                  {config.name}
-                </Typography>
-                <MonitorsStatus monitors={config.monitors || []} />
-              </Box>
-              
-              <Box sx={{ mb: 2 }}>
-                <Chip
-                  label={config.chain}
-                  size="small"
-                  sx={{ 
-                    bgcolor: 'primary.main',
-                    color: 'white',
-                    fontWeight: 500
-                  }}
-                />
-              </Box>
+    <>
+      <Grid container spacing={3}>
+        {configurations.map((config) => (
+          <Grid item xs={12} sm={6} md={4} key={config.id}>
+            <Card 
+              sx={{ 
+                height: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+                transition: 'transform 0.2s ease-in-out',
+                '&:hover': {
+                  transform: 'translateY(-4px)',
+                },
+              }}
+            >
+              <CardActionArea onClick={() => navigate(`/configurations/${config.id}`)}>
+                <CardContent sx={{ flexGrow: 1 }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 2 }}>
+                    <Typography variant="h6" component="h2" fontWeight={600}>
+                      {config.name}
+                    </Typography>
+                    <MonitorsStatus monitors={config.monitors || []} />
+                  </Box>
 
-              <Typography variant="body2" color="text.secondary">
-                {config.servers?.length || 0} Servers • {config.monitors?.length || 0} Monitors
-              </Typography>
-            </CardContent>
+                  <Stack spacing={2}>
+                    <Box>
+                      <Chip
+                        label={config.chain}
+                        size="small"
+                        sx={{ 
+                          bgcolor: 'primary.main',
+                          color: 'white',
+                          fontWeight: 500
+                        }}
+                      />
+                    </Box>
 
-            <CardActions sx={{ justifyContent: 'flex-end', p: 2 }}>
-              <Tooltip title="View Details">
-                <IconButton
+                    <Stack direction="row" spacing={2}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <StorageIcon fontSize="small" color="action" />
+                        <Typography variant="body2" color="text.secondary">
+                          {config.servers?.length || 0} Servers
+                        </Typography>
+                      </Box>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <MonitorHeartIcon fontSize="small" color="action" />
+                        <Typography variant="body2" color="text.secondary">
+                          {config.monitors?.length || 0} Monitors
+                        </Typography>
+                      </Box>
+                    </Stack>
+                  </Stack>
+                </CardContent>
+              </CardActionArea>
+
+              <CardActions sx={{ p: 2, gap: 1 }}>
+                <Button
                   size="small"
-                  onClick={() => navigate(`/configurations/${config.id}`)}
-                  sx={{ color: 'primary.main' }}
+                  variant="outlined"
+                  color="primary"
+                  startIcon={<EditIcon />}
+                  onClick={() => handleEdit(config)}
+                  fullWidth
                 >
-                  <VisibilityIcon />
-                </IconButton>
-              </Tooltip>
-              <Tooltip title="Edit">
-                <IconButton
+                  Edit
+                </Button>
+                <Button
                   size="small"
-                  onClick={() => navigate(`/configurations/${config.id}/edit`)}
-                  sx={{ color: 'warning.main' }}
+                  variant="outlined"
+                  color="error"
+                  startIcon={<DeleteIcon />}
+                  onClick={() => handleDeleteClick(config)}
+                  fullWidth
                 >
-                  <EditIcon />
-                </IconButton>
-              </Tooltip>
-              <Tooltip title="Delete">
-                <IconButton
-                  size="small"
-                  onClick={() => handleDelete(config.id)}
-                  sx={{ color: 'error.main' }}
-                >
-                  <DeleteIcon />
-                </IconButton>
-              </Tooltip>
-            </CardActions>
-          </Card>
-        </Grid>
-      ))}
-    </Grid>
+                  Delete
+                </Button>
+              </CardActions>
+            </Card>
+          </Grid>
+        ))}
+      </Grid>
+
+      {editModalOpen && (
+        <UpsertConfigurationModal
+          open={editModalOpen}
+          fetchData={onConfigurationUpdated}
+          configuration={selectedConfig}
+          handleClose={() => {
+            setSelectedConfig(null);
+            setEditModalOpen(false);
+          }}
+        />
+      )}
+
+      <Dialog
+        open={deleteDialogOpen}
+        onClose={() => setDeleteDialogOpen(false)}
+        maxWidth="xs"
+        fullWidth
+      >
+        <DialogTitle>Delete Configuration</DialogTitle>
+        <DialogContent>
+          <Typography>
+            Are you sure you want to delete the configuration "{selectedConfig?.name}"? This action cannot be undone.
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDeleteDialogOpen(false)} color="inherit">
+            Cancel
+          </Button>
+          <Button onClick={handleDeleteConfirm} color="error" variant="contained">
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
   );
 };
 

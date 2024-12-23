@@ -21,11 +21,9 @@ export const useConfigurationFilters = (configurations: ApiConfiguration[]) => {
 
     // Apply company filter
     if (selectedCompany) {
-      filtered = filtered.filter(config => {
-        // Handle both cases where company might be in the root or nested
-        const companyId = config.company?.id || config?.company_id;
-        return companyId?.toString() === selectedCompany;
-      });
+      filtered = filtered.filter(config => 
+        config.company?.id?.toString() === selectedCompany
+      );
     }
 
     // Apply status filter

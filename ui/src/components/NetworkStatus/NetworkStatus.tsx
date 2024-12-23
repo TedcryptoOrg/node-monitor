@@ -1,95 +1,31 @@
-import React, {useEffect, useState} from 'react';
-import {ApiConfiguration} from "../../types/ApiConfiguration";
-import {DataGrid} from "@mui/x-data-grid";
-import {Box} from "@mui/system";
-import {useApi} from "../../context/ApiProvider";
-import {ServerMetric} from "../../types/ServerMetric";
-import {columns} from "./DataGrid/Columns";
+import React from 'react';
+import { Box, Typography } from '@mui/material';
+import MetricsTable from './components/MetricsTable';
+import { useMetrics } from './hooks/useMetrics';
 
 const NetworkStatus: React.FC = () => {
-    const api = useApi()
-    const [metrics, setMetrics] = useState<ServerMetric[]>([]);
-    const firstRender = React.useRef(true);
+  const { metricsMap, configurations, isLoading, error, refetch } = useMetrics();
 
-    const lazyFetchMetrics = () => {
-        setMetrics((currentMetrics) => {
-            for(const metric of currentMetrics) {
-                api?.get(`/servers/${metric.server.id}/metrics`)
-                    .then(response => {
-                        if (!response.ok) {
-                            metric.freeDiskSpace = null
-                            metric.usedDiskSpace = null
-                            metric.totalDiskSpace = null
-                            metric.usedDiskSpacePercentage = null
-                            metric.memoryUsage = null
-                            metric.memoryUsagePercentage = null
-                            metric.totalMemory = null
-                            return null;
-                        }
+  return (
+    <Box>
+      <Typography variant="h4" gutterBottom fontWeight="bold" color="primary">
+        Network Status
+      </Typography>
+      <Typography variant="subtitle1" color="text.secondary" gutterBottom>
+        Monitor system resources and performance metrics across your nodes
+      </Typography>
 
-                        const data = response.body
-                        metric.freeDiskSpace = data.freeDiskSpace;
-                        metric.usedDiskSpace = data.usedDiskSpace;
-                        metric.totalDiskSpace = data.totalDiskSpace;
-                        metric.usedDiskSpacePercentage = data.usedDiskSpacePercentage;
-                        metric.memoryUsage = data.memoryUsage;
-                        metric.memoryUsagePercentage = data.memoryUsagePercentage;
-                        metric.totalMemory = data.totalMemory;
-                    })
-                ;
-            }
-            return currentMetrics;
-        });
-    }
-
-    useEffect(() => {
-        if (firstRender.current) {
-            console.log('firstRender')
-            firstRender.current = false;
-            api?.get(`/configurations`)
-                .then(response => {
-                    if (!response.ok) {
-                        throw Error('Failed to fetch')
-                    }
-
-                    const data: ApiConfiguration[] = response.body
-                    for (const configuration of data) {
-                        if (!configuration.servers) {
-                            continue;
-                        }
-
-                        for (const server of configuration.servers) {
-                            setMetrics(metrics => [...metrics, {
-                                configuration: configuration,
-                                server: server,
-                                freeDiskSpace: 0,
-                                usedDiskSpace: 0,
-                                totalDiskSpace: 0,
-                                usedDiskSpacePercentage: 0,
-                                memoryUsage: 0,
-                                memoryUsagePercentage: 0,
-                                totalMemory: 0
-                            }]);
-                        }
-                    }
-
-                    lazyFetchMetrics();
-                })
-        }
-    }, [api]);
-
-    return (
-
-        <Box sx={{ height: '100%', width: '100%' }}>
-            <DataGrid
-                rows={metrics}
-                columns={columns}
-                autoHeight={true}
-                getRowId={(row) => row.server.id}
-                style={{ width: '100%' }}
-            />
-        </Box>
-    );
-}
+      <Box sx={{ mt: 4 }}>
+        <MetricsTable 
+          metricsMap={metricsMap}
+          configurations={configurations}
+          isLoading={isLoading}
+          error={error}
+          onRetry={refetch}
+        />
+      </Box>
+    </Box>
+  );
+};
 
 export default NetworkStatus;
