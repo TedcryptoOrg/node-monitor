@@ -42,7 +42,7 @@ export function castToString(value: unknown): string {
     throw new Error('Cannot cast object to string');
   }
 
-  return String(value);
+  return String(value as number|string);
 }
 
 export function castToStringOrUndefined (value: unknown): string | undefined {
