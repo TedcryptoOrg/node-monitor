@@ -1,0 +1,81 @@
+name: "Api: Build"
+
+defaults:
+  run:
+    working-directory: "api"
+
+on:
+  workflow_dispatch: ~
+  pull_request:
+    paths:
+      - ".github/workflows/api.build-image.yaml"
+      - "api/**"
+  push:
+    paths:
+      - ".github/workflows/api.build-image.yaml"
+      - ".github/workflows/api.deploy.yaml"
+      - "api/**"
+    tags:
+      - 'api-v*'
+    branches:
+      - "main"
+
+jobs:
+  build:
+    name: "Build Image"
+    runs-on: ubuntu-latest
+    outputs:
+      tag: ${{ steps.tag.outputs.tag }}
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Extract Tag Name or SHA for Main Branch
+        if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/api-v')
+        id: tag
+        run: |
+          FULL_TAG="${{ github.ref }}"
+          # Replace slashes with hyphens and remove 'refs/tags/api-' prefix
+          SANITIZED_TAG="${FULL_TAG/refs\/heads\//}"
+          SANITIZED_TAG="${SANITIZED_TAG/refs\/tags\/api-/}"
+          SANITIZED_TAG="${SANITIZED_TAG/\//-}"
+          if [ -z "$SANITIZED_TAG" ] || [ "$SANITIZED_TAG" == "main" ]; then
+            SANITIZED_TAG="latest"
+          fi
+          echo "Sanitized Tag Name: $SANITIZED_TAG"
+          echo "::set-output name=tag::$SANITIZED_TAG"
+
+      - name: Set SHA for Pull Request
+        if: github.event_name == 'pull_request'
+        id: sha
+        run: |
+          echo "SHA: ${{ github.sha }}"
+          echo "::set-output name=sha::${{ github.sha }}"
+
+      - name: Log in to Docker Hub
+        uses: docker/login-action@7ca345011ac4304463197fac0e56eab1bc7e6af0
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Extract metadata (tags, labels) for Docker
+        id: meta
+        uses: docker/metadata-action@906ecf0fc0a80f9110f79d9e6c04b1080f4a2621
+        with:
+          images: joshlopes/tedcrypto-node-monitor-api
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@7e094594beda23fc8f21fa31049f4b203e51096b
+        with:
+          context: ./api
+          file: ./api/docker/node/Dockerfile
+          target: prod
+          push: true
+          provenance: false
+          load: false
+          tags: |
+            ${{ (github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/api-v')) && format('joshlopes/tedcrypto-node-monitor-api:{0}', steps.tag.outputs.tag) || '' }}
+            ${{ github.event_name == 'pull_request' && format('joshlopes/tedcrypto-node-monitor-api:pr-{0}', steps.sha.outputs.sha) || '' }}
+            ${{ github.event_name == 'pull_request' && format('joshlopes/tedcrypto-node-monitor-api:pr-{0}', github.event.pull_request.number) || '' }}
+          labels: ${{ steps.meta.outputs.labels }}

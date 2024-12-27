@@ -1,0 +1,41 @@
+name: "Api: Static analysis"
+
+defaults:
+  run:
+    working-directory: "api"
+
+on:
+  workflow_dispatch: ~
+  pull_request:
+    paths:
+      - ".github/workflows/api.static-analysis.yaml"
+      - "api/**"
+  push:
+    paths:
+      - ".github/workflows/api.static-analysis.yaml"
+      - "api/**"
+    branches:
+      - "main"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.head_ref || github.run_id }} ~ "api.static-analysis.yaml"
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: lts/*
+
+      - name: Install modules
+        run: npm install
+
+      - name: Run Lint
+        run: npm run lint
