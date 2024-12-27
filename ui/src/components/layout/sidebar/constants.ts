@@ -1,4 +1,5 @@
-export const DRAWER_WIDTH = 280;
+export const DRAWER_WIDTH = 240;
+export const COLLAPSED_WIDTH = 64;
 
 export const NAV_SECTIONS = {
   MAIN: 'Main',
