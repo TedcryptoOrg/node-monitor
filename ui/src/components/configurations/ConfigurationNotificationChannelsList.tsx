@@ -69,7 +69,6 @@ const ConfigurationNotificationChannelsList: React.FC<NotificationChannelsListPr
 
     return (
         <>
-            <Typography typography={"h5"}>Configuration Notification Channels</Typography>
             {isLoading ? <LinearProgress/> : (<>
                 {isLoading ? <LinearProgress /> : <TableContainer component={Paper}>
                     <Table>

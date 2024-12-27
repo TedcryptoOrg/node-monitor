@@ -1,274 +1,79 @@
-import React, { useState, useEffect, useCallback } from "react";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  Button,
-  LinearProgress,
-  Typography,
-  Grid,
-  Card,
-  CardContent,
-  CardActions,
-} from "@mui/material";
-import { useParams } from "react-router-dom";
-import { ApiConfiguration } from "../../types/ApiConfiguration";
-import { ApiServer } from "../../types/ApiServer";
-import UpsertServerModal from "../servers/UpsertServerModal";
-import BooleanIcon from "../Shared/BooleanIcon";
-import UpsertConfigurationModal from "./UpsertConfigurationModal";
-import ServerLink from "../servers/ServerLink";
-import MonitorsStatus from "../monitors/MonitorsStatus";
-import MonitorsList from "../monitors/MonitorsList";
-import { enqueueSnackbar } from "notistack";
-import AssociateNotificationChannel from "./AssociateNotificationChannel";
-import ConfigurationNotificationChannelsList from "./ConfigurationNotificationChannelsList";
-import {useApi} from "../../context/ApiProvider";
-
-type RouteParams = {
-  [key: number]: string;
-};
+import React, { useState, useEffect, useCallback } from 'react';
+import { useParams } from 'react-router-dom';
+import { Box, Grid, LinearProgress } from '@mui/material';
+import { ApiConfiguration } from '../../types/ApiConfiguration';
+import { useApi } from '../../context/ApiProvider';
+import { enqueueSnackbar } from 'notistack';
+import ConfigurationHeader from './details/ConfigurationHeader';
+import ConfigurationDetails from './details/ConfigurationDetails';
+import ConfigurationServers from './details/ConfigurationServers';
+import ConfigurationMonitors from './details/ConfigurationMonitors';
+import ConfigurationNotifications from './details/ConfigurationNotifications';
 
 const ConfigurationOverview: React.FC = () => {
   const api = useApi();
-  const { id } = useParams<RouteParams>() as { id: number };
-  const [isLoadingConfiguration, setLoadingConfiguration] = useState(true);
-  const [configuration, setConfiguration] = useState<ApiConfiguration | null>(
-    null
-  );
-  const [isLoadingServers, setLoadingServers] = useState(true);
-  const [servers, setServers] = useState<ApiServer[]>([]);
-  const firstRender = React.useRef(true);
-
-  const fetchServers = useCallback(() => {
-    setLoadingServers(true);
-    api?.get(`/configurations/${id}/servers`)
-      .then(response => {
-        if (!response.ok) {
-            throw Error('Failed to fetch')
-        }
-        return response.body
-      })
-      .then(data => setServers(data))
-      .catch((error) => {
-        console.error('Error:', error);
-        enqueueSnackbar('Failed to fetch server data!', {variant: 'error'});
-        setServers([])
-      })
-      .finally(() => setLoadingServers(false))
-  }, [id, api]);
+  const { id } = useParams<{ id: string }>();
+  const [isLoading, setLoading] = useState(true);
+  const [configuration, setConfiguration] = useState<ApiConfiguration | null>(null);
 
   const fetchData = useCallback(() => {
-    setLoadingConfiguration(true);
+    setLoading(true);
     api?.get(`/configurations/${id}`)
       .then(response => {
         if (!response.ok) {
-            throw Error('Failed to fetch')
+          throw new Error('Failed to fetch configuration');
         }
-
-        return response.body
-      })      
-      .then((data) => {
-        console.log("🚀 ~ fetchData ~ data:", data);
-        return setConfiguration(data);
+        return response.body;
       })
+      .then(data => setConfiguration(data))
       .catch((error) => {
         console.error('Error:', error);
-        enqueueSnackbar('Failed to fetch configuration data!', {variant: 'error'});
-        setConfiguration(null)
+        enqueueSnackbar('Failed to fetch configuration data!', { variant: 'error' });
+        setConfiguration(null);
       })
-      .finally(() => setLoadingConfiguration(false))
-    ;
+      .finally(() => setLoading(false));
   }, [id, api]);
 
   useEffect(() => {
-    if (firstRender.current) {
-      fetchData();
-      fetchServers();
-      firstRender.current = false;
-    }
-  }, [fetchData, fetchServers]);
+    fetchData();
+  }, [fetchData]);
 
-  // Configuration
-  const [openConfigurationModal, setOpenConfigurationModal] = useState(false);
+  if (isLoading) {
+    return <LinearProgress />;
+  }
 
-  // Upsert server
-  const [openServerModal, setOpenServerModal] = useState(false);
-  const [editServer, setEditServer] = useState<ApiServer | null>(null);
-
-  const handleServerModalOpen = () => {
-    setOpenServerModal(true);
-  };
-
-  const handleServerModalClose = () => {
-    setEditServer(null);
-    setOpenServerModal(false);
-  };
-
-  const handleEditServer = (id: number) => {
-    const server = servers.find((server: ApiServer) => server.id === id);
-    if (server) {
-      setEditServer(server);
-      handleServerModalOpen();
-    } else {
-      enqueueSnackbar(`No server found with id ${id}!`, { variant: "error" });
-    }
-  };
-
-  const handleRemoveServer = (id: number) => {
-    api?.delete(`/servers/${id}`)
-      .then((response) => {
-        fetchServers()
-        enqueueSnackbar('Server removed successfully!', {variant: 'success'});
-      }).catch((error) => {
-        console.error('Error:', error)
-        enqueueSnackbar('Failed to remove server!', {variant: 'error'});
-      });
-  };
+  if (!configuration) {
+    return null;
+  }
 
   return (
-    <div>
-      <Grid container spacing={1}>
-        <Grid xs={12}>
-          <Typography variant="h5">Configuration Overview</Typography>
+    <Box>
+      <ConfigurationHeader configuration={configuration} onUpdate={fetchData} />
+      
+      <Grid container spacing={3} sx={{ mt: 1 }}>
+        <Grid item xs={12} md={4}>
+          <ConfigurationDetails configuration={configuration} />
         </Grid>
-        <Grid xs={12} md={4}>
-          {isLoadingConfiguration ? (
-            <LinearProgress />
-          ) : (
-            configuration && (
-              <>
-                <UpsertConfigurationModal
-                  open={openConfigurationModal}
-                  fetchData={fetchData}
-                  configuration={configuration}
-                  handleClose={() => {
-                    setOpenConfigurationModal(false);
-                  }}
-                />
-                <Card>
-                  <CardContent>
-                    <p>Name: {configuration.name}</p>
-                    <p>Chain: {configuration.chain}</p>
-                    <p>
-                      Is Enabled:{" "}
-                      <BooleanIcon value={configuration.is_enabled} />
-                    </p>
-                    <p>
-                      Created At:{" "}
-                      {new Date(configuration.createdAt).toLocaleString()}
-                    </p>
-                    <p>
-                      Updated At:{" "}
-                      {new Date(configuration.updatedAt).toLocaleString()}
-                    </p>
-                  </CardContent>
-                  <CardActions>
-                    <Button
-                      variant="contained"
-                      size={"small"}
-                      color="warning"
-                      onClick={() => {
-                        setOpenConfigurationModal(true);
-                      }}
-                    >
-                      Edit
-                    </Button>
-                  </CardActions>
-                </Card>
-              </>
-            )
-          )}
+        
+        <Grid item xs={12} md={8}>
+          <ConfigurationNotifications configuration={configuration} />
         </Grid>
-        <Grid xs={0} md={1}></Grid>
-        <Grid xs={12} md={6}>
-          {configuration ? (
-            <>
-              <ConfigurationNotificationChannelsList
-                configuration={configuration}
-              />
-              <AssociateNotificationChannel configuration={configuration} />
-            </>
-          ) : (
-            <LinearProgress />
-          )}
+
+        <Grid item xs={12}>
+          <ConfigurationServers 
+            configuration={configuration} 
+            onUpdate={fetchData}
+          />
+        </Grid>
+
+        <Grid item xs={12}>
+          <ConfigurationMonitors 
+            configuration={configuration}
+            onUpdate={fetchData}
+          />
         </Grid>
       </Grid>
-
-      <h3>Servers</h3>
-      <Button variant="outlined" onClick={handleServerModalOpen}>
-        Add Server
-      </Button>
-      <UpsertServerModal
-        open={openServerModal}
-        fetchData={fetchServers}
-        configurationId={id}
-        editServer={editServer}
-        handleClose={handleServerModalClose}
-      />
-      {isLoadingServers ? (
-        <LinearProgress />
-      ) : (
-        <TableContainer component={Paper}>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell>ID</TableCell>
-                <TableCell>Name</TableCell>
-                <TableCell>Address</TableCell>
-                <TableCell>Is Enabled</TableCell>
-                <TableCell>Status</TableCell>
-                <TableCell>Actions</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {servers.map((server) => (
-                <TableRow key={server.id}>
-                  <TableCell>{server.id}</TableCell>
-                  <TableCell>
-                    <ServerLink server={server} />
-                  </TableCell>
-                  <TableCell>{server.address}</TableCell>
-                  <TableCell>
-                    <BooleanIcon value={server.is_enabled} />
-                  </TableCell>
-                  <TableCell>
-                    <MonitorsStatus monitors={server.monitors ?? []} />
-                  </TableCell>
-                  <TableCell>
-                    <Button
-                      variant="contained"
-                      color="primary"
-                      onClick={() => handleEditServer(server.id ?? 0)}
-                    >
-                      Edit
-                    </Button>
-                    <Button
-                      variant="contained"
-                      color="secondary"
-                      onClick={() => handleRemoveServer(server.id ?? 0)}
-                    >
-                      Remove
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      )}
-
-      <h3>Monitors</h3>
-      {configuration ? (
-        <MonitorsList configuration={configuration} />
-      ) : (
-        <LinearProgress />
-      )}
-    </div>
+    </Box>
   );
 };
 

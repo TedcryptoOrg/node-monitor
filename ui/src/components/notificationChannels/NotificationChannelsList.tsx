@@ -1,153 +1,115 @@
+import React, { useCallback, useEffect, useState } from 'react';
 import {
-    Button,
-    LinearProgress,
-    Paper,
-    Table, TableBody, TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    Typography
-} from "@mui/material";
-import React, {useCallback, useEffect, useRef, useState} from "react";
-import {ApiNotificationChannel} from "../../types/ApiNotificationChannel";
-import UpsertNotificationChannelModal from "./UpsertNotificationChannelModal";
-import BooleanIcon from "../Shared/BooleanIcon";
-import {enqueueSnackbar} from "notistack";
-import {ApiConfiguration} from "../../types/ApiConfiguration";
-import {useApi} from "../../context/ApiProvider";
+  Grid,
+  LinearProgress,
+  Box,
+  Typography,
+} from '@mui/material';
+import { ApiNotificationChannel } from '../../types/ApiNotificationChannel';
+import { useApi } from '../../context/ApiProvider';
+import { enqueueSnackbar } from 'notistack';
+import NotificationChannelCard from './NotificationChannelCard';
+import UpsertNotificationChannelModal from './UpsertNotificationChannelModal';
 
-export interface NotificationChannelsListProps {
-    configuration?: ApiConfiguration
-}
+const NotificationChannelsList: React.FC = () => {
+  const api = useApi();
+  const [channels, setChannels] = useState<ApiNotificationChannel[]>([]);
+  const [editChannel, setEditChannel] = useState<ApiNotificationChannel | null>(null);
+  const [openModal, setOpenModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
-const NotificationChannelsList: React.FC<NotificationChannelsListProps> = (
-    {
-        configuration,
+  const fetchChannels = useCallback(async () => {
+    try {
+      const response = await api?.get('/notification-channels');
+      if (response?.ok) {
+        setChannels(response.body || []);
+      } else {
+        throw new Error('Failed to fetch channels');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      enqueueSnackbar('Failed to fetch notification channels', { variant: 'error' });
+      setChannels([]);
+    } finally {
+      setIsLoading(false);
     }
-) => {
-    const api = useApi();
-    const [notificationChannels, setNotificationChannels] = useState<ApiNotificationChannel[]>([]);
-    const [editNotificationChannel, setEditNotificationChannel] = useState<ApiNotificationChannel|null>(null);
-    const [openModal, setModalOpen] = useState(false);
-    const [isLoading, setIsLoading] = useState(false);
-    const isFirstRender = useRef(true);
+  }, [api]);
 
-    const fetchData = useCallback(() => {
-        setIsLoading(true)
-        let url
-        if (configuration) {
-            url = `/configurations/${configuration.id}/notification-channels`
-        } else {
-            url = `/notification-channels`
-        }
+  useEffect(() => {
+    fetchChannels();
+  }, [fetchChannels]);
 
-        api?.get(url)
-            .then(response => {
-                if (!response.ok) {
-                    throw Error('Failed to fetch')
-                }
+  const handleEdit = (channel: ApiNotificationChannel) => {
+    setEditChannel(channel);
+    setOpenModal(true);
+  };
 
-                return response.body
-            })
-            .then(data => setNotificationChannels(data))
-            .catch((error) => {
-                console.error('Error:', error);
-                setNotificationChannels([])
-            })
-            .finally(() => setIsLoading(false))
-        ;
-    }, [setNotificationChannels, setIsLoading, api, configuration])
-
-    useEffect(() => {
-        if (isFirstRender.current) {
-            fetchData()
-            isFirstRender.current = false
-        }
-    }, [fetchData]);
-
-    const handleModalOpen = () => {
-        setModalOpen(true);
+  const handleDelete = async (id: number) => {
+    try {
+      const response = await api?.delete(`/notification-channels/${id}`);
+      if (response?.ok) {
+        enqueueSnackbar('Channel deleted successfully', { variant: 'success' });
+        fetchChannels();
+      } else {
+        throw new Error('Failed to delete channel');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      enqueueSnackbar('Failed to delete channel', { variant: 'error' });
     }
+  };
 
-    const handleModalClose = () => {
-        setEditNotificationChannel(null);
-        setModalOpen(false);
-    };
+  if (isLoading) {
+    return <LinearProgress />;
+  }
 
-    const handleEdit = (id: number) => {
-        const notificationChannel = notificationChannels
-            .find((notificationChannel: ApiNotificationChannel) => notificationChannel.id === id);
-        if (notificationChannel === undefined) {
-            enqueueSnackbar(`No notification channel found with id ${id}`, {variant: 'error'})
-
-            return
-        }
-
-        setEditNotificationChannel(notificationChannel)
-        handleModalOpen()
-    };
-
-    const handleRemove = (id: number) => {
-        api?.delete(`/notification-channels/${id}`).then(() => {
-            fetchData()
-            enqueueSnackbar(`Notification channel removed successfully`, {variant: 'success'})
-        }).catch((error) => {
-            console.error('Error:', error)
-            enqueueSnackbar(`Error when deleting notification channel`, {variant: 'error'});
-        });
-    };
-
+  if (channels.length === 0) {
     return (
-        <>
-            <Typography typography={"h5"}>Notification Channels</Typography>
-            {isLoading ? <LinearProgress/> : (<>
-                <Button variant="outlined" onClick={handleModalOpen}>
-                    Add Notification Channel
-                </Button>
-                <UpsertNotificationChannelModal
-                    open={openModal}
-                    fetchData={fetchData}
-                    notificationChannel={editNotificationChannel}
-                    handleClose={handleModalClose}
-                />
-                {isLoading ? <LinearProgress /> : <TableContainer component={Paper}>
-                    <Table>
-                        <TableHead>
-                            <TableRow>
-                                <TableCell>Id</TableCell>
-                                <TableCell>Type</TableCell>
-                                <TableCell>Name</TableCell>
-                                <TableCell>Enabled</TableCell>
-                                <TableCell>Actions</TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {notificationChannels.map((notificationChannel) => (
-                                <TableRow key={notificationChannel.id}>
-                                    <TableCell>{notificationChannel.id}</TableCell>
-                                    <TableCell>{notificationChannel.type}</TableCell>
-                                    <TableCell>{notificationChannel.name}</TableCell>
-                                    <TableCell>
-                                        <BooleanIcon value={notificationChannel.is_enabled} />
-                                    </TableCell>
-                                    <TableCell>
-                                        <Button variant="contained" color="primary"
-                                                onClick={() => handleEdit(notificationChannel.id ?? 0)}>
-                                            Edit
-                                        </Button>
-                                        <Button variant="contained" color="secondary"
-                                                onClick={() => handleRemove(notificationChannel.id ?? 0)}>
-                                            Remove
-                                        </Button>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </TableContainer>}
-            </>)}
-        </>
-    )
-}
+      <Box
+        sx={{
+          textAlign: 'center',
+          py: 8,
+          bgcolor: 'background.paper',
+          borderRadius: 2,
+          border: '1px solid',
+          borderColor: 'divider',
+        }}
+      >
+        <Typography variant="h6" color="text.secondary" gutterBottom>
+          No notification channels configured
+        </Typography>
+        <Typography color="text.secondary">
+          Add your first notification channel to start receiving alerts
+        </Typography>
+      </Box>
+    );
+  }
+
+  return (
+    <>
+      <Grid container spacing={3}>
+        {channels.map((channel) => (
+          <Grid item xs={12} sm={6} md={4} key={channel.id}>
+            <NotificationChannelCard
+              channel={channel}
+              onEdit={handleEdit}
+              onDelete={handleDelete}
+            />
+          </Grid>
+        ))}
+      </Grid>
+
+      <UpsertNotificationChannelModal
+        open={openModal}
+        fetchData={fetchChannels}
+        notificationChannel={editChannel}
+        handleClose={() => {
+          setEditChannel(null);
+          setOpenModal(false);
+        }}
+      />
+    </>
+  );
+};
 
 export default NotificationChannelsList;

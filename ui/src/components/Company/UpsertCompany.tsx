@@ -1,102 +1,129 @@
-import React, {useCallback, useEffect, useState} from 'react';
-import {useNavigate, useParams} from 'react-router-dom';
-import {TextField, Button, Container, Box, Typography, Grid, FormControlLabel, Checkbox} from '@mui/material';
-import {enqueueSnackbar} from "notistack";
-import {AxiosError} from "axios";
-import {CompanyInput} from "../../types/Company";
-import {useApi} from "../../context/ApiProvider";
+import React, { useCallback, useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import {
+  TextField,
+  Button,
+  Container,
+  Box,
+  Typography,
+  Grid,
+  FormControlLabel,
+  Switch,
+  Card,
+  CardContent,
+} from '@mui/material';
+import { enqueueSnackbar } from "notistack";
+import { CompanyInput } from "../../types/Company";
+import { useApi } from "../../context/ApiProvider";
 
 type RouteParams = {
-    [key: number]: string | undefined;
+  [key: number]: string | undefined;
 };
 
-const UpsertCompany: React.FC = () => {
-    const api = useApi();
-    const { id } = useParams<RouteParams>() as { id?: number };
-    const [name, setName] = useState('');
-    const [isActive, setIsActive] = useState(true);
-    const navigate = useNavigate();
+export const UpsertCompany: React.FC = () => {
+  const api = useApi();
+  const { id } = useParams<RouteParams>() as { id?: number };
+  const [name, setName] = useState('');
+  const [isActive, setIsActive] = useState(true);
+  const navigate = useNavigate();
 
-    const fetchData = useCallback(() => {
-        if (id) {
-            api?.get(`/companies/${id}`)
-                .then(response => {
-                    if (!response.ok) {
-                        throw Error('Failed to fetch')
-                    }
+  const fetchData = useCallback(() => {
+    if (id) {
+      api?.get(`/companies/${id}`)
+        .then(response => {
+          if (!response.ok || !response.body) {
+            throw new Error('Failed to fetch company!');
+          }
+          const data = response.body;
+          setName(data.name);
+          setIsActive(data.is_active);
+        })
+        .catch(() => {
+          enqueueSnackbar('Failed to load data!', { variant: 'error' });
+        });
+    }
+  }, [id, api]);
 
-                    return response.body
-                })
-                .then(data => {
-                    setName(data.name);
-                    setIsActive(data.is_active);
-                })
-                .catch((error) => {
-                    console.error('Error:', error);
-                });
-        }
-    }, [id, api]);
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
 
-    useEffect(() => {
-        fetchData();
-    }, [fetchData, id]);
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
 
-    const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-        event.preventDefault();
-
-        const company: CompanyInput = {
-            name: name,
-            is_active: isActive,
-        };
-
-        const url = id ? `/companies/${id}` : `/companies`;
-        api?.[id ? 'put' : 'post'](url, company)
-            .then(response => {
-                enqueueSnackbar(`Successfully ${id ? 'updated' : 'created'}!`, {variant: 'success'})
-                navigate('/companies/' + (response.body?.id ?? id ?? ''))
-            })
-            .catch((error: AxiosError) => {
-                console.error('Error:', error);
-
-                const data: any = error.response?.data;
-                if (data) {
-                    const errorMessage = data.message || data.error || data;
-                    enqueueSnackbar(`Failed! Error: ${errorMessage}`, {variant: 'error'})
-
-                    return
-                }
-
-                enqueueSnackbar(`Failed! Error: ${error}`, {variant: 'error'})
-            });
+    const company: CompanyInput = {
+      name,
+      is_active: isActive,
     };
 
-    return (
-        <Container>
-            <Box my={4}>
-                <Typography variant="h4" component="h1" gutterBottom>
-                    { id ? 'Update' : 'Create' } Company
-                </Typography>
-                <form onSubmit={handleSubmit}>
-                    <Grid container spacing={3}>
-                        <Grid item xs={12} sm={6}>
-                            <TextField fullWidth label="Name" value={name} onChange={e => setName(e.target.value)} required />
-                        </Grid>
-                        <Grid item xs={12} sm={6}>
-                            <FormControlLabel
-                                control={<Checkbox checked={isActive} onChange={e => setIsActive(e.target.checked)} />}
-                                label="Is Active"
-                            />
-                        </Grid>
-                        <Grid item xs={12}>
-                            <Button type="submit" variant="contained" color="primary">
-                                {id ? 'Update' : 'Create'} Company
-                            </Button>
-                        </Grid>
-                    </Grid>
-                </form>
-            </Box>
-        </Container>
-    );
-};
+    api?.[id ? 'put' : 'post'](id ? `/companies/${id}` : '/companies', company)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(response.body?.message || 'Failed to save company');
+        }
+        enqueueSnackbar(`Company ${id ? 'updated' : 'created'} successfully!`, { variant: 'success' });
+        navigate('/companies');
+      })
+      .catch((error) => {
+        console.error('Error:', error);
+        enqueueSnackbar(`Failed to ${id ? 'update' : 'create'} company`, { variant: 'error' });
+      });
+  };
 
-export default UpsertCompany;
+  return (
+    <Container maxWidth="md">
+      <Box sx={{ mb: 4 }}>
+        <Typography variant="h4" gutterBottom fontWeight="bold" color="primary">
+          {id ? 'Update' : 'Create'} Company
+        </Typography>
+      </Box>
+
+      <Card>
+        <CardContent>
+          <form onSubmit={handleSubmit}>
+            <Grid container spacing={3}>
+              <Grid item xs={12}>
+                <TextField
+                  fullWidth
+                  label="Name"
+                  value={name}
+                  onChange={e => setName(e.target.value)}
+                  required
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={isActive}
+                      onChange={e => setIsActive(e.target.checked)}
+                      color="primary"
+                    />
+                  }
+                  label="Active"
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <Box sx={{ display: 'flex', gap: 2 }}>
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    color="primary"
+                  >
+                    {id ? 'Update' : 'Create'} Company
+                  </Button>
+                  <Button
+                    variant="outlined"
+                    onClick={() => navigate('/companies')}
+                  >
+                    Cancel
+                  </Button>
+                </Box>
+              </Grid>
+            </Grid>
+          </form>
+        </CardContent>
+      </Card>
+    </Container>
+  );
+};

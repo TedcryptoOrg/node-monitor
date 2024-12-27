@@ -1,86 +1,101 @@
 import React, { useEffect, useState } from 'react';
-import {Button, Grid} from '@mui/material';
-import { Autocomplete } from '@mui/material';
-import { TextField } from '@mui/material';
+import { Button, Grid, Autocomplete, TextField, Box } from '@mui/material';
 import { ApiNotificationChannel } from '../../types/ApiNotificationChannel';
 import { ApiConfiguration } from '../../types/ApiConfiguration';
-import {enqueueSnackbar} from "notistack";
-import {ApiConfigurationNotificationChannelInput} from "../../types/ApiConfigurationNotificationChannel";
-import {eventEmitter} from "../../services/Events/EventEmitter";
-import {EventsEnum} from "../../services/Events/EventsEnum";
-import {useApi} from "../../context/ApiProvider";
+import { enqueueSnackbar } from 'notistack';
+import { ApiConfigurationNotificationChannelInput } from '../../types/ApiConfigurationNotificationChannel';
+import { eventEmitter } from '../../services/Events/EventEmitter';
+import { EventsEnum } from '../../services/Events/EventsEnum';
+import { useApi } from '../../context/ApiProvider';
 
 interface AssociateNotificationChannelProps {
-    configuration: ApiConfiguration;
+  configuration: ApiConfiguration;
 }
 
 const AssociateNotificationChannel: React.FC<AssociateNotificationChannelProps> = ({ configuration }) => {
-    const api = useApi();
-    const [notificationChannels, setNotificationChannels] = useState<ApiNotificationChannel[]>([]);
-    const [selectedChannel, setSelectedChannel] = useState<ApiNotificationChannel | null>(null);
-    const firstRender = React.useRef(true);
+  const api = useApi();
+  const [notificationChannels, setNotificationChannels] = useState<ApiNotificationChannel[]>([]);
+  const [selectedChannel, setSelectedChannel] = useState<ApiNotificationChannel | null>(null);
+  const firstRender = React.useRef(true);
 
-    useEffect(() => {
-        if (firstRender.current) {
-            api?.get(`/notification-channels`)
-                .then(response => {
-                    if (!response.ok) {
-                        throw Error('Failed to fetch')
-                    }
+  useEffect(() => {
+    if (firstRender.current) {
+      api?.get(`/notification-channels`)
+        .then(response => {
+          if (!response.ok) {
+            throw Error('Failed to fetch')
+          }
+          return response.body;
+        })
+        .then(data => setNotificationChannels(data))
+        .catch(error => {
+          console.error('Error:', error);
+          enqueueSnackbar('Failed to fetch notification channels', { variant: 'error' });
+        });
+      firstRender.current = false;
+    }
+  }, [api]);
 
-                    return response.body
-                })
-                .then(data => setNotificationChannels(data));
-            firstRender.current = false;
-        }
-    }, [setNotificationChannels, firstRender, api]);
+  const handleAdd = () => {
+    if (!selectedChannel) {
+      enqueueSnackbar('Please select a notification channel', { variant: 'error' });
+      return;
+    }
 
-    const handleAdd = () => {
-        if (!selectedChannel) {
-            enqueueSnackbar('Please select a notification channel!', {variant: 'error'});
-            return;
-        }
-        const configurationNotificationChannel: ApiConfigurationNotificationChannelInput = {
-            configuration_id: configuration.id,
-            notification_channel_id: selectedChannel.id,
-        }
-        api?.post(`/configurations/${configuration.id}/notification-channels`, configurationNotificationChannel)
-            .then(async (response) => {
-                if (!response.ok) {
-                    throw Error('Failed to associate notification channel')
-                }
-
-                return response.body
-            })
-            .then(data => {
-                setSelectedChannel(null);
-                eventEmitter.emit(EventsEnum.NOTIFICATION_CHANNEL_ASSOCIATED);
-                enqueueSnackbar(`Successfully associated notification channel`, {variant: 'success'})
-            })
-            .catch((error) => enqueueSnackbar(`Failed to associate notification channel: ${error}`, {variant: 'error'}))
-        ;
+    const configurationNotificationChannel: ApiConfigurationNotificationChannelInput = {
+      configuration_id: configuration.id,
+      notification_channel_id: selectedChannel.id,
     };
 
-    return (
-        <Grid container spacing={0} paddingTop={2}>
-            <Grid xs={12}>
-                <Autocomplete
-                    options={notificationChannels}
-                    getOptionLabel={(option) => option.name}
-                    value={selectedChannel}
-                    onChange={(event, newValue) => {
-                        setSelectedChannel(newValue);
-                    }}
-                    renderInput={(params) => <TextField {...params} label="Notification Channels" required variant="outlined" />}
-                />
-            </Grid>
-            <Grid xs={12}>
-                <Button variant="contained" color="primary" fullWidth onClick={handleAdd}>
-                    Add
-                </Button>
-            </Grid>
+    api?.post(`/configurations/${configuration.id}/notification-channels`, configurationNotificationChannel)
+      .then(response => {
+        if (!response.ok) {
+          throw Error('Failed to associate notification channel');
+        }
+        setSelectedChannel(null);
+        eventEmitter.emit(EventsEnum.NOTIFICATION_CHANNEL_ASSOCIATED);
+        enqueueSnackbar('Successfully associated notification channel', { variant: 'success' });
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        enqueueSnackbar('Failed to associate notification channel', { variant: 'error' });
+      });
+  };
+
+  return (
+    <Box sx={{ mt: 2 }}>
+      <Grid container spacing={2}>
+        <Grid item xs={12}>
+          <Autocomplete
+            options={notificationChannels}
+            getOptionLabel={(option) => option.name}
+            value={selectedChannel}
+            onChange={(_, newValue) => setSelectedChannel(newValue)}
+            renderInput={(params) => (
+              <TextField 
+                {...params} 
+                label="Notification Channels" 
+                variant="outlined" 
+                size="small"
+                placeholder="Select a notification channel"
+              />
+            )}
+          />
         </Grid>
-    );
+        <Grid item xs={12}>
+          <Button 
+            variant="contained" 
+            color="primary" 
+            fullWidth 
+            onClick={handleAdd}
+            disabled={!selectedChannel}
+          >
+            Add Channel
+          </Button>
+        </Grid>
+      </Grid>
+    </Box>
+  );
 };
 
 export default AssociateNotificationChannel;

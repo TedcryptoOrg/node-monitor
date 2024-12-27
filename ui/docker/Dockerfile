@@ -1,4 +1,4 @@
-FROM node:20.18 as build
+FROM node:20.18 AS build
 
 WORKDIR /app
 
@@ -13,7 +13,7 @@ ENV REACT_APP_API_HOST ${REACT_APP_API_HOST}
 
 RUN npm run build
 
-FROM nginx:stable-alpine as production
+FROM nginx:stable-alpine AS production
 
 RUN apk add --no-cache bash
 

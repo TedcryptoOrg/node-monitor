@@ -1,6 +1,6 @@
-FROM node:20-alpine as app_base
+FROM node:20-alpine AS app_base
 
-RUN apk --no-cache add mariadb-client
+RUN apk --no-cache add mariadb-client openssl
 
 # Set the working directory
 WORKDIR /app
@@ -12,7 +12,7 @@ ENV PORT=3003
 
 EXPOSE 3003
 
-FROM app_base as dev
+FROM app_base AS dev
 
 # Install the dependencies
 RUN npm install
@@ -25,7 +25,7 @@ COPY docker/node/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
 
-FROM app_base as test
+FROM app_base AS test
 
 # Install the dependencies
 RUN npm ci
@@ -41,7 +41,7 @@ COPY docker/node/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
 
-FROM app_base as build
+FROM app_base AS build
 
 COPY ../../tsconfig.json .
 COPY ../../src ./src
@@ -52,7 +52,7 @@ RUN npm run build
 
 RUN ls -a
 
-FROM app_base as prod
+FROM app_base AS prod
 
 ENV APP_ENV=prod
 ENV NODE_ENV=production
