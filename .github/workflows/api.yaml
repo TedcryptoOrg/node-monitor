@@ -1,0 +1,69 @@
+name: "Api: CI/CD"
+
+concurrency:
+  group: "api-${{ github.ref }}"
+  cancel-in-progress: true
+
+defaults:
+  run:
+    working-directory: "api"
+
+on:
+  workflow_dispatch: ~
+  pull_request:
+    paths:
+      - ".github/workflows/api.yaml"
+      - "api/**"
+  push:
+    paths:
+      - ".github/workflows/api.yaml"
+      - "api/**"
+    tags:
+      - 'api-v*'
+    branches:
+      - "main"
+
+jobs:
+  static_analysis:
+    name: "Static Analysis"
+    uses: TedcryptoOrg/github-actions/.github/workflows/shared.static-analysis.yaml@v0.2.0
+    secrets: inherit
+    with:
+      working_directory: "api"
+
+  tests:
+    name: "Tests"
+    uses: TedcryptoOrg/github-actions/.github/workflows/shared.tests.yaml@v0.2.0
+    secrets: inherit
+    with:
+      working_directory: "api"
+      docker_compose_file: "api/docker-compose.ci.yaml"
+
+  build:
+    name: "Build Image"
+    needs: [tests, static_analysis]
+    uses: TedcryptoOrg/github-actions/.github/workflows/shared.build-image.yaml@v0.2.0
+    secrets: inherit
+    with:
+      working_directory: "api"
+      image_name: "joshlopes/tedcrypto-node-monitor-api"
+      dockerfile: "api/docker/node/Dockerfile"
+      tag_prefix: 'api'
+
+  deploy:
+    name: "Deploy"
+    needs: [build, tests, static_analysis]
+    if: >
+      github.event_name == 'push' &&
+      github.ref == 'refs/heads/main'
+    uses: TedcryptoOrg/github-actions/.github/workflows/shared.deploy.yaml@v0.2.0
+    secrets:
+      SERVER: ${{ secrets.CAPROVER_SERVER }}
+      APP: ${{ secrets.CAPROVER_API_APP }}
+      APP_TOKEN: ${{ secrets.CAPROVER_API_TOKEN }}
+      TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+      TELEGRAM_THREAD_ID: ${{ secrets.TELEGRAM_THREAD_ID }}
+    with:
+      image_name: "joshlopes/tedcrypto-node-monitor-api:latest"
+      telegram_app_name: "Tedcrypto Monitor API 🖥️️"
