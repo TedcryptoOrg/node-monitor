@@ -34,12 +34,15 @@ export function castToNumberOrUndefined (value: unknown): number | undefined {
   return castToNumber(value)
 }
 
-export function castToString (value: unknown): string {
+export function castToString(value: unknown): string {
   if (value === undefined) {
-    throw new Error('Value is required')
+    throw new Error('Value is required');
+  }
+  if (typeof value === 'object' && value !== null) {
+    throw new Error('Cannot cast object to string');
   }
 
-  return String(value)
+  return String(value);
 }
 
 export function castToStringOrUndefined (value: unknown): string | undefined {
